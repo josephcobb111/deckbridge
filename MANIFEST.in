@@ -19,3 +19,5 @@ recursive-include tests *.py
 recursive-include src *.sql
 recursive-include src *.yml
 recursive-include src *.yaml
+
+prune .ipynb_checkpoints
