@@ -1,0 +1,8 @@
+[run]
+omit =
+  tests/*
+  src/deckbridge/_version.py
+  src/deckbridge/_git_version.py
+
+[report]
+show_missing = True

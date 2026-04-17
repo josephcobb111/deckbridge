@@ -1,0 +1,21 @@
+include *.ini
+include *.md
+include *.py
+include *.rst
+include *.sh
+include *.txt
+include *.toml
+include *.yml
+
+include .bumpversion.cfg
+include .coveragerc
+include Makefile
+
+recursive-include conda_recipe *.yaml
+recursive-include docs *.py
+recursive-include docs *.rst
+recursive-include tests *.py
+
+recursive-include src *.sql
+recursive-include src *.yml
+recursive-include src *.yaml

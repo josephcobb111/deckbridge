@@ -1,0 +1,207 @@
+[project]
+name = "deckbridge"
+requires-python = ">=3.9"
+description = "Deck builder for analytics."
+authors = [
+    {name = "Joseph Cobb", email = "josephxcobb@gmail.com"}
+]
+classifiers = [
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3.9",
+]
+
+dynamic = ["readme", "version", "dependencies"]
+
+[project.optional-dependencies]
+docs = [
+    "sphinx",
+    "furo",
+    "myst-parser",
+]
+tests = [
+    "coverage",
+    "mypy",
+    "pytest>=6.0",
+    "pytest-cov",
+    "pyyaml",
+    "types-pyyaml",
+]
+qa = [
+    "check-manifest",
+    "pre-commit",
+    "pre-commit-hooks",
+    "mypy",
+    "edgetest",
+    "ruff",
+    "black",
+    "flake8",
+    "isort",
+    "pylint",
+]
+build = [
+    "twine",
+    "wheel",
+    "bump2version",
+]
+dev = [
+    "deckbridge[docs]",
+    "deckbridge[tests]",
+    "deckbridge[qa]",
+    "deckbridge[build]",
+]
+
+[project.urls]
+repository = "https://github.com/josephcobb111/deckbridge"
+
+# The build system using setuptools allows pip to work for these projects.
+[build-system]
+requires = ["setuptools>=64.0.0"]
+build-backend = "setuptools.build_meta"
+
+###################################################################################################
+# Setuptools Configuration
+###################################################################################################
+
+# This is currently a default behavior of pyproject.toml, but we're trying to be explicit.
+# You still need the MANIFEST.in file.
+# See: https://setuptools.pypa.io/en/latest/userguide/datafiles.html
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.dynamic]
+version = {attr = "deckbridge.__version__"}
+readme = {file = ["README.md", "CHANGELOG.md"]}
+dependencies = {file = "requirements.txt"}
+
+# Both flat and src layouts are supported by default. This makes it explicit.
+# https://setuptools.pypa.io/en/latest/userguide/pyproject_config.html#setuptools-specific-configuration
+[tool.setuptools.packages.find]
+where = ["src"]
+
+###################################################################################################
+# Dev Tooling Configuration
+###################################################################################################
+
+# CHECK-MANIFEST ----------------------------------------------------------------------------------
+[tool.check-manifest]
+ignore = [
+    "docs",
+    "docs/**",
+    "notebooks",
+    "notebooks/**",
+    "setup",
+    "setup/**",
+    ".pre-commit-config.yaml",
+]
+
+# EDGETEST ----------------------------------------------------------------------------------------
+[edgetest]
+deps = "-r requirements.txt"
+extras = "tests"
+command = "pytest --cov-fail-under=0"  # TO DO: make coverage compatible
+
+# MYPY --------------------------------------------------------------------------------------------
+[tool.mypy]
+warn_return_any = true
+warn_unused_configs = true
+ignore_missing_imports = true
+
+# PYTEST ------------------------------------------------------------------------------------------
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "--cov=src -vv -ra --cov-report=html --verbose --cov-fail-under=80"
+testpaths = ["tests"]
+markers = [
+    "quality: code quality tests",
+]
+
+# See: https://docs.astral.sh/ruff/rules/
+[tool.ruff]
+#extend-include = ["*.ipynb"] # enable linting within notebook cells
+target-version = "py39"
+src = ["src"]
+line-length = 140
+
+[tool.ruff.lint]
+preview = true
+select = [
+    "E",  # pycodestyle errors
+    "W",  # pycodestyle warnings
+    "F",  # pyflakes
+    "D",  # pydocstyle
+    "I",  # isort
+    "C",  # flake8-comprehensions
+    "TID252",  # flake8-tidy-imports ban relative imports
+    #"T20",  # flake8-print
+    #"UP",  # pyupgrade
+    #"B",  # flake8-bugbear
+    #"A",  # flake8-builtins
+    #"C901",  # mccabe complexity
+    #"G",  # flake8-logging-format
+    #"ARG",  # flake8-unused-arguments
+    #"SIM",  # flake8-simplify
+    #"NPY",  # numpy rules
+    #"LOG",  # flake8-logging
+    #"RUF",  # Ruff errors
+]
+
+ignore = [
+    "E111",  # Check indentation level. Using formatter instead.
+    "E114",  # Check indentation level. Using formatter instead.
+    "E117",  # Check indentation level. Using formatter instead.
+    "E203",  # Check whitespace. Using formatter instead.
+    "E501",  # Line too long. Using formatter instead.
+    "D206",  # Docstring indentation. Using formatter instead.
+    "D300",  # Use triple single quotes. Using formatter instead.
+    "D416",  # Section names ends in colon, we have the underlines in place.
+    "SIM108",  # Use ternary operator instead of if-else blocks.
+    "SIM105",  # Use `contextlib.suppress(FineNotFoundError)` instead of `try`-`except`-`pass`.
+    "UP035",  # `typing.x` is deprecated, use `x` instead.
+    "UP006",  # `typing.x` is deprecated, use `x` instead.
+    "C901",  # McCabe complexity
+]
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["E402", "F401"]
+"**/{tests,docs}/*" = ["E402", "D", "F841", "ARG", "T20"]
+
+[tool.ruff.lint.flake8-tidy-imports]
+ban-relative-imports = "all"
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+# ISORT ------------------------------------------------------------------------------------------
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+include_trailing_comma = true
+force_grid_wrap = 0
+use_parentheses = true
+line_length = 140
+
+# PYLINT ------------------------------------------------------------------------------------------
+[tool.pylint.master]
+ignore-paths = "^docs/,tests/,versioneer.py,src/deckbridge/_git_version.py"
+
+[tool.pylint.format]
+# Regexp for a line that is allowed to be longer than the limit
+ignore-long-lines = "^\\s*(# )?<?https:?://\\S+>?$"
+max-line-length = 140
+
+[tool.pylint.logging]
+# The type of string formatting that logging methods do. `old` means using % formatting, `new` is for `{}` formatting
+logging-format-style = "new"
+
+[tool.pylint.main]
+fail-under = 9.5
+
+[tool.pylint."messages control"]
+disable = ["unspecified-encoding", "logging-too-many-args", "logging-fstring-interpolation"]
+good-names = ["df", "f"]
+
+[tool.pylint.miscellaneous]
+# List of note tags to take in consideration, separated by a comma
+notes = ["FIXME", "XXX", "TODO"]

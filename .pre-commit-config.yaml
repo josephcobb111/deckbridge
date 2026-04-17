@@ -1,0 +1,101 @@
+# See documentation at: https://pre-commit.com/
+# These hooks are all specified as `local`, meaning the tools in the active virtual environment
+# are used (via the .[dev] installation procedure in pip).
+# The tests and docs directories are ignored for some hooks, the notebooks directory is ignored.
+exclude: (^notebooks/)
+repos:
+  - repo: local
+    hooks:
+      # Ruff: Checking and formatting
+      # https://docs.astral.sh/ruff
+      # Configuration is in the pyproject.toml file.
+      -  id: ruff
+         name: ruff
+         description: "Run 'ruff' for extremely fast Python linting"
+         entry: ruff check --force-exclude
+         language: python
+         types_or: [python, pyi]
+         require_serial: true
+         additional_dependencies: []
+         minimum_pre_commit_version: "2.9.2"
+      -  id: ruff-format
+         name: ruff-format
+         description: "Run 'ruff format' for extremely fast Python formatting"
+         entry: ruff format --force-exclude
+         language: python
+         types_or: [python, pyi]
+         args: []
+         require_serial: true
+         additional_dependencies: []
+         minimum_pre_commit_version: "2.9.2"
+      # Black: format Python code
+      # https://github.com/psf/black/blob/master/.pre-commit-hooks.yaml
+      -  id: black
+         name: black
+         entry: black
+         language: system
+         types: [file, python]
+         args: ["--line-length=140", "--force-exclude=^/tests/"]
+      # https://github.com/timothycrosley/isort/blob/develop/.pre-commit-hooks.yaml
+      # The pyproject.toml holds the compatible config for use with Black
+      # https://github.com/psf/black/blob/master/docs/compatible_configs.md#isort
+      -  id: isort
+         name: isort
+         entry: isort
+         language: system
+         exclude: (^docs/)
+         types: [python]
+         args: ["--profile", "black"]
+      # Flake8: Complexity and style checking
+      # #https://flake8.pycqa.org/en/latest/user/using-hooks.html
+      -  id: flake8
+         name: flake8
+         entry: flake8
+         language: system
+         exclude: (^tests/|^deckbridge/_version.py|^versioneer.py|^docs/)
+         types: [python]
+         args: ["--config=setup.cfg", "--ignore=E731,W503,W504,E129,E203,D100,D104,D107"]
+      # Mypy: Optional static type checking
+      # https://github.com/pre-commit/mirrors-mypy
+      -  id: mypy
+         name: mypy
+         entry: mypy
+         language: system
+         types: [python]
+         exclude: (^tests/^deckbridge/_version.py|^versioneer.py|^setup.py|^docs/|^deckbridge/__init__.py|^deckbridge/_git_version.py)
+         args: ["--config-file=pyproject.toml"]
+      # Pylint: Complexity and style checking
+      # https://pylint.pycqa.org/en/latest/user_guide/installation/pre-commit-integration.html
+      -  id: pylint
+         name: pylint
+         entry: pylint
+         language: system
+         types: [file, python]
+      # General fixers: Format files for white spaces and trailing new lines, warn on debug statements
+      # https://github.com/pre-commit/pre-commit-hooks#hooks-available
+      -  id: trailing-whitespace
+         name: trailing-whitespace
+         entry: trailing-whitespace-fixer
+         types: [file, python]
+         language: system
+         exclude: (^docs/)
+      -  id: debug-statement
+         name: debug-statement
+         entry: debug-statement-hook
+         types: [file, python]
+         language: system
+         exclude: (^docs/)
+      -  id: end-of-file-fixer
+         name: end-of-file-fixer
+         entry: end-of-file-fixer
+         types: [file, python]
+         language: system
+         exclude: (^docs/)
+  # Check-manifest: Ensures required non-Python files are included in MANIFEST.in
+  # https://github.com/mgedmin/check-manifest/blob/master/.pre-commit-hooks.yaml
+  - repo: https://github.com/mgedmin/check-manifest
+    rev: "0.49"
+    hooks:
+      - id: check-manifest
+        language_version: python3.9
+        exclude: (^docs)

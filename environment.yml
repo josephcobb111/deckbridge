@@ -1,0 +1,8 @@
+name: deckbridge
+channels:
+    - conda-gurobi
+    - conda-shared
+    - conda-forge
+dependencies:
+    - python>=3.9
+    - pandas>=1.0.0,<=3.0.0

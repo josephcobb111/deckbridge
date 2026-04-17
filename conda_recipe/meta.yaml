@@ -1,0 +1,23 @@
+package:
+  name: deckbridge
+  version: "0.1.0"
+
+source:
+  path: ../
+
+build:
+  noarch: python
+  number: 0
+  script: python -m pip install --no-deps --ignore-installed .
+
+requirements:
+  host:
+    - python
+    - setuptools
+  run:
+    - python>=3.9
+    - pandas>=1.0.0,<=3.0.0
+
+test:
+  imports:
+    - pandas
