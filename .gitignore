@@ -179,3 +179,11 @@ conda-pkg
 
 # ruff
 .ruff_cache/
+
+# Google API
+credentials.json
+token.pickle
+
+# Local files
+.DS_Store
+
