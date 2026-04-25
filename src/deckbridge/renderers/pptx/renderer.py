@@ -33,6 +33,9 @@ class PPTXRenderer:
 
                 chart_type, chart_data = self.compiler.compile(spec)
 
+                title_box = s.shapes.title
+                title_box.text = spec.title
+
                 x, y, cx, cy = Inches(1), Inches(1.5), Inches(8), Inches(4.5)
 
                 chart = s.shapes.add_chart(chart_type, x, y, cx, cy, chart_data).chart
