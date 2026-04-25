@@ -143,19 +143,11 @@ class GSlidesRenderer:
         requests = []
 
         for i, slide in enumerate(deck.slides):
-            # Title slide → use slide["title"]
-            if slide["type"] == "title":
-                title_text = slide["title"]
-
-            # Chart slide → use spec.title
-            elif slide["type"] == "chart":
-                title_text = slide["spec"].title
-
-            else:
+            if slide["type"] != "chart":
                 continue
 
             slide_id = page_id_map[i]
-            title_id = f"slide_title_{i}"
+            title_id = f"chart_title_{i}"
 
             requests.append(
                 {
@@ -171,7 +163,7 @@ class GSlidesRenderer:
                 }
             )
 
-            requests.append({"insertText": {"objectId": title_id, "text": title_text}})
+            requests.append({"insertText": {"objectId": title_id, "text": slide["spec"].title}})
 
         if requests:
             self.slides_service.presentations().batchUpdate(presentationId=presentation_id, body={"requests": requests}).execute()
