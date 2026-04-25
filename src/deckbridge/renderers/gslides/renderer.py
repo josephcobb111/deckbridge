@@ -20,6 +20,7 @@ class GSlidesRenderer:
         # STEP 2: Add title text
         # -----------------------------
         self._add_titles(deck, presentation_id, page_id_map)
+        self._add_slide_titles(deck, presentation_id, page_id_map)
 
         # -----------------------------
         # STEP 3: Add charts
@@ -134,6 +135,43 @@ class GSlidesRenderer:
                         }
                     }
                 )
+
+        if requests:
+            self.slides_service.presentations().batchUpdate(presentationId=presentation_id, body={"requests": requests}).execute()
+
+    def _add_slide_titles(self, deck, presentation_id, page_id_map):
+        requests = []
+
+        for i, slide in enumerate(deck.slides):
+            # Title slide → use slide["title"]
+            if slide["type"] == "title":
+                title_text = slide["title"]
+
+            # Chart slide → use spec.title
+            elif slide["type"] == "chart":
+                title_text = slide["spec"].title
+
+            else:
+                continue
+
+            slide_id = page_id_map[i]
+            title_id = f"slide_title_{i}"
+
+            requests.append(
+                {
+                    "createShape": {
+                        "objectId": title_id,
+                        "shapeType": "TEXT_BOX",
+                        "elementProperties": {
+                            "pageObjectId": slide_id,
+                            "size": {"height": {"magnitude": 800000, "unit": "EMU"}, "width": {"magnitude": 8000000, "unit": "EMU"}},
+                            "transform": {"scaleX": 1, "scaleY": 1, "translateX": 500000, "translateY": 200000, "unit": "EMU"},
+                        },
+                    }
+                }
+            )
+
+            requests.append({"insertText": {"objectId": title_id, "text": title_text}})
 
         if requests:
             self.slides_service.presentations().batchUpdate(presentationId=presentation_id, body={"requests": requests}).execute()
