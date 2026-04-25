@@ -17,6 +17,7 @@ class SheetsChartBuilder:
                             "basicChart": {
                                 "chartType": self._map_chart_type(spec.chart_type),
                                 "legendPosition": "BOTTOM_LEGEND",
+                                "axis": [{"position": "BOTTOM_AXIS", "title": spec.x}, {"position": "LEFT_AXIS", "title": spec.y}],
                                 "domains": [
                                     {
                                         "domain": {
