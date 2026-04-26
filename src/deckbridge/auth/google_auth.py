@@ -5,7 +5,11 @@ from google.auth.transport.requests import Request
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 
-SCOPES = ["https://www.googleapis.com/auth/presentations", "https://www.googleapis.com/auth/spreadsheets"]
+SCOPES = [
+    "https://www.googleapis.com/auth/presentations",
+    "https://www.googleapis.com/auth/spreadsheets",
+    "https://www.googleapis.com/auth/drive",
+]
 
 
 def get_google_services():
@@ -27,5 +31,6 @@ def get_google_services():
 
     slides_service = build("slides", "v1", credentials=creds)
     sheets_service = build("sheets", "v4", credentials=creds)
+    drive_service = build("drive", "v3", credentials=creds)
 
-    return slides_service, sheets_service
+    return slides_service, sheets_service, drive_service

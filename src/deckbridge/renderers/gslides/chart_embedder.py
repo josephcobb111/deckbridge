@@ -12,8 +12,8 @@ class SlidesChartEmbedder:
                     "linkingMode": "LINKED",
                     "elementProperties": {
                         "pageObjectId": page_id,
-                        "size": {"height": {"magnitude": 4000000, "unit": "EMU"}, "width": {"magnitude": 6000000, "unit": "EMU"}},
-                        "transform": {"scaleX": 1, "scaleY": 1, "translateX": 100000, "translateY": 100000, "unit": "EMU"},
+                        "size": {"height": {"magnitude": 3500000, "unit": "EMU"}, "width": {"magnitude": 7000000, "unit": "EMU"}},
+                        "transform": {"scaleX": 1, "scaleY": 1, "translateX": 1000000, "translateY": 1200000, "unit": "EMU"},
                     },
                 }
             }
