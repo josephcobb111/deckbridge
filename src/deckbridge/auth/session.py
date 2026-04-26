@@ -39,13 +39,6 @@ def create_gslides_session(title: str = "Deckbridge Deck", template_id=None):
 
     presentation_id = copy_presentation_template(drive_service, template_id, title)
 
-    # # remove default slide
-    # default_slide_id = presentation["slides"][0]["objectId"]
-
-    # slides_service.presentations().batchUpdate(
-    #     presentationId=presentation_id, body={"requests": [{"deleteObject": {"objectId": default_slide_id}}]}
-    # ).execute()
-
     # move to Drive folder
     drive_service.files().update(fileId=presentation_id, addParents=run_folder_id, fields="id, parents").execute()
 
