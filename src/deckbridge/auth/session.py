@@ -1,10 +1,18 @@
 from datetime import datetime
 
+from deckbridge.config import DEFAULT_GSLIDES_TEMPLATE_ID
+
 from .drive_folders import DriveFolderManager
 from .google_auth import get_google_services
 
 
-def create_gslides_session(title: str = "Deckbridge Deck"):
+def copy_presentation_template(drive_service, template_id, new_title):
+    file = drive_service.files().copy(fileId=template_id, body={"name": new_title}).execute()
+
+    return file["id"]
+
+
+def create_gslides_session(title: str = "Deckbridge Deck", template_id=None):
 
     slides_service, sheets_service, drive_service = get_google_services()
 
@@ -26,16 +34,17 @@ def create_gslides_session(title: str = "Deckbridge Deck"):
     # -----------------------
     # 3. Create presentation
     # -----------------------
-    presentation = slides_service.presentations().create(body={"title": title}).execute()
+    if template_id is None:
+        template_id = DEFAULT_GSLIDES_TEMPLATE_ID
 
-    presentation_id = presentation["presentationId"]
+    presentation_id = copy_presentation_template(drive_service, template_id, title)
 
-    # remove default slide
-    default_slide_id = presentation["slides"][0]["objectId"]
+    # # remove default slide
+    # default_slide_id = presentation["slides"][0]["objectId"]
 
-    slides_service.presentations().batchUpdate(
-        presentationId=presentation_id, body={"requests": [{"deleteObject": {"objectId": default_slide_id}}]}
-    ).execute()
+    # slides_service.presentations().batchUpdate(
+    #     presentationId=presentation_id, body={"requests": [{"deleteObject": {"objectId": default_slide_id}}]}
+    # ).execute()
 
     # move to Drive folder
     drive_service.files().update(fileId=presentation_id, addParents=run_folder_id, fields="id, parents").execute()
