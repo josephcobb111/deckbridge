@@ -18,7 +18,7 @@ def main():
     # -----------------------
     # Title slide
     # -----------------------
-    deck.add_title_slide("Demo", "Refactored Package")
+    deck.add_title_slide("Demo - Title Slide", "Refactored Package - Author")
 
     # -----------------------
     # Chart slide (NEW API)
@@ -28,13 +28,19 @@ def main():
         data=df,
         x="month",
         y="revenue",
-        title="Revenue Trend"
+        title="Revenue Trend - Chart Title"
     )
 
     deck.add_chart_slide(
-        title="Revenue Trend",
-        layout="one_chart",   # 👈 NEW
-        charts=[chart]        # 👈 NEW (list)
+        title="Revenue Trend - Slide Title",
+        layout="one_chart",
+        charts=[chart],
+    )
+
+    deck.add_chart_slide(
+        title="Revenue Trend - Slide Title",
+        layout="two_chart",
+        charts=[chart, chart],
     )
 
     # -----------------------
