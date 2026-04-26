@@ -1,4 +1,7 @@
+from deckbridge.layouts.registry import LAYOUTS
+
 from .chart_compiler import GSlidesChartCompiler
+from .utils import to_emu
 
 
 class GSlidesRenderer:
@@ -29,9 +32,22 @@ class GSlidesRenderer:
             if slide["type"] != "chart":
                 continue
 
-            spec = slide["spec"]
+            layout_name = slide["layout"]
+            charts = slide["charts"]
 
-            self.chart_compiler.compile(presentation_id=presentation_id, page_id=page_id_map[i], spec=spec)
+            layout_spec = LAYOUTS[layout_name]
+
+            page_id = page_id_map[i]
+
+            for idx, spec in enumerate(charts):
+                slot = list(layout_spec.slots.values())[idx]
+
+                self.chart_compiler.compile(
+                    presentation_id=presentation_id,
+                    page_id=page_id,
+                    spec=spec,
+                    slot=slot,  # 👈 NEW
+                )
 
     # =========================================================
     # STEP 1 — CREATE SLIDES (STRUCTURE ONLY)
@@ -163,7 +179,7 @@ class GSlidesRenderer:
                 }
             )
 
-            requests.append({"insertText": {"objectId": title_id, "text": slide["spec"].title}})
+            requests.append({"insertText": {"objectId": title_id, "text": slide["title"]}})
 
         if requests:
             self.slides_service.presentations().batchUpdate(presentationId=presentation_id, body={"requests": requests}).execute()

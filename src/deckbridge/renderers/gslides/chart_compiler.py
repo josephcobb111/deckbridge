@@ -14,7 +14,7 @@ class GSlidesChartCompiler:
         self.chart_builder = SheetsChartBuilder(sheets_service, spreadsheet_id)
         self.embedder = SlidesChartEmbedder(slides_service)
 
-    def compile(self, presentation_id, page_id, spec: ChartSpec):
+    def compile(self, presentation_id, page_id, spec: ChartSpec, slot):
 
         # 1. Write data to Sheets
         sheet = self.writer.write_dataframe(spec.data)
@@ -27,4 +27,10 @@ class GSlidesChartCompiler:
         chart_id = response["replies"][0]["addChart"]["chart"]["chartId"]
 
         # 3. Embed into Slides
-        self.embedder.embed_chart(presentation_id, self.spreadsheet_id, chart_id, page_id)
+        self.embedder.embed_chart(
+            presentation_id,
+            self.spreadsheet_id,
+            chart_id,
+            page_id,
+            slot,  # 👈 NEW
+        )

@@ -2,6 +2,7 @@ from deckbridge.deck.deck import Deck
 from deckbridge.backends.pptx_backend import PPTXBackend
 from deckbridge.backends.gslides_backend import GSlidesBackend
 from deckbridge.auth.session import create_gslides_session
+from deckbridge.deck.specs import ChartSpec
 
 import pandas as pd
 
@@ -14,13 +15,41 @@ def main():
 
     deck = Deck()
 
+    # -----------------------
+    # Title slide
+    # -----------------------
     deck.add_title_slide("Demo", "Refactored Package")
-    deck.add_chart_slide("Revenue Trend", "line", df, "month", "revenue")
 
+    # -----------------------
+    # Chart slide (NEW API)
+    # -----------------------
+    chart = ChartSpec(
+        chart_type="line",
+        data=df,
+        x="month",
+        y="revenue",
+        title="Revenue Trend"
+    )
+
+    deck.add_chart_slide(
+        title="Revenue Trend",
+        layout="one_chart",   # 👈 NEW
+        charts=[chart]        # 👈 NEW (list)
+    )
+
+    # -----------------------
+    # Render PPTX
+    # -----------------------
     deck.render(PPTXBackend("demo.pptx"))
 
+    # -----------------------
+    # Render Google Slides
+    # -----------------------
     session = create_gslides_session("Q4 Deck")
-    deck.render(GSlidesBackend(**session))
+
+    deck.render(
+        GSlidesBackend(**session)
+    )
 
 
 if __name__ == "__main__":
