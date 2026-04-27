@@ -27,8 +27,8 @@ class SlidesChartEmbedder:
                             "unit": "EMU",
                         },
                     },
-                }
-            }
+                },
+            },
         ]
 
         self.slides.presentations().batchUpdate(presentationId=presentation_id, body={"requests": requests}).execute()

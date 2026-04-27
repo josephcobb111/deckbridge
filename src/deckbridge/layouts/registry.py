@@ -8,11 +8,11 @@ LAYOUTS = {
         name="one_chart",
         slots={
             # Slide title (top)
-            "slide_title": {"x": 1, "y": 0.3, "w": 8, "h": 0.8},
+            "slide_title": {"x": 0.5, "y": 0.1, "w": 12.5, "h": 0.8},
             # Chart title (above chart)
-            "chart_1_title": {"x": 1, "y": 1.2, "w": 8, "h": 0.4},
+            "chart_1_title": {"x": 0.5, "y": 1.1, "w": 12.5, "h": 0.5},
             # Chart
-            "chart_1": {"x": 1, "y": 1.7, "w": 8, "h": 4.5},
+            "chart_1": {"x": 0.5, "y": 1.6, "w": 12.5, "h": 5.25},
         },
     ),
     # =========================================================
@@ -22,7 +22,7 @@ LAYOUTS = {
         name="two_chart",
         slots={
             # Slide title
-            "slide_title": {"x": 1, "y": 0.3, "w": 8, "h": 0.8},
+            "slide_title": {"x": 0.5, "y": 0.1, "w": 12.5, "h": 0.8},
             # Chart 1
             "chart_1_title": {"x": 0.5, "y": 1.2, "w": 4.5, "h": 0.4},
             "chart_1": {"x": 0.5, "y": 1.7, "w": 4.5, "h": 4},
@@ -38,7 +38,7 @@ LAYOUTS = {
         name="three_chart",
         slots={
             # Slide title
-            "slide_title": {"x": 1, "y": 0.3, "w": 8, "h": 0.8},
+            "slide_title": {"x": 0.5, "y": 0.1, "w": 12.5, "h": 0.8},
             # Chart 1
             "chart_1_title": {"x": 0.5, "y": 1.2, "w": 3, "h": 0.4},
             "chart_1": {"x": 0.5, "y": 1.7, "w": 3, "h": 4},

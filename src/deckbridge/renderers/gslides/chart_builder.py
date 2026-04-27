@@ -1,4 +1,5 @@
 from ...deck.specs import ChartSpec
+from .utils import inches_to_pixels
 
 
 class SheetsChartBuilder:
@@ -6,7 +7,7 @@ class SheetsChartBuilder:
         self.sheets = sheets_service
         self.spreadsheet_id = spreadsheet_id
 
-    def create_chart(self, sheet_name, sheet_id, spec: ChartSpec):
+    def create_chart(self, sheet_name, sheet_id, spec: ChartSpec, position: dict):
 
         requests = [
             {
@@ -53,7 +54,20 @@ class SheetsChartBuilder:
                                 ],
                             },
                         },
-                        "position": {"newSheet": True},
+                        "position": {
+                            "overlayPosition": {
+                                "anchorCell": {
+                                    "sheetId": sheet_id,
+                                    "rowIndex": 1,
+                                    "columnIndex": 5,
+                                },
+                                "offsetXPixels": 0,
+                                "offsetYPixels": 0,
+                                "widthPixels": inches_to_pixels(position["w"]),
+                                "heightPixels": inches_to_pixels(position["h"]),
+                            }
+                        },
+                        # },
                     }
                 }
             }

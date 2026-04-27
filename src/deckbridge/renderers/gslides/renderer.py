@@ -1,6 +1,8 @@
 from deckbridge.layouts.registry import LAYOUTS
 from deckbridge.renderers.gslides.chart_compiler import GSlidesChartCompiler
 
+from .utils import inches_to_emu
+
 
 class GSlidesRenderer:
     def __init__(self, slides_service, sheets_service, spreadsheet_id):
@@ -117,8 +119,17 @@ class GSlidesRenderer:
                     "shapeType": "TEXT_BOX",
                     "elementProperties": {
                         "pageObjectId": page_id,
-                        "size": {"height": {"magnitude": h * 914400, "unit": "EMU"}, "width": {"magnitude": w * 914400, "unit": "EMU"}},
-                        "transform": {"scaleX": 1, "scaleY": 1, "translateX": x * 914400, "translateY": y * 914400, "unit": "EMU"},
+                        "size": {
+                            "height": {"magnitude": inches_to_emu(h), "unit": "EMU"},
+                            "width": {"magnitude": inches_to_emu(w), "unit": "EMU"},
+                        },
+                        "transform": {
+                            "scaleX": 1,
+                            "scaleY": 1,
+                            "translateX": inches_to_emu(x),
+                            "translateY": inches_to_emu(y),
+                            "unit": "EMU",
+                        },
                     },
                 }
             },

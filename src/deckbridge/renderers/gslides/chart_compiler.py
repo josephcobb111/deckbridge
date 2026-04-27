@@ -29,6 +29,7 @@ class GSlidesChartCompiler:
             sheet_name,
             sheet_id,
             spec,
+            position,
         )
 
         response = self.sheets.spreadsheets().batchUpdate(spreadsheetId=self.spreadsheet_id, body={"requests": requests}).execute()
