@@ -46,13 +46,12 @@ def main():
         y="revenue",
     )
 
-
     deck.add_chart_slide(
         title="Revenue Trend - Slide Title",
         layout="one_chart",
         charts=[
             ChartBlock(chart1, "Revenue Trend (Line) - Chart Title"),
-        ]
+        ],
     )
 
     deck.add_chart_slide(
@@ -60,8 +59,8 @@ def main():
         layout="two_chart",
         charts=[
             ChartBlock(chart1, "Revenue Trend (Line) - Chart Title"),
-            ChartBlock(chart2, "Revenue (Bar) - Chart Title")
-        ]
+            ChartBlock(chart2, "Revenue (Bar) - Chart Title"),
+        ],
     )
 
     deck.add_chart_slide(
@@ -71,7 +70,7 @@ def main():
             ChartBlock(chart1, "Revenue Trend (Line) - Chart Title"),
             ChartBlock(chart2, "Revenue (Bar) - Chart Title"),
             ChartBlock(chart3, "Revenue Trend (Line) - Chart Title"),
-        ]
+        ],
     )
 
     # -----------------------
@@ -84,9 +83,7 @@ def main():
     # -----------------------
     session = create_gslides_session("Q4 Deck")
 
-    deck.render(
-        GSlidesBackend(**session)
-    )
+    deck.render(GSlidesBackend(**session))
 
 
 if __name__ == "__main__":

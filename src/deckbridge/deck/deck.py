@@ -1,5 +1,4 @@
 from ..backends.base import BaseBackend
-from .specs import ChartSpec
 
 
 class Deck:
