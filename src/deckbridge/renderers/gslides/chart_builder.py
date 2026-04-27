@@ -17,6 +17,7 @@ class SheetsChartBuilder:
                             "basicChart": {
                                 "chartType": self._map_chart_type(spec.chart_type),
                                 "legendPosition": "BOTTOM_LEGEND",
+                                "headerCount": 1,
                                 "axis": [{"position": "BOTTOM_AXIS", "title": spec.x}, {"position": "LEFT_AXIS", "title": spec.y}],
                                 "domains": [
                                     {
@@ -25,7 +26,7 @@ class SheetsChartBuilder:
                                                 "sources": [
                                                     {
                                                         "sheetId": sheet_id,
-                                                        "startRowIndex": 1,
+                                                        "startRowIndex": 0,
                                                         "endRowIndex": len(spec.data) + 1,
                                                         "startColumnIndex": 0,
                                                         "endColumnIndex": 1,
@@ -42,7 +43,7 @@ class SheetsChartBuilder:
                                                 "sources": [
                                                     {
                                                         "sheetId": sheet_id,
-                                                        "startRowIndex": 1,
+                                                        "startRowIndex": 0,
                                                         "endRowIndex": len(spec.data) + 1,
                                                         "startColumnIndex": 1,
                                                         "endColumnIndex": 2,
