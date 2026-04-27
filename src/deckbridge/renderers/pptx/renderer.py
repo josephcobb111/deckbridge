@@ -21,9 +21,9 @@ class PPTXRenderer:
         prs = Presentation(self.template_path)
 
         for slide in deck.slides:
-            # -----------------------
-            # Title slide
-            # -----------------------
+            # =====================================================
+            # TITLE SLIDE (leave mostly as-is for now)
+            # =====================================================
             if slide["type"] == "title":
                 layout = prs.slide_layouts[0]
                 s = prs.slides.add_slide(layout)
@@ -31,32 +31,65 @@ class PPTXRenderer:
                 s.shapes[0].text_frame.text = slide["title"]
                 s.shapes[1].text_frame.text = slide["subtitle"]
 
-            # -----------------------
-            # Chart slide (NATIVE)
-            # -----------------------
+            # =====================================================
+            # CHART SLIDE (FULL SLOT SYSTEM)
+            # =====================================================
             elif slide["type"] == "chart":
-                layout = prs.slide_layouts[2]
+                # Use blank layout (we control everything)
+                layout = prs.slide_layouts[3]  # blank is safest
                 s = prs.slides.add_slide(layout)
 
-                title_box = s.shapes.title
-                title_box.text = slide["title"]
-
                 layout_spec = LAYOUTS[slide["layout"]]
+                slots = layout_spec.slots
 
-                for i, spec in enumerate(slide["charts"]):
-                    slot = list(layout_spec.slots.values())[i]
+                # -----------------------
+                # 1. Slide title
+                # -----------------------
+                if "slide_title" in slots and slide.get("title"):
+                    slot = slots["slide_title"]
 
-                    x = Inches(slot["x"])
-                    y = Inches(slot["y"])
-                    cx = Inches(slot["w"])
-                    cy = Inches(slot["h"])
+                    textbox = s.shapes.add_textbox(
+                        Inches(slot["x"]),
+                        Inches(slot["y"]),
+                        Inches(slot["w"]),
+                        Inches(slot["h"]),
+                    )
 
-                    chart_type, chart_data = self.compiler.compile(spec)
+                    textbox.text_frame.text = slide["title"]
 
-                    chart = s.shapes.add_chart(chart_type, x, y, cx, cy, chart_data).chart
+                # -----------------------
+                # 2. Charts + Chart Titles
+                # -----------------------
+                for i, block in enumerate(slide["charts"], start=1):
+                    chart_slot_key = f"chart_{i}"
+                    title_slot_key = f"chart_{i}_title"
 
-                    if spec.title:
-                        chart.has_title = True
-                        chart.chart_title.text_frame.text = spec.title
+                    # --- Chart ---
+                    if chart_slot_key not in slots:
+                        continue
+
+                    chart_slot = slots[chart_slot_key]
+
+                    x = Inches(chart_slot["x"])
+                    y = Inches(chart_slot["y"])
+                    cx = Inches(chart_slot["w"])
+                    cy = Inches(chart_slot["h"])
+
+                    chart_type, chart_data = self.compiler.compile(block.chart)
+
+                    s.shapes.add_chart(chart_type, x, y, cx, cy, chart_data)
+
+                    # --- Chart Title ---
+                    if block.title and title_slot_key in slots:
+                        title_slot = slots[title_slot_key]
+
+                        textbox = s.shapes.add_textbox(
+                            Inches(title_slot["x"]),
+                            Inches(title_slot["y"]),
+                            Inches(title_slot["w"]),
+                            Inches(title_slot["h"]),
+                        )
+
+                        textbox.text_frame.text = block.title
 
         prs.save(output_path)

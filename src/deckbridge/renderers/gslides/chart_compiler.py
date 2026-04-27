@@ -16,16 +16,15 @@ class GSlidesChartCompiler:
         self.chart_builder = SheetsChartBuilder(sheets_service, spreadsheet_id)
         self.embedder = SlidesChartEmbedder(slides_service)
 
-    def compile(self, presentation_id, page_id, spec: ChartSpec, slot):
+    def compile(self, presentation_id, page_id, spec: ChartSpec, position: dict, chart_key: str):
 
-        # 1. Write data to Sheets
-        safe_name = spec.title[:20].replace(" ", "_")
+        # 1. Create unique sheet name
+        sheet_name = f"{chart_key}_{uuid.uuid4().hex[:4]}"
 
-        sheet_name = f"{safe_name}_{uuid.uuid4().hex[:4]}"
-
+        # 2. Write data
         sheet_name, sheet_id = self.writer.write_dataframe(spec.data, sheet_name=sheet_name)
 
-        # 2. Create chart in Sheets
+        # 3. Create chart
         requests = self.chart_builder.create_chart(
             sheet_name,
             sheet_id,
@@ -36,11 +35,5 @@ class GSlidesChartCompiler:
 
         chart_id = response["replies"][0]["addChart"]["chart"]["chartId"]
 
-        # 3. Embed into Slides
-        self.embedder.embed_chart(
-            presentation_id,
-            self.spreadsheet_id,
-            chart_id,
-            page_id,
-            slot,  # 👈 NEW
-        )
+        # 4. Embed
+        self.embedder.embed_chart(presentation_id, self.spreadsheet_id, chart_id, page_id, position)

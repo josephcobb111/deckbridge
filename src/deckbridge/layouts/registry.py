@@ -1,20 +1,53 @@
 from deckbridge.deck.specs import LayoutSpec
 
 LAYOUTS = {
-    "one_chart": LayoutSpec(name="one_chart", slots={"chart_1": {"x": 1, "y": 1.5, "w": 8, "h": 4.5}}),
+    # =========================================================
+    # ONE CHART
+    # =========================================================
+    "one_chart": LayoutSpec(
+        name="one_chart",
+        slots={
+            # Slide title (top)
+            "slide_title": {"x": 1, "y": 0.3, "w": 8, "h": 0.8},
+            # Chart title (above chart)
+            "chart_1_title": {"x": 1, "y": 1.2, "w": 8, "h": 0.4},
+            # Chart
+            "chart_1": {"x": 1, "y": 1.7, "w": 8, "h": 4.5},
+        },
+    ),
+    # =========================================================
+    # TWO CHART
+    # =========================================================
     "two_chart": LayoutSpec(
         name="two_chart",
         slots={
-            "chart_1": {"x": 0.5, "y": 1.5, "w": 4.5, "h": 4},
-            "chart_2": {"x": 5, "y": 1.5, "w": 4.5, "h": 4},
+            # Slide title
+            "slide_title": {"x": 1, "y": 0.3, "w": 8, "h": 0.8},
+            # Chart 1
+            "chart_1_title": {"x": 0.5, "y": 1.2, "w": 4.5, "h": 0.4},
+            "chart_1": {"x": 0.5, "y": 1.7, "w": 4.5, "h": 4},
+            # Chart 2
+            "chart_2_title": {"x": 5, "y": 1.2, "w": 4.5, "h": 0.4},
+            "chart_2": {"x": 5, "y": 1.7, "w": 4.5, "h": 4},
         },
     ),
+    # =========================================================
+    # THREE CHART
+    # =========================================================
     "three_chart": LayoutSpec(
         name="three_chart",
         slots={
-            "chart_1": {"x": 0.5, "y": 1.5, "w": 3, "h": 4},
-            "chart_2": {"x": 3.5, "y": 1.5, "w": 3, "h": 4},
-            "chart_3": {"x": 6.5, "y": 1.5, "w": 3, "h": 4},
+            # Slide title
+            "slide_title": {"x": 1, "y": 0.3, "w": 8, "h": 0.8},
+            # Chart 1
+            "chart_1_title": {"x": 0.5, "y": 1.2, "w": 3, "h": 0.4},
+            "chart_1": {"x": 0.5, "y": 1.7, "w": 3, "h": 4},
+            # Chart 2
+            "chart_2_title": {"x": 3.5, "y": 1.2, "w": 3, "h": 0.4},
+            "chart_2": {"x": 3.5, "y": 1.7, "w": 3, "h": 4},
+            # Chart 3
+            "chart_3_title": {"x": 6.5, "y": 1.2, "w": 3, "h": 0.4},
+            "chart_3": {"x": 6.5, "y": 1.7, "w": 3, "h": 4},
         },
     ),
 }

@@ -13,7 +13,6 @@ class SheetsChartBuilder:
                 "addChart": {
                     "chart": {
                         "spec": {
-                            "title": spec.title,
                             "basicChart": {
                                 "chartType": self._map_chart_type(spec.chart_type),
                                 "legendPosition": "BOTTOM_LEGEND",
