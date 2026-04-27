@@ -16,6 +16,7 @@ recursive-include docs *.py
 recursive-include docs *.rst
 recursive-include tests *.py
 
+recursive-include src *.pptx
 recursive-include src *.sql
 recursive-include src *.yml
 recursive-include src *.yaml

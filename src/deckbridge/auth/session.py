@@ -19,12 +19,12 @@ def create_gslides_session(title: str = "Deckbridge Deck", template_id=None):
     folder_mgr = DriveFolderManager(drive_service)
 
     # -----------------------
-    # 1. Root folder
+    # Root folder
     # -----------------------
     root_folder_id = folder_mgr.get_or_create_folder("deckbridge")
 
     # -----------------------
-    # 2. Run folder (unique per execution)
+    # Run folder (unique per execution)
     # -----------------------
     timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
     run_folder_name = f"{title}_{timestamp}"
@@ -32,7 +32,7 @@ def create_gslides_session(title: str = "Deckbridge Deck", template_id=None):
     run_folder_id = folder_mgr.get_or_create_folder(run_folder_name, parent_id=root_folder_id)
 
     # -----------------------
-    # 3. Create presentation
+    # Create presentation
     # -----------------------
     if template_id is None:
         template_id = DEFAULT_GSLIDES_TEMPLATE_ID
@@ -43,19 +43,11 @@ def create_gslides_session(title: str = "Deckbridge Deck", template_id=None):
     drive_service.files().update(fileId=presentation_id, addParents=run_folder_id, fields="id, parents").execute()
 
     # -----------------------
-    # 4. Create spreadsheet
+    # Create spreadsheet
     # -----------------------
     spreadsheet = sheets_service.spreadsheets().create(body={"properties": {"title": f"{title} - Data"}}).execute()
 
     spreadsheet_id = spreadsheet["spreadsheetId"]
-
-    # rename sheet tab
-    sheet_id = spreadsheet["sheets"][0]["properties"]["sheetId"]
-
-    sheets_service.spreadsheets().batchUpdate(
-        spreadsheetId=spreadsheet_id,
-        body={"requests": [{"updateSheetProperties": {"properties": {"sheetId": sheet_id, "title": "data"}, "fields": "title"}}]},
-    ).execute()
 
     # move spreadsheet into folder
     drive_service.files().update(fileId=spreadsheet_id, addParents=run_folder_id, fields="id, parents").execute()

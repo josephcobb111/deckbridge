@@ -43,7 +43,7 @@ class PPTXRenderer:
                 slots = layout_spec.slots
 
                 # -----------------------
-                # 1. Slide title
+                # Slide title
                 # -----------------------
                 if "slide_title" in slots and slide.get("title"):
                     slot = slots["slide_title"]
@@ -58,7 +58,7 @@ class PPTXRenderer:
                     textbox.text_frame.text = slide["title"]
 
                 # -----------------------
-                # 2. Charts + Chart Titles
+                # Charts + Chart Titles
                 # -----------------------
                 for i, block in enumerate(slide["charts"], start=1):
                     chart_slot_key = f"chart_{i}"

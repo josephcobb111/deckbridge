@@ -7,7 +7,7 @@ class SheetsChartBuilder:
         self.sheets = sheets_service
         self.spreadsheet_id = spreadsheet_id
 
-    def create_chart(self, sheet_name, sheet_id, spec: ChartSpec, position: dict):
+    def create_chart(self, sheet_id, spec: ChartSpec, position: dict):
 
         requests = [
             {

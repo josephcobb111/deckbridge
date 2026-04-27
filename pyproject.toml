@@ -199,7 +199,7 @@ logging-format-style = "new"
 fail-under = 9.5
 
 [tool.pylint."messages control"]
-disable = ["unspecified-encoding", "logging-too-many-args", "logging-fstring-interpolation"]
+disable = ["unspecified-encoding", "logging-too-many-args", "logging-fstring-interpolation", "too-few-public-methods"]
 good-names = ["df", "f"]
 
 [tool.pylint.miscellaneous]
