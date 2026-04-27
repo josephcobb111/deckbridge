@@ -5,7 +5,7 @@ class SheetsDataWriter:
 
     def write_dataframe(self, df, sheet_name):
 
-        # 1. Create new sheet
+        # Create new sheet
         add_sheet_request = {"addSheet": {"properties": {"title": sheet_name}}}
 
         response = (
@@ -14,7 +14,7 @@ class SheetsDataWriter:
 
         sheet_id = response["replies"][0]["addSheet"]["properties"]["sheetId"]
 
-        # 2. Write data
+        # Write data
         values = [df.columns.tolist()] + df.values.tolist()
 
         self.sheets.spreadsheets().values().update(
