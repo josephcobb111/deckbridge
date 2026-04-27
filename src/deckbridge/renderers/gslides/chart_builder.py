@@ -1,4 +1,5 @@
 from ...deck.specs import ChartSpec
+from .utils import inches_to_pixels
 
 
 class SheetsChartBuilder:
@@ -6,17 +7,17 @@ class SheetsChartBuilder:
         self.sheets = sheets_service
         self.spreadsheet_id = spreadsheet_id
 
-    def create_chart(self, sheet_name, spec: ChartSpec):
+    def create_chart(self, sheet_name, sheet_id, spec: ChartSpec, position: dict):
 
         requests = [
             {
                 "addChart": {
                     "chart": {
                         "spec": {
-                            "title": spec.title,
                             "basicChart": {
                                 "chartType": self._map_chart_type(spec.chart_type),
                                 "legendPosition": "BOTTOM_LEGEND",
+                                "headerCount": 1,
                                 "axis": [{"position": "BOTTOM_AXIS", "title": spec.x}, {"position": "LEFT_AXIS", "title": spec.y}],
                                 "domains": [
                                     {
@@ -24,8 +25,8 @@ class SheetsChartBuilder:
                                             "sourceRange": {
                                                 "sources": [
                                                     {
-                                                        "sheetId": 0,
-                                                        "startRowIndex": 1,
+                                                        "sheetId": sheet_id,
+                                                        "startRowIndex": 0,
                                                         "endRowIndex": len(spec.data) + 1,
                                                         "startColumnIndex": 0,
                                                         "endColumnIndex": 1,
@@ -41,8 +42,8 @@ class SheetsChartBuilder:
                                             "sourceRange": {
                                                 "sources": [
                                                     {
-                                                        "sheetId": 0,
-                                                        "startRowIndex": 1,
+                                                        "sheetId": sheet_id,
+                                                        "startRowIndex": 0,
                                                         "endRowIndex": len(spec.data) + 1,
                                                         "startColumnIndex": 1,
                                                         "endColumnIndex": 2,
@@ -54,7 +55,20 @@ class SheetsChartBuilder:
                                 ],
                             },
                         },
-                        "position": {"newSheet": True},
+                        "position": {
+                            "overlayPosition": {
+                                "anchorCell": {
+                                    "sheetId": sheet_id,
+                                    "rowIndex": 1,
+                                    "columnIndex": 5,
+                                },
+                                "offsetXPixels": 0,
+                                "offsetYPixels": 0,
+                                "widthPixels": inches_to_pixels(position["w"]),
+                                "heightPixels": inches_to_pixels(position["h"]),
+                            }
+                        },
+                        # },
                     }
                 }
             }

@@ -1,6 +1,13 @@
 from dataclasses import dataclass
+from typing import Dict
 
 import pandas as pd
+
+
+@dataclass
+class LayoutSpec:
+    name: str
+    slots: Dict[str, dict]
 
 
 @dataclass
@@ -9,4 +16,3 @@ class ChartSpec:
     data: pd.DataFrame
     x: str
     y: str
-    title: str = ""

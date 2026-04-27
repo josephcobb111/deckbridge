@@ -352,9 +352,7 @@ def run_command(commands, args, cwd=None, verbose=False, hide_stderr=False, env=
     return stdout, p.returncode
 
 
-LONG_VERSION_PY[  # noqa
-    "git"
-] = r'''
+LONG_VERSION_PY["git"] = r'''
 # This file helps to compute a version number in source trees obtained from
 # git-archive tarball (such as those provided by githubs download-from-tag
 # feature). Distribution tarballs (built by setup.py sdist) and build
@@ -798,7 +796,7 @@ def get_versions():
     return {"version": "0+unknown", "full-revisionid": None,
             "dirty": None,
             "error": "unable to compute version", "date": None}
-'''
+'''  # noqa
 
 
 @register_vcs_handler("git", "get_keywords")
