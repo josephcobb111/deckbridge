@@ -6,7 +6,7 @@ class SheetsChartBuilder:
         self.sheets = sheets_service
         self.spreadsheet_id = spreadsheet_id
 
-    def create_chart(self, sheet_name, spec: ChartSpec):
+    def create_chart(self, sheet_name, sheet_id, spec: ChartSpec):
 
         requests = [
             {
@@ -24,7 +24,7 @@ class SheetsChartBuilder:
                                             "sourceRange": {
                                                 "sources": [
                                                     {
-                                                        "sheetId": 0,
+                                                        "sheetId": sheet_id,
                                                         "startRowIndex": 1,
                                                         "endRowIndex": len(spec.data) + 1,
                                                         "startColumnIndex": 0,
@@ -41,7 +41,7 @@ class SheetsChartBuilder:
                                             "sourceRange": {
                                                 "sources": [
                                                     {
-                                                        "sheetId": 0,
+                                                        "sheetId": sheet_id,
                                                         "startRowIndex": 1,
                                                         "endRowIndex": len(spec.data) + 1,
                                                         "startColumnIndex": 1,

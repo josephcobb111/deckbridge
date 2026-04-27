@@ -1,3 +1,5 @@
+import uuid
+
 from ...deck.specs import ChartSpec
 from .chart_builder import SheetsChartBuilder
 from .chart_embedder import SlidesChartEmbedder
@@ -17,10 +19,18 @@ class GSlidesChartCompiler:
     def compile(self, presentation_id, page_id, spec: ChartSpec, slot):
 
         # 1. Write data to Sheets
-        sheet = self.writer.write_dataframe(spec.data)
+        safe_name = spec.title[:20].replace(" ", "_")
+
+        sheet_name = f"{safe_name}_{uuid.uuid4().hex[:4]}"
+
+        sheet_name, sheet_id = self.writer.write_dataframe(spec.data, sheet_name=sheet_name)
 
         # 2. Create chart in Sheets
-        requests = self.chart_builder.create_chart(sheet, spec)
+        requests = self.chart_builder.create_chart(
+            sheet_name,
+            sheet_id,
+            spec,
+        )
 
         response = self.sheets.spreadsheets().batchUpdate(spreadsheetId=self.spreadsheet_id, body={"requests": requests}).execute()
 
