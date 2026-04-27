@@ -22,7 +22,7 @@ def main():
     deck.add_title_slide("Demo - Title Slide", "Refactored Package - Author")
 
     # -----------------------
-    # Chart slide (NEW API)
+    # Chart slide
     # -----------------------
     chart1 = ChartSpec(
         chart_type="line",

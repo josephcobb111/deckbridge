@@ -18,15 +18,14 @@ class GSlidesChartCompiler:
 
     def compile(self, presentation_id, page_id, spec: ChartSpec, position: dict, chart_key: str):
 
-        # 1. Create unique sheet name
+        # Create unique sheet name
         sheet_name = f"{chart_key}_{uuid.uuid4().hex[:4]}"
 
-        # 2. Write data
+        # Write data
         sheet_name, sheet_id = self.writer.write_dataframe(spec.data, sheet_name=sheet_name)
 
-        # 3. Create chart
+        # Create chart
         requests = self.chart_builder.create_chart(
-            sheet_name,
             sheet_id,
             spec,
             position,
@@ -36,5 +35,5 @@ class GSlidesChartCompiler:
 
         chart_id = response["replies"][0]["addChart"]["chart"]["chartId"]
 
-        # 4. Embed
+        # Embed chart
         self.embedder.embed_chart(presentation_id, self.spreadsheet_id, chart_id, page_id, position)
