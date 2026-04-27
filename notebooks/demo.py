@@ -1,12 +1,11 @@
-from deckbridge.deck.deck import Deck
-from deckbridge.backends.pptx_backend import PPTXBackend
-from deckbridge.backends.gslides_backend import GSlidesBackend
-from deckbridge.auth.session import create_gslides_session
-from deckbridge.deck.specs import ChartSpec
-from deckbridge.deck.blocks import ChartBlock
-
-
 import pandas as pd
+
+from deckbridge.auth.session import create_gslides_session
+from deckbridge.backends.gslides_backend import GSlidesBackend
+from deckbridge.backends.pptx_backend import PPTXBackend
+from deckbridge.deck.blocks import ChartBlock
+from deckbridge.deck.deck import Deck
+from deckbridge.deck.specs import ChartSpec
 
 
 def main():
