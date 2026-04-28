@@ -7,6 +7,22 @@ from deckbridge.renderers.gslides.utils import hex_to_slides_rgb, inches_to_emu
 from deckbridge.renderers.pptx.utils import hex_to_rgb255
 
 
+def resolve_text_content(slide, slot_key):
+    # Slide
+    content = slide.get(slot_key)
+    if content is not None:
+        return content
+
+    # Chart-derived
+    if slot_key.endswith("_title"):
+        chart_key = slot_key.replace("_title", "")
+        block = slide["content"].get(chart_key)
+        if block:
+            return block.chart_title
+
+    return None
+
+
 def render_text_slot(
     backend,
     slot_key,

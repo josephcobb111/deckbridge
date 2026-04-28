@@ -5,6 +5,7 @@ from pptx.util import Inches
 
 from deckbridge.layouts.registry import LAYOUTS
 from deckbridge.renderers.common.slot_renderer import render_slot
+from deckbridge.renderers.common.text_renderer import resolve_text_content
 
 from .chart_compiler import PPTXChartCompiler
 
@@ -38,15 +39,7 @@ class PPTXRenderer:
                     content = slide["content"].get(slot_key)
 
                 elif slot_type == "text":
-                    # Explicit slide-level override
-                    content = slide.get(slot_key)
-
-                    # Derived (chart titles)
-                    if content is None and slot_key.endswith("_title"):
-                        chart_key = slot_key.replace("_title", "")
-                        block = slide["content"].get(chart_key)
-                        if block:
-                            content = block.chart_title
+                    content = resolve_text_content(slide, slot_key)
 
                 else:
                     content = None
