@@ -68,7 +68,7 @@ class GSlidesRenderer:
             # -----------------------
             # Chart slots
             # -----------------------
-            if slot_key.startswith("chart_") and not slot_key.endswith("_title"):
+            if slot["type"] == "chart":
                 block = slide["content"].get(slot_key)
                 if not block:
                     continue
