@@ -1,7 +1,8 @@
 from pptx.enum.text import PP_ALIGN
 from pptx.util import Inches, Pt
 
-from deckbridge.renderers.gslides.utils import inches_to_emu
+from deckbridge.renderers.gslides.utils import hex_to_slides_rgb, inches_to_emu
+from deckbridge.renderers.pptx.utils import hex_to_rgb255
 
 
 def render_text_slots(
@@ -77,9 +78,13 @@ def _render_pptx(slide, layout_spec, text_map):
             "center": PP_ALIGN.CENTER,
             "left": PP_ALIGN.LEFT,
             "right": PP_ALIGN.RIGHT,
+            "justified": PP_ALIGN.JUSTIFY,
         }
         if slot.get("align"):
             p.alignment = align_map[slot["align"]]
+
+        if slot.get("font_color"):
+            p.font.color.rgb = hex_to_rgb255(slot.get("font_color"))
 
         p.font.bold = slot.get("bold") or False
 
@@ -162,15 +167,34 @@ def _render_gslides(
             }
         )
 
+        align_map = {
+            "center": "CENTER",
+            "left": "START",
+            "right": "END",
+            "justified": "JUSTIFIED",
+        }
         if slot.get("align"):
             requests.append(
                 {
                     "updateParagraphStyle": {
                         "objectId": object_id,
                         "textRange": {"type": "ALL"},
-                        "style": {"alignment": slot.get("align").upper()},
+                        "style": {"alignment": align_map[slot.get("align")]},
                         "fields": "alignment",
                     },
+                }
+            )
+
+        if slot.get("font_color"):
+            color = hex_to_slides_rgb(slot.get("font_color"))
+            requests.append(
+                {
+                    "updateTextStyle": {
+                        "objectId": object_id,
+                        "textRange": {"type": "ALL"},
+                        "style": {"foregroundColor": {"opaqueColor": {"rgbColor": color}}},
+                        "fields": "foregroundColor",
+                    }
                 }
             )
 
