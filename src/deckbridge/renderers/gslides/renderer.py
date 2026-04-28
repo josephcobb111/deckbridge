@@ -50,36 +50,45 @@ class GSlidesRenderer:
     def _render_content(self, slide, presentation_id, page_id):
 
         layout_spec = LAYOUTS[slide["layout"]]
-
         slots = layout_spec.slots
 
-        text_map = {
-            "deck_title": slide.get("deck_title"),
-            "deck_author": slide.get("deck_author"),
-            "slide_title": slide.get("slide_title"),
-        }
+        text_map = {}
 
         # -----------------------
-        # Charts + Titles
+        # Global text fields
+        # -----------------------
+        for key in ["deck_title", "deck_author", "slide_title"]:
+            if slide.get(key):
+                text_map[key] = slide[key]
+
+        # -----------------------
+        # Slot-driven rendering
         # -----------------------
         for slot_key, slot in slots.items():
-            if slot_key.startswith("chart_") and not slot_key.endswith("title"):
+            # -----------------------
+            # Chart slots
+            # -----------------------
+            if slot_key.startswith("chart_") and not slot_key.endswith("_title"):
                 block = slide["content"].get(slot_key)
+                if not block:
+                    continue
 
-                chart_slot = slots[slot_key]
-
+                # Render chart
                 self.chart_compiler.compile(
                     presentation_id=presentation_id,
                     page_id=page_id,
                     spec=block.chart,
-                    position=chart_slot,
+                    position=slot,
                     chart_key=slot_key,
                 )
 
-                # Chart titles (from ChartBlock)
-                if block.chart_title:
+                # Add chart title to text_map
+                if getattr(block, "chart_title", None):
                     text_map[f"{slot_key}_title"] = block.chart_title
 
+        # -----------------------
+        # Render all text slots
+        # -----------------------
         render_text_slots(
             backend="gslides",
             layout_spec=layout_spec,
