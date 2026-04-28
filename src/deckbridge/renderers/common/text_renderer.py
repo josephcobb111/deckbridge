@@ -6,11 +6,12 @@ from deckbridge.renderers.pptx.utils import hex_to_rgb255
 
 
 def render_text_slots(
-    backend: str,
-    slide_obj,
+    backend,
     layout_spec,
-    text_map: dict,
-    slides_service=None,
+    text_map,
+    *,
+    slide_obj=None,              # pptx
+    slides_service=None,         # gslides
     presentation_id=None,
     page_id=None,
 ):
