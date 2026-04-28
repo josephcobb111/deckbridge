@@ -59,8 +59,8 @@ class PPTXRenderer:
 
             # Chart titles (from ChartBlock)
             for i, block in enumerate(slide["charts"], start=1):
-                if block.title:
-                    text_map[f"chart_{i}_title"] = block.title
+                if block.chart_title:
+                    text_map[f"chart_{i}_title"] = block.chart_title
 
             render_text_slots(
                 backend="pptx",
