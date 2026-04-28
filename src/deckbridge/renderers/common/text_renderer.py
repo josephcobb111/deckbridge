@@ -1,4 +1,5 @@
-from pptx.util import Inches
+from pptx.enum.text import PP_ALIGN
+from pptx.util import Inches, Pt
 
 from deckbridge.renderers.gslides.utils import inches_to_emu
 
@@ -69,6 +70,23 @@ def _render_pptx(slide, layout_spec, text_map):
         p = tf.paragraphs[0]
         p.text = text
 
+        if slot.get("font_size"):
+            p.font.size = Pt(slot["font_size"])
+
+        align_map = {
+            "center": PP_ALIGN.CENTER,
+            "left": PP_ALIGN.LEFT,
+            "right": PP_ALIGN.RIGHT,
+        }
+        if slot.get("align"):
+            p.alignment = align_map[slot["align"]]
+
+        p.font.bold = slot.get("bold") or False
+
+        p.font.italics = slot.get("italics") or False
+
+        p.font.underline = slot.get("underline") or False
+
 
 # =========================================================
 # GOOGLE SLIDES IMPLEMENTATION
@@ -116,6 +134,45 @@ def _render_gslides(
         )
 
         requests.append({"insertText": {"objectId": object_id, "text": text}})
+
+        if slot.get("font_size"):
+            requests.append(
+                {
+                    "updateTextStyle": {
+                        "objectId": object_id,
+                        "textRange": {"type": "ALL"},
+                        "style": {"fontSize": {"magnitude": slot.get("font_size"), "unit": "PT"}},
+                        "fields": "fontSize",
+                    },
+                }
+            )
+
+        requests.append(
+            {
+                "updateTextStyle": {
+                    "objectId": object_id,
+                    "textRange": {"type": "ALL"},
+                    "style": {
+                        "bold": slot.get("bold") or False,
+                        "italic": slot.get("italics") or False,
+                        "underline": slot.get("underline") or False,
+                    },
+                    "fields": "bold,italic,underline",
+                }
+            }
+        )
+
+        if slot.get("align"):
+            requests.append(
+                {
+                    "updateParagraphStyle": {
+                        "objectId": object_id,
+                        "textRange": {"type": "ALL"},
+                        "style": {"alignment": slot.get("align").upper()},
+                        "fields": "alignment",
+                    },
+                }
+            )
 
     if requests:
         slides_service.presentations().batchUpdate(presentationId=presentation_id, body={"requests": requests}).execute()

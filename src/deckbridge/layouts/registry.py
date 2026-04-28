@@ -7,7 +7,17 @@ LAYOUTS = {
     "title_slide": LayoutSpec(
         name="title_slide",
         slots={
-            "deck_title": {"x": 1, "y": 2, "w": 8, "h": 1},
+            "deck_title": {
+                "x": 1,
+                "y": 2,
+                "w": 8,
+                "h": 1,
+                "font_size": 32,
+                "align": "center",
+                "bold": True,
+                "italics": False,
+                "underline": False,
+            },
             "deck_author": {"x": 1, "y": 3.2, "w": 8, "h": 0.8},
         },
     ),
