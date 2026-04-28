@@ -19,7 +19,9 @@ def main():
     # -----------------------
     # Title slide
     # -----------------------
-    deck.add_title_slide("Demo - Title Slide", "Refactored Package - Author")
+    deck.add_slide(
+        deck_title="Demo - deck_title", deck_author="deckbridge - deck_author"
+    )
 
     # -----------------------
     # Chart slide
@@ -45,26 +47,23 @@ def main():
         y="revenue",
     )
 
-    deck.add_chart_slide(
-        title="Revenue Trend - Slide Title",
-        layout="one_chart",
+    deck.add_slide(
+        slide_title="Revenue Trend - Slide Title",
         charts=[
             ChartBlock(chart1, "Revenue Trend (Line) - Chart Title"),
         ],
     )
 
-    deck.add_chart_slide(
-        title="Revenue Trend - Slide Title",
-        layout="two_chart",
+    deck.add_slide(
+        slide_title="Revenue Trend - Slide Title",
         charts=[
             ChartBlock(chart1, "Revenue Trend (Line) - Chart Title"),
             ChartBlock(chart2, "Revenue (Bar) - Chart Title"),
         ],
     )
 
-    deck.add_chart_slide(
-        title="Revenue Trend - Slide Title",
-        layout="three_chart",
+    deck.add_slide(
+        slide_title="Revenue Trend - Slide Title",
         charts=[
             ChartBlock(chart1, "Revenue Trend (Line) - Chart Title"),
             ChartBlock(chart2, "Revenue (Bar) - Chart Title"),

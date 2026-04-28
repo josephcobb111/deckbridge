@@ -1,4 +1,5 @@
 from deckbridge.layouts.registry import LAYOUTS
+from deckbridge.renderers.common.text_renderer import render_text_slots
 from deckbridge.renderers.gslides.chart_compiler import GSlidesChartCompiler
 
 from .utils import inches_to_emu
@@ -15,19 +16,15 @@ class GSlidesRenderer:
     def render(self, deck, presentation_id: str):
 
         # -----------------------------
-        # STEP 1: Create slides
+        # Create slides
         # -----------------------------
         page_id_map = self._create_slides(deck, presentation_id)
 
         # -----------------------------
-        # STEP 2: Render content via slots
+        # Render content for each slide
         # -----------------------------
         for i, slide in enumerate(deck.slides):
-            if slide["type"] == "title":
-                self._render_title_slide(slide, presentation_id, page_id_map[i])
-
-            elif slide["type"] == "chart":
-                self._render_chart_slide(slide, presentation_id, page_id_map[i])
+            self._render_content(slide, presentation_id, page_id_map[i])
 
     # =========================================================
     # CREATE SLIDES
@@ -43,51 +40,30 @@ class GSlidesRenderer:
 
             page_ids[i] = slide_id
 
-        self.slides.presentations().batchUpdate(presentationId=presentation_id, body={"requests": requests}).execute()
+        self._batch_update(presentation_id, requests)
 
         return page_ids
 
     # =========================================================
-    # TITLE SLIDE (keep simple for now)
+    # RENDER CONTENT
     # =========================================================
-    def _render_title_slide(self, slide, presentation_id, page_id):
-        requests = []
-
-        # Title
-        requests += self._create_textbox(object_id=f"title_{page_id}", text=slide["title"], page_id=page_id, x=1, y=1, w=8, h=1)
-
-        # Subtitle
-        if slide.get("subtitle"):
-            requests += self._create_textbox(object_id=f"subtitle_{page_id}", text=slide["subtitle"], page_id=page_id, x=1, y=2, w=8, h=1)
-
-        self._batch_update(presentation_id, requests)
-
-    # =========================================================
-    # CHART SLIDE (SLOT-DRIVEN)
-    # =========================================================
-    def _render_chart_slide(self, slide, presentation_id, page_id):
+    def _render_content(self, slide, presentation_id, page_id):
 
         layout_spec = LAYOUTS[slide["layout"]]
+
+        # -----------------------
+        # Charts
+        # -----------------------
         slots = layout_spec.slots
 
         requests = []
-
-        # -----------------------
-        # Slide title
-        # -----------------------
-        if "slide_title" in slots and slide.get("title"):
-            slot = slots["slide_title"]
-
-            requests += self._create_textbox(object_id=f"slide_title_{page_id}", text=slide["title"], page_id=page_id, **slot)
 
         # -----------------------
         # Charts + chart titles
         # -----------------------
         for i, block in enumerate(slide["charts"], start=1):
             chart_slot_key = f"chart_{i}"
-            title_slot_key = f"chart_{i}_title"
 
-            # --- Chart ---
             if chart_slot_key in slots:
                 chart_slot = slots[chart_slot_key]
 
@@ -99,42 +75,32 @@ class GSlidesRenderer:
                     chart_key=chart_slot_key,
                 )
 
-            # --- Chart title ---
-            if block.title and title_slot_key in slots:
-                title_slot = slots[title_slot_key]
-
-                requests += self._create_textbox(object_id=f"{title_slot_key}_{page_id}", text=block.title, page_id=page_id, **title_slot)
-
         if requests:
             self._batch_update(presentation_id, requests)
 
-    # =========================================================
-    # TEXTBOX HELPER
-    # =========================================================
-    def _create_textbox(self, object_id, text, page_id, x, y, w, h):
-        return [
-            {
-                "createShape": {
-                    "objectId": object_id,
-                    "shapeType": "TEXT_BOX",
-                    "elementProperties": {
-                        "pageObjectId": page_id,
-                        "size": {
-                            "height": {"magnitude": inches_to_emu(h), "unit": "EMU"},
-                            "width": {"magnitude": inches_to_emu(w), "unit": "EMU"},
-                        },
-                        "transform": {
-                            "scaleX": 1,
-                            "scaleY": 1,
-                            "translateX": inches_to_emu(x),
-                            "translateY": inches_to_emu(y),
-                            "unit": "EMU",
-                        },
-                    },
-                }
-            },
-            {"insertText": {"objectId": object_id, "text": text}},
-        ]
+        # -----------------------
+        # Titles (text boxes)
+        # -----------------------
+        text_map = {
+            "deck_title": slide.get("deck_title"),
+            "deck_author": slide.get("deck_author"),
+            "slide_title": slide.get("slide_title"),
+        }
+
+        # Chart titles (from ChartBlock)
+        for i, block in enumerate(slide["charts"], start=1):
+            if block.title:
+                text_map[f"chart_{i}_title"] = block.title
+
+        render_text_slots(
+            backend="gslides",
+            slide_obj=None,
+            layout_spec=layout_spec,
+            text_map=text_map,
+            slides_service=self.slides,
+            presentation_id=presentation_id,
+            page_id=page_id,
+        )
 
     # =========================================================
     # BATCH HELPER
