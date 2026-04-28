@@ -1,3 +1,5 @@
+import uuid
+
 from pptx.enum.text import PP_ALIGN
 from pptx.util import Inches, Pt
 
@@ -114,7 +116,7 @@ def _render_gslides(
 
         slot = layout_spec.slots[slot_name]
 
-        object_id = f"{slot_name}_{page_id}"
+        object_id = f"{page_id}_{slot_name}_{uuid.uuid4().hex[:6]}"
 
         requests.append(
             {
