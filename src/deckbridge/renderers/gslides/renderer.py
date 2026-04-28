@@ -1,10 +1,7 @@
 from deckbridge.layouts.registry import LAYOUTS
 from deckbridge.renderers.common.context import RenderContext
 from deckbridge.renderers.common.slot_renderer import render_slots
-from deckbridge.renderers.common.text_renderer import resolve_text_content
 from deckbridge.renderers.gslides.chart_compiler import GSlidesChartCompiler
-
-from .utils import inches_to_emu
 
 
 class GSlidesRenderer:

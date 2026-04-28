@@ -26,8 +26,6 @@ def _render_chart(ctx, slot, block, chart_key):
         return
 
     if ctx.backend == "pptx":
-        from pptx.util import Inches
-
         x = Inches(slot["x"])
         y = Inches(slot["y"])
         cx = Inches(slot["w"])

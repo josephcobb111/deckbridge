@@ -1,5 +1,3 @@
-import uuid
-
 from pptx.enum.text import PP_ALIGN
 from pptx.util import Inches, Pt
 

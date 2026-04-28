@@ -1,12 +1,10 @@
 from importlib import resources
 
 from pptx import Presentation
-from pptx.util import Inches
 
 from deckbridge.layouts.registry import LAYOUTS
 from deckbridge.renderers.common.context import RenderContext
 from deckbridge.renderers.common.slot_renderer import render_slots
-from deckbridge.renderers.common.text_renderer import resolve_text_content
 
 from .chart_compiler import PPTXChartCompiler
 
