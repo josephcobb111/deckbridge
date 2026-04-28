@@ -1,5 +1,6 @@
 from deckbridge.layouts.registry import LAYOUTS
-from deckbridge.renderers.common.slot_renderer import render_slot
+from deckbridge.renderers.common.context import RenderContext
+from deckbridge.renderers.common.slot_renderer import render_slots
 from deckbridge.renderers.common.text_renderer import resolve_text_content
 from deckbridge.renderers.gslides.chart_compiler import GSlidesChartCompiler
 
@@ -49,38 +50,18 @@ class GSlidesRenderer:
     # RENDER CONTENT
     # =========================================================
     def _render_content(self, slide, presentation_id, page_id):
-
         layout_spec = LAYOUTS[slide["layout"]]
-        slots = layout_spec.slots
 
-        for slot_key, slot in slots.items():
-            slot_type = slot.get("type")
+        ctx = RenderContext(
+            backend="gslides",
+            layout_spec=layout_spec,
+            slides_service=self.slides,
+            presentation_id=presentation_id,
+            page_id=page_id,
+            chart_compiler=self.chart_compiler,
+        )
 
-            # -----------------------
-            # Resolve content
-            # -----------------------
-            if slot_type == "chart":
-                content = slide["content"].get(slot_key)
-
-            elif slot_type == "text":
-                content = resolve_text_content(slide, slot_key)
-
-            else:
-                content = None
-
-            # -----------------------
-            # Render
-            # -----------------------
-            render_slot(
-                backend="gslides",
-                slot_key=slot_key,
-                slot=slot,
-                content=content,
-                slides_service=self.slides,
-                presentation_id=presentation_id,
-                page_id=page_id,
-                chart_compiler=self.chart_compiler,
-            )
+        render_slots(ctx, slide)
 
     # =========================================================
     # BATCH HELPER
