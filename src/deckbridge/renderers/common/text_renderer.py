@@ -10,8 +10,8 @@ def render_text_slots(
     layout_spec,
     text_map,
     *,
-    slide_obj=None,              # pptx
-    slides_service=None,         # gslides
+    slide_obj=None,  # pptx
+    slides_service=None,  # gslides
     presentation_id=None,
     page_id=None,
 ):
@@ -89,7 +89,7 @@ def _render_pptx(slide, layout_spec, text_map):
 
         p.font.bold = slot.get("bold") or False
 
-        p.font.italics = slot.get("italics") or False
+        p.font.italic = slot.get("italic") or False
 
         p.font.underline = slot.get("underline") or False
 
@@ -160,7 +160,7 @@ def _render_gslides(
                     "textRange": {"type": "ALL"},
                     "style": {
                         "bold": slot.get("bold") or False,
-                        "italic": slot.get("italics") or False,
+                        "italic": slot.get("italic") or False,
                         "underline": slot.get("underline") or False,
                     },
                     "fields": "bold,italic,underline",

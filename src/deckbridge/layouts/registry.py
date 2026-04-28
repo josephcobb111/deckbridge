@@ -16,7 +16,7 @@ LAYOUTS = {
                 "align": "left",
                 "font_color": "#7F7F7F",
                 "bold": True,
-                "italics": False,
+                "italic": False,
                 "underline": False,
             },
             "deck_author": {"x": 1, "y": 3.2, "w": 8, "h": 0.8},
