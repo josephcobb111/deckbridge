@@ -6,4 +6,4 @@ from deckbridge.deck.specs import ChartSpec
 @dataclass
 class ChartBlock:
     chart: ChartSpec
-    title: str = ""
+    chart_title: str = ""

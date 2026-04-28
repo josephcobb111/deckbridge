@@ -1,5 +1,5 @@
 from deckbridge.layouts.registry import LAYOUTS
-from deckbridge.renderers.common.text_renderer import render_text_slots
+from deckbridge.renderers.common.slot_renderer import render_slot
 from deckbridge.renderers.gslides.chart_compiler import GSlidesChartCompiler
 
 from .utils import inches_to_emu
@@ -50,57 +50,44 @@ class GSlidesRenderer:
     def _render_content(self, slide, presentation_id, page_id):
 
         layout_spec = LAYOUTS[slide["layout"]]
-
-        # -----------------------
-        # Charts
-        # -----------------------
         slots = layout_spec.slots
 
-        requests = []
+        for slot_key, slot in slots.items():
+            slot_type = slot.get("type")
 
-        # -----------------------
-        # Charts + chart titles
-        # -----------------------
-        for i, block in enumerate(slide["charts"], start=1):
-            chart_slot_key = f"chart_{i}"
+            # -----------------------
+            # Resolve content
+            # -----------------------
+            if slot_type == "chart":
+                content = slide["content"].get(slot_key)
 
-            if chart_slot_key in slots:
-                chart_slot = slots[chart_slot_key]
+            elif slot_type == "text":
+                # Explicit slide-level override
+                content = slide.get(slot_key)
 
-                self.chart_compiler.compile(
-                    presentation_id=presentation_id,
-                    page_id=page_id,
-                    spec=block.chart,
-                    position=chart_slot,
-                    chart_key=chart_slot_key,
-                )
+                # Derived (chart titles)
+                if content is None and slot_key.endswith("_title"):
+                    chart_key = slot_key.replace("_title", "")
+                    block = slide["content"].get(chart_key)
+                    if block:
+                        content = block.chart_title
 
-        if requests:
-            self._batch_update(presentation_id, requests)
+            else:
+                content = None
 
-        # -----------------------
-        # Titles (text boxes)
-        # -----------------------
-        text_map = {
-            "deck_title": slide.get("deck_title"),
-            "deck_author": slide.get("deck_author"),
-            "slide_title": slide.get("slide_title"),
-        }
-
-        # Chart titles (from ChartBlock)
-        for i, block in enumerate(slide["charts"], start=1):
-            if block.title:
-                text_map[f"chart_{i}_title"] = block.title
-
-        render_text_slots(
-            backend="gslides",
-            slide_obj=None,
-            layout_spec=layout_spec,
-            text_map=text_map,
-            slides_service=self.slides,
-            presentation_id=presentation_id,
-            page_id=page_id,
-        )
+            # -----------------------
+            # Render
+            # -----------------------
+            render_slot(
+                backend="gslides",
+                slot_key=slot_key,
+                slot=slot,
+                content=content,
+                slides_service=self.slides,
+                presentation_id=presentation_id,
+                page_id=page_id,
+                chart_compiler=self.chart_compiler,
+            )
 
     # =========================================================
     # BATCH HELPER
