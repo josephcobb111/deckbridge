@@ -56,8 +56,6 @@ class GSlidesRenderer:
         # -----------------------
         slots = layout_spec.slots
 
-        requests = []
-
         # -----------------------
         # Charts + chart titles
         # -----------------------
@@ -75,9 +73,6 @@ class GSlidesRenderer:
                     chart_key=chart_slot_key,
                 )
 
-        if requests:
-            self._batch_update(presentation_id, requests)
-
         # -----------------------
         # Titles (text boxes)
         # -----------------------
@@ -94,7 +89,6 @@ class GSlidesRenderer:
 
         render_text_slots(
             backend="gslides",
-            slide_obj=None,
             layout_spec=layout_spec,
             text_map=text_map,
             slides_service=self.slides,
