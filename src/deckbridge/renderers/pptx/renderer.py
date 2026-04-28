@@ -4,6 +4,7 @@ from pptx import Presentation
 from pptx.util import Inches
 
 from deckbridge.layouts.registry import LAYOUTS
+from deckbridge.renderers.common.text_renderer import render_text_slots
 
 from .chart_compiler import PPTXChartCompiler
 
@@ -21,53 +22,21 @@ class PPTXRenderer:
         prs = Presentation(self.template_path)
 
         for slide in deck.slides:
-            # =====================================================
-            # TITLE SLIDE (leave mostly as-is for now)
-            # =====================================================
-            if slide["type"] == "title":
-                layout = prs.slide_layouts[0]
-                s = prs.slides.add_slide(layout)
+            # Use blank layout
+            layout = prs.slide_layouts[3]  # blank is safest
+            s = prs.slides.add_slide(layout)
 
-                s.shapes[0].text_frame.text = slide["title"]
-                s.shapes[1].text_frame.text = slide["subtitle"]
+            layout_spec = LAYOUTS[slide["layout"]]
 
-            # =====================================================
-            # CHART SLIDE (FULL SLOT SYSTEM)
-            # =====================================================
-            elif slide["type"] == "chart":
-                # Use blank layout (we control everything)
-                layout = prs.slide_layouts[3]  # blank is safest
-                s = prs.slides.add_slide(layout)
+            # -----------------------
+            # Charts
+            # -----------------------
+            slots = layout_spec.slots
 
-                layout_spec = LAYOUTS[slide["layout"]]
-                slots = layout_spec.slots
+            for i, block in enumerate(slide["charts"], start=1):
+                chart_slot_key = f"chart_{i}"
 
-                # -----------------------
-                # Slide title
-                # -----------------------
-                if "slide_title" in slots and slide.get("title"):
-                    slot = slots["slide_title"]
-
-                    textbox = s.shapes.add_textbox(
-                        Inches(slot["x"]),
-                        Inches(slot["y"]),
-                        Inches(slot["w"]),
-                        Inches(slot["h"]),
-                    )
-
-                    textbox.text_frame.text = slide["title"]
-
-                # -----------------------
-                # Charts + Chart Titles
-                # -----------------------
-                for i, block in enumerate(slide["charts"], start=1):
-                    chart_slot_key = f"chart_{i}"
-                    title_slot_key = f"chart_{i}_title"
-
-                    # --- Chart ---
-                    if chart_slot_key not in slots:
-                        continue
-
+                if chart_slot_key in slots:
                     chart_slot = slots[chart_slot_key]
 
                     x = Inches(chart_slot["x"])
@@ -79,17 +48,25 @@ class PPTXRenderer:
 
                     s.shapes.add_chart(chart_type, x, y, cx, cy, chart_data)
 
-                    # --- Chart Title ---
-                    if block.title and title_slot_key in slots:
-                        title_slot = slots[title_slot_key]
+            # -----------------------
+            # Titles (text boxes)
+            # -----------------------
+            text_map = {
+                "deck_title": slide.get("deck_title"),
+                "deck_author": slide.get("deck_author"),
+                "slide_title": slide.get("slide_title"),
+            }
 
-                        textbox = s.shapes.add_textbox(
-                            Inches(title_slot["x"]),
-                            Inches(title_slot["y"]),
-                            Inches(title_slot["w"]),
-                            Inches(title_slot["h"]),
-                        )
+            # Chart titles (from ChartBlock)
+            for i, block in enumerate(slide["charts"], start=1):
+                if block.title:
+                    text_map[f"chart_{i}_title"] = block.title
 
-                        textbox.text_frame.text = block.title
+            render_text_slots(
+                backend="pptx",
+                slide_obj=s,
+                layout_spec=layout_spec,
+                text_map=text_map,
+            )
 
         prs.save(output_path)

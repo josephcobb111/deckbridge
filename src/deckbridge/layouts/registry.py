@@ -2,6 +2,27 @@ from deckbridge.deck.specs import LayoutSpec
 
 LAYOUTS = {
     # =========================================================
+    # TITLE SLIDE
+    # =========================================================
+    "title_slide": LayoutSpec(
+        name="title_slide",
+        slots={
+            "deck_title": {
+                "x": 1,
+                "y": 2,
+                "w": 8,
+                "h": 1,
+                "font_size": 32,
+                "align": "left",
+                "font_color": "#7F7F7F",
+                "bold": True,
+                "italics": False,
+                "underline": False,
+            },
+            "deck_author": {"x": 1, "y": 3.2, "w": 8, "h": 0.8},
+        },
+    ),
+    # =========================================================
     # ONE CHART
     # =========================================================
     "one_chart": LayoutSpec(
