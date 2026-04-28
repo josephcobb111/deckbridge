@@ -141,33 +141,6 @@ def _render_gslides(
 
         requests.append({"insertText": {"objectId": object_id, "text": text}})
 
-        if slot.get("font_size"):
-            requests.append(
-                {
-                    "updateTextStyle": {
-                        "objectId": object_id,
-                        "textRange": {"type": "ALL"},
-                        "style": {"fontSize": {"magnitude": slot.get("font_size"), "unit": "PT"}},
-                        "fields": "fontSize",
-                    },
-                }
-            )
-
-        requests.append(
-            {
-                "updateTextStyle": {
-                    "objectId": object_id,
-                    "textRange": {"type": "ALL"},
-                    "style": {
-                        "bold": slot.get("bold") or False,
-                        "italic": slot.get("italic") or False,
-                        "underline": slot.get("underline") or False,
-                    },
-                    "fields": "bold,italic,underline",
-                }
-            }
-        )
-
         align_map = {
             "center": "CENTER",
             "left": "START",
@@ -186,18 +159,32 @@ def _render_gslides(
                 }
             )
 
+        style = {}
+        fields = []
+
+        if slot.get("font_size"):
+            style["fontSize"] = {"magnitude": slot["font_size"], "unit": "PT"}
+            fields.append("fontSize")
+
+        style["bold"] = slot.get("bold") or False
+        style["italic"] = slot.get("italic") or False
+        style["underline"] = slot.get("underline") or False
+        fields.extend(["bold", "italic", "underline"])
+
         if slot.get("font_color"):
-            color = hex_to_slides_rgb(slot.get("font_color"))
-            requests.append(
-                {
-                    "updateTextStyle": {
-                        "objectId": object_id,
-                        "textRange": {"type": "ALL"},
-                        "style": {"foregroundColor": {"opaqueColor": {"rgbColor": color}}},
-                        "fields": "foregroundColor",
-                    }
+            style["foregroundColor"] = {"opaqueColor": {"rgbColor": hex_to_slides_rgb(slot["font_color"])}}
+            fields.append("foregroundColor")
+
+        requests.append(
+            {
+                "updateTextStyle": {
+                    "objectId": object_id,
+                    "textRange": {"type": "ALL"},
+                    "style": style,
+                    "fields": ",".join(fields),
                 }
-            )
+            }
+        )
 
     if requests:
         slides_service.presentations().batchUpdate(presentationId=presentation_id, body={"requests": requests}).execute()
