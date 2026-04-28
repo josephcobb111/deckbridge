@@ -49,26 +49,26 @@ def main():
 
     deck.add_slide(
         slide_title="Revenue Trend - Slide Title",
-        charts=[
-            ChartBlock(chart=chart1, chart_title="Revenue Trend (Line) - Chart Title"),
-        ],
+        content={
+            "chart_1": ChartBlock(chart=chart1, chart_title="Revenue Trend (Line) - Chart Title"),
+        },
     )
 
     deck.add_slide(
         slide_title="Revenue Trend - Slide Title",
-        charts=[
-            ChartBlock(chart=chart1, chart_title="Revenue Trend (Line) - Chart Title"),
-            ChartBlock(chart=chart2, chart_title="Revenue (Bar) - Chart Title"),
-        ],
+        content={
+            "chart_1": ChartBlock(chart=chart1, chart_title="Revenue Trend (Line) - Chart Title"),
+            "chart_2": ChartBlock(chart=chart2, chart_title="Revenue (Bar) - Chart Title"),
+        },
     )
 
     deck.add_slide(
         slide_title="Revenue Trend - Slide Title",
-        charts=[
-            ChartBlock(chart=chart1, chart_title="Revenue Trend (Line) - Chart Title"),
-            ChartBlock(chart=chart2, chart_title="Revenue (Bar) - Chart Title"),
-            ChartBlock(chart=chart3, chart_title="Revenue Trend (Line) - Chart Title"),
-        ],
+        content={
+            "chart_1": ChartBlock(chart=chart1, chart_title="Revenue Trend (Line) - Chart Title"),
+            "chart_2": ChartBlock(chart=chart2, chart_title="Revenue (Bar) - Chart Title"),
+            "chart_3": ChartBlock(chart=chart3, chart_title="Revenue Trend (Line) - Chart Title"),
+        },
     )
 
     # -----------------------

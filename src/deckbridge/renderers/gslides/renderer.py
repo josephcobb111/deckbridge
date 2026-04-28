@@ -51,41 +51,34 @@ class GSlidesRenderer:
 
         layout_spec = LAYOUTS[slide["layout"]]
 
-        # -----------------------
-        # Charts
-        # -----------------------
         slots = layout_spec.slots
 
-        # -----------------------
-        # Charts + chart titles
-        # -----------------------
-        for i, block in enumerate(slide["charts"], start=1):
-            chart_slot_key = f"chart_{i}"
-
-            if chart_slot_key in slots:
-                chart_slot = slots[chart_slot_key]
-
-                self.chart_compiler.compile(
-                    presentation_id=presentation_id,
-                    page_id=page_id,
-                    spec=block.chart,
-                    position=chart_slot,
-                    chart_key=chart_slot_key,
-                )
-
-        # -----------------------
-        # Titles (text boxes)
-        # -----------------------
         text_map = {
             "deck_title": slide.get("deck_title"),
             "deck_author": slide.get("deck_author"),
             "slide_title": slide.get("slide_title"),
         }
 
-        # Chart titles (from ChartBlock)
-        for i, block in enumerate(slide["charts"], start=1):
-            if block.chart_title:
-                text_map[f"chart_{i}_title"] = block.chart_title
+        # -----------------------
+        # Charts + Titles
+        # -----------------------
+        for slot_key, slot in slots.items():
+            if slot_key.startswith("chart_") and not slot_key.endswith("title"):
+                block = slide["content"].get(slot_key)
+
+                chart_slot = slots[slot_key]
+
+                self.chart_compiler.compile(
+                    presentation_id=presentation_id,
+                    page_id=page_id,
+                    spec=block.chart,
+                    position=chart_slot,
+                    chart_key=slot_key,
+                )
+
+                # Chart titles (from ChartBlock)
+                if block.chart_title:
+                    text_map[f"{slot_key}_title"] = block.chart_title
 
         render_text_slots(
             backend="gslides",
