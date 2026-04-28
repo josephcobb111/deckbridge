@@ -4,7 +4,7 @@ from pptx import Presentation
 from pptx.util import Inches
 
 from deckbridge.layouts.registry import LAYOUTS
-from deckbridge.renderers.common.text_renderer import render_text_slots
+from deckbridge.renderers.common.slot_renderer import render_slot
 
 from .chart_compiler import PPTXChartCompiler
 
@@ -28,51 +28,39 @@ class PPTXRenderer:
             layout_spec = LAYOUTS[slide["layout"]]
             slots = layout_spec.slots
 
-            text_map = {}
-
-            # -----------------------
-            # Global text fields
-            # -----------------------
-            for key in ["deck_title", "deck_author", "slide_title"]:
-                if slide.get(key):
-                    text_map[key] = slide[key]
-
-            # -----------------------
-            # Slot-driven rendering
-            # -----------------------
             for slot_key, slot in slots.items():
+                slot_type = slot.get("type")
+
                 # -----------------------
-                # Chart slots
+                # Resolve content
                 # -----------------------
-                if slot["type"] == "chart":
-                    block = slide["content"].get(slot_key)
-                    if not block:
-                        continue
+                if slot_type == "chart":
+                    content = slide["content"].get(slot_key)
 
-                    # Render chart
-                    chart_slot = slots[slot_key]
+                elif slot_type == "text":
+                    # Explicit slide-level override
+                    content = slide.get(slot_key)
 
-                    x = Inches(chart_slot["x"])
-                    y = Inches(chart_slot["y"])
-                    cx = Inches(chart_slot["w"])
-                    cy = Inches(chart_slot["h"])
+                    # Derived (chart titles)
+                    if content is None and slot_key.endswith("_title"):
+                        chart_key = slot_key.replace("_title", "")
+                        block = slide["content"].get(chart_key)
+                        if block:
+                            content = block.chart_title
 
-                    chart_type, chart_data = self.compiler.compile(block.chart)
+                else:
+                    content = None
 
-                    s.shapes.add_chart(chart_type, x, y, cx, cy, chart_data)
-
-                    # Add chart title to text_map
-                    if getattr(block, "chart_title", None):
-                        text_map[f"{slot_key}_title"] = block.chart_title
-
-            # -----------------------
-            # Render all text slots
-            # -----------------------
-            render_text_slots(
-                backend="pptx",
-                slide_obj=s,
-                layout_spec=layout_spec,
-                text_map=text_map,
-            )
+                # -----------------------
+                # Render
+                # -----------------------
+                render_slot(
+                    backend="pptx",
+                    slot_key=slot_key,
+                    slot=slot,
+                    content=content,
+                    slide_obj=s,
+                    chart_compiler=self.compiler,
+                )
 
         prs.save(output_path)

@@ -1,5 +1,5 @@
 from deckbridge.layouts.registry import LAYOUTS
-from deckbridge.renderers.common.text_renderer import render_text_slots
+from deckbridge.renderers.common.slot_renderer import render_slot
 from deckbridge.renderers.gslides.chart_compiler import GSlidesChartCompiler
 
 from .utils import inches_to_emu
@@ -52,51 +52,42 @@ class GSlidesRenderer:
         layout_spec = LAYOUTS[slide["layout"]]
         slots = layout_spec.slots
 
-        text_map = {}
-
-        # -----------------------
-        # Global text fields
-        # -----------------------
-        for key in ["deck_title", "deck_author", "slide_title"]:
-            if slide.get(key):
-                text_map[key] = slide[key]
-
-        # -----------------------
-        # Slot-driven rendering
-        # -----------------------
         for slot_key, slot in slots.items():
+            slot_type = slot.get("type")
+
             # -----------------------
-            # Chart slots
+            # Resolve content
             # -----------------------
-            if slot["type"] == "chart":
-                block = slide["content"].get(slot_key)
-                if not block:
-                    continue
+            if slot_type == "chart":
+                content = slide["content"].get(slot_key)
 
-                # Render chart
-                self.chart_compiler.compile(
-                    presentation_id=presentation_id,
-                    page_id=page_id,
-                    spec=block.chart,
-                    position=slot,
-                    chart_key=slot_key,
-                )
+            elif slot_type == "text":
+                # Explicit slide-level override
+                content = slide.get(slot_key)
 
-                # Add chart title to text_map
-                if getattr(block, "chart_title", None):
-                    text_map[f"{slot_key}_title"] = block.chart_title
+                # Derived (chart titles)
+                if content is None and slot_key.endswith("_title"):
+                    chart_key = slot_key.replace("_title", "")
+                    block = slide["content"].get(chart_key)
+                    if block:
+                        content = block.chart_title
 
-        # -----------------------
-        # Render all text slots
-        # -----------------------
-        render_text_slots(
-            backend="gslides",
-            layout_spec=layout_spec,
-            text_map=text_map,
-            slides_service=self.slides,
-            presentation_id=presentation_id,
-            page_id=page_id,
-        )
+            else:
+                content = None
+
+            # -----------------------
+            # Render
+            # -----------------------
+            render_slot(
+                backend="gslides",
+                slot_key=slot_key,
+                slot=slot,
+                content=content,
+                slides_service=self.slides,
+                presentation_id=presentation_id,
+                page_id=page_id,
+                chart_compiler=self.chart_compiler,
+            )
 
     # =========================================================
     # BATCH HELPER
