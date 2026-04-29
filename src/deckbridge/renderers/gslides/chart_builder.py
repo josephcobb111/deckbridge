@@ -1,3 +1,4 @@
+from ...deck.blocks import ChartBlock
 from ...deck.specs import ChartSpec
 from .utils import inches_to_pixels
 
@@ -34,22 +35,23 @@ class SheetsChartBuilder:
 
         return requests
 
-    def apply_chart_style(self, sheet_id, chart_id, spec: ChartSpec, chart_theme: dict):
+    def apply_chart_style(self, sheet_id, chart_id, block: ChartBlock, chart_theme: dict):
 
         axis_theme = chart_theme.get("axis", {})
         font_size = axis_theme.get("font_size", 10)
 
-        api_spec = self._build_chart_spec(sheet_id, spec)
+        api_spec = self._build_chart_spec(sheet_id, block.chart)
+        api_spec["title"] = block.chart_title if chart_theme["chart_title"]["has_title"] else None
         api_spec["basicChart"]["axis"] = [
             {
-                "title": spec.x,
+                "title": block.chart.x,
                 "position": "BOTTOM_AXIS",
                 "format": {
                     "fontSize": font_size,
                 },
             },
             {
-                "title": spec.y,
+                "title": block.chart.y,
                 "position": "LEFT_AXIS",
                 "format": {
                     "fontSize": font_size,
@@ -78,6 +80,7 @@ class SheetsChartBuilder:
         chart_type = self._map_chart_type(spec.chart_type)
 
         return {
+            "title": None,
             "basicChart": {
                 "chartType": self._map_chart_type(spec.chart_type),
                 "legendPosition": "BOTTOM_LEGEND",

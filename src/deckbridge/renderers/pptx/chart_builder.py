@@ -15,13 +15,14 @@ class PPTXChartBuilder:
 
         return chart_type, chart_data
 
-    def apply_chart_style(self, chart, theme, layout_name):
+    def apply_chart_style(self, chart, theme, layout_name, spec):
         """
         Apply theme-driven styling to a chart object
         """
         chart_theme = resolve_chart_theme(theme, layout_name)
 
         self._single_series_bar_chart(chart)
+        self._set_chart_title(chart, chart_theme, spec)
         self._apply_axis_style(chart, chart_theme)
         self._apply_legend_style(chart, chart_theme)
 
@@ -50,6 +51,13 @@ class PPTXChartBuilder:
     def _single_series_bar_chart(self, chart):
         if chart.chart_type == self._map_chart_type("bar") and len(chart.plots[0].series) == 1:
             chart.plots[0].vary_by_categories = False
+
+    def _set_chart_title(self, chart, chart_theme, spec):
+        if chart_theme["chart_title"]["has_title"]:
+            chart.has_title = True
+            chart.chart_title.text_frame.text = spec.chart_title
+        else:
+            chart.has_title = False
 
     def _apply_axis_style(self, chart, chart_theme):
         axis_theme = chart_theme.get("axis", {})

@@ -41,4 +41,5 @@ class PPTXChartCompiler:
             chart,
             theme=ctx.theme,
             layout_name=ctx.layout_spec.name,
+            spec=block,
         )

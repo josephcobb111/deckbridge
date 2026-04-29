@@ -43,7 +43,7 @@ class GSlidesChartCompiler:
         requests = self.chart_builder.apply_chart_style(
             sheet_id,
             chart_id,
-            block.chart,
+            block,
             chart_theme,
         )
 
