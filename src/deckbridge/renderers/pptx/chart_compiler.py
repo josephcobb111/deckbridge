@@ -21,6 +21,7 @@ class PPTXChartCompiler:
         """
         chart_theme = self._resolve_chart_theme(theme, layout_name)
 
+        self._single_series_bar_chart(chart)
         self._apply_axis_style(chart, chart_theme)
         self._apply_legend_style(chart, chart_theme)
 
@@ -45,6 +46,10 @@ class PPTXChartCompiler:
             raise ValueError(f"Unsupported chart type: {chart_type}")
 
         return mapping[chart_type]
+
+    def _single_series_bar_chart(self, chart):
+        if chart.chart_type == self._map_chart_type("bar") and len(chart.plots[0].series) == 1:
+            chart.plots[0].vary_by_categories = False
 
     def _resolve_chart_theme(self, theme, layout_name):
         base = theme.get("chart", {}).get("default", {})
