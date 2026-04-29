@@ -16,23 +16,26 @@ THEME = {
     },
     "slots": {
         "deck_title": {
-            "font_size": 40,
+            "font_size": 32,
+            "font_color": "#7F7F7F",
             "bold": True,
-            "align": "center",
+            "italic": False,
+            "underline": False,
         },
         "deck_author": {
             "font_size": 18,
             "align": "center",
         },
         "slide_title": {
-            "font_size": 32,
+            "font_size": 20,
+            "font_color": "#7F7F7F",
             "bold": True,
-            "align": "center",
         },
         "chart_title": {
-            "font_size": 14,
-            "bold": True,
+            "font_size": 16,
             "align": "center",
+            "bold": True,
+            "underline": True,
         },
     },
 }
