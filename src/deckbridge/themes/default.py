@@ -24,7 +24,7 @@ THEME = {
         },
         "deck_author": {
             "font_size": 18,
-            "align": "center",
+            "align": "left",
         },
         "slide_title": {
             "font_size": 20,
