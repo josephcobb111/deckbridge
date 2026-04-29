@@ -1,24 +1,32 @@
 from pptx.enum.text import PP_ALIGN
 from pptx.util import Inches, Pt
 
+from deckbridge.renderers.common.style_resolver import resolve_text_style
 from deckbridge.renderers.gslides.utils import hex_to_slides_rgb, inches_to_emu
 from deckbridge.renderers.pptx.utils import hex_to_rgb255
 
+PPTX_ALIGN_MAP = {
+    "center": PP_ALIGN.CENTER,
+    "left": PP_ALIGN.LEFT,
+    "right": PP_ALIGN.RIGHT,
+    "justified": PP_ALIGN.JUSTIFY,
+}
+GSLIDES_ALIGN_MAP = {
+    "center": "CENTER",
+    "left": "START",
+    "right": "END",
+    "justified": "JUSTIFIED",
+}
 
-def resolve_text_content(slide, slot_key):
-    # Slide
-    content = slide.get(slot_key)
-    if content is not None:
-        return content
 
-    # Chart-derived
-    if slot_key.endswith("_title"):
-        chart_key = slot_key.replace("_title", "")
-        block = slide["content"].get(chart_key)
-        if block:
-            return block.chart_title
+def resolve_text_content(slide, slot_key, slot):
+    content_type = slot.get("content_type")
 
-    return None
+    if content_type == "chart_title":
+        block = slide["content"].get(slot["source"])
+        return block.chart_title if block else None
+
+    return slide.get(slot_key)
 
 
 def render_text_slot(
@@ -36,7 +44,7 @@ def render_text_slot(
         return
 
     if backend == "pptx":
-        _render_text_pptx(slide_obj, slot, text)
+        _render_text_pptx(slide_obj, slot_key, slot, text)
 
     elif backend == "gslides":
         _render_text_gslides(
@@ -52,7 +60,9 @@ def render_text_slot(
         raise ValueError(f"Unsupported backend: {backend}")
 
 
-def _render_text_pptx(slide, slot, text):
+def _render_text_pptx(slide, slot_key, slot, text):
+    style = resolve_text_style(slot_key, slot)
+
     textbox = slide.shapes.add_textbox(
         Inches(slot["x"]),
         Inches(slot["y"]),
@@ -66,24 +76,12 @@ def _render_text_pptx(slide, slot, text):
     p = tf.paragraphs[0]
     p.text = text
 
-    if slot.get("font_size"):
-        p.font.size = Pt(slot["font_size"])
-
-    align_map = {
-        "center": PP_ALIGN.CENTER,
-        "left": PP_ALIGN.LEFT,
-        "right": PP_ALIGN.RIGHT,
-        "justified": PP_ALIGN.JUSTIFY,
-    }
-    if slot.get("align"):
-        p.alignment = align_map[slot["align"]]
-
-    if slot.get("font_color"):
-        p.font.color.rgb = hex_to_rgb255(slot["font_color"])
-
-    p.font.bold = slot.get("bold", False)
-    p.font.italic = slot.get("italics", False)
-    p.font.underline = slot.get("underline", False)
+    p.font.size = Pt(style["font_size"])
+    p.alignment = PPTX_ALIGN_MAP[style["align"]]
+    p.font.color.rgb = hex_to_rgb255(style["font_color"])
+    p.font.bold = style["bold"]
+    p.font.italic = style["italic"]
+    p.font.underline = style["underline"]
 
 
 def _render_text_gslides(
@@ -94,6 +92,8 @@ def _render_text_gslides(
     slot,
     text,
 ):
+    style = resolve_text_style(slot_key, slot)
+
     object_id = f"{slot_key}_{page_id}"
 
     requests = []
@@ -132,53 +132,36 @@ def _render_text_gslides(
         }
     )
 
-    # Style
-    style_fields = []
-    style = {}
-
-    if slot.get("font_size"):
-        style["fontSize"] = {"magnitude": slot["font_size"], "unit": "PT"}
-        style_fields.append("fontSize")
-
-    if slot.get("font_color"):
-        style["foregroundColor"] = {"opaqueColor": {"rgbColor": hex_to_slides_rgb(slot["font_color"])}}
-        style_fields.append("foregroundColor")
-
-    style["bold"] = slot.get("bold", False)
-    style["italic"] = slot.get("italics", False)
-    style["underline"] = slot.get("underline", False)
-    style_fields.extend(["bold", "italic", "underline"])
+    api_style = {
+        "fontSize": {"magnitude": style["font_size"], "unit": "PT"},
+        "foregroundColor": {"opaqueColor": {"rgbColor": hex_to_slides_rgb(style["font_color"])}},
+        "bold": style["bold"],
+        "italic": style["italic"],
+        "underline": style["underline"],
+    }
 
     requests.append(
         {
             "updateTextStyle": {
                 "objectId": object_id,
                 "textRange": {"type": "ALL"},
-                "style": style,
-                "fields": ",".join(style_fields),
+                "style": api_style,
+                "fields": ",".join(api_style.keys()),
             }
         }
     )
 
     # Alignment
-    align_map = {
-        "center": "CENTER",
-        "left": "START",
-        "right": "END",
-        "justified": "JUSTIFIED",
-    }
-
-    if slot.get("align"):
-        requests.append(
-            {
-                "updateParagraphStyle": {
-                    "objectId": object_id,
-                    "textRange": {"type": "ALL"},
-                    "style": {"alignment": align_map[slot["align"]]},
-                    "fields": "alignment",
-                }
+    requests.append(
+        {
+            "updateParagraphStyle": {
+                "objectId": object_id,
+                "textRange": {"type": "ALL"},
+                "style": {"alignment": GSLIDES_ALIGN_MAP[style["align"]]},
+                "fields": "alignment",
             }
-        )
+        }
+    )
 
     slides_service.presentations().batchUpdate(
         presentationId=presentation_id,

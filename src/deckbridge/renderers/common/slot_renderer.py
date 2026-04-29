@@ -17,7 +17,7 @@ def render_slots(ctx, slide):
             _render_chart(ctx, slot, block, chart_key=slot_key)
 
         elif slot_type == "text":
-            content = resolve_text_content(slide, slot_key)
+            content = resolve_text_content(slide, slot_key, slot)
             _render_text(ctx, slot, content, slot_key)
 
 
