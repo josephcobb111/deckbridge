@@ -6,6 +6,8 @@ from typing import Optional
 class RenderContext:
     backend: str  # "pptx" | "gslides"
 
+    theme: dict
+
     # Shared
     layout_spec: Optional[object] = None
 

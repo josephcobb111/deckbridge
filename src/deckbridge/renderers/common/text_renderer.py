@@ -11,6 +11,7 @@ PPTX_ALIGN_MAP = {
     "right": PP_ALIGN.RIGHT,
     "justified": PP_ALIGN.JUSTIFY,
 }
+
 GSLIDES_ALIGN_MAP = {
     "center": "CENTER",
     "left": "START",

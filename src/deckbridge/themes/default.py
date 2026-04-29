@@ -10,10 +10,7 @@ DEFAULT_TEXT_STYLE = {
 
 
 THEME = {
-    "text": {
-        "font_family": "Arial",
-        "font_color": "#000000",
-    },
+    "text": {},
     "slots": {
         "deck_title": {
             "font_size": 32,
@@ -36,6 +33,26 @@ THEME = {
             "align": "center",
             "bold": True,
             "underline": True,
+        },
+    },
+    "chart": {
+        "default": {
+            "axis": {"font_size": 12},
+            "legend": {"position": "BOTTOM", "font_size": 10},
+        },
+        "layouts": {
+            "one_chart": {
+                "axis": {"font_size": 14},
+                "legend": {"font_size": 12},
+            },
+            "two_chart": {
+                "axis": {"font_size": 12},
+                "legend": {"font_size": 10},
+            },
+            "three_chart": {
+                "axis": {"font_size": 12},
+                "legend": {"font_size": 10},
+            },
         },
     },
 }

@@ -40,6 +40,14 @@ def _render_chart(ctx, slot, block, chart_key):
         except Exception:
             pass
 
+        chart = shape.chart
+
+        ctx.chart_compiler.apply_chart_style(
+            chart,
+            theme=ctx.theme,
+            layout_name=ctx.layout_spec.name,
+        )
+
     elif ctx.backend == "gslides":
         ctx.chart_compiler.compile(
             presentation_id=ctx.presentation_id,
