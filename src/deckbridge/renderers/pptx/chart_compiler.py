@@ -11,10 +11,7 @@ class PPTXChartCompiler:
     def __init__(self):
         self.builder = PPTXChartBuilder()
 
-    def render_chart(self, ctx, slot, block, chart_key):
-        if not block:
-            return
-
+    def compile(self, ctx, slot, block, chart_key):
         # -----------------------
         # Position
         # -----------------------

@@ -2,7 +2,7 @@ from pptx.chart.data import CategoryChartData
 from pptx.enum.chart import XL_CHART_TYPE, XL_LEGEND_POSITION
 from pptx.util import Inches, Pt
 
-from deckbridge.utils import deep_merge
+from deckbridge.renderers.common.style_resolver import resolve_chart_theme
 
 
 class PPTXChartBuilder:
@@ -19,7 +19,7 @@ class PPTXChartBuilder:
         """
         Apply theme-driven styling to a chart object
         """
-        chart_theme = self._resolve_chart_theme(theme, layout_name)
+        chart_theme = resolve_chart_theme(theme, layout_name)
 
         self._single_series_bar_chart(chart)
         self._apply_axis_style(chart, chart_theme)
@@ -50,12 +50,6 @@ class PPTXChartBuilder:
     def _single_series_bar_chart(self, chart):
         if chart.chart_type == self._map_chart_type("bar") and len(chart.plots[0].series) == 1:
             chart.plots[0].vary_by_categories = False
-
-    def _resolve_chart_theme(self, theme, layout_name):
-        base = theme.get("chart", {}).get("default", {})
-        layout_override = theme.get("chart", {}).get("layouts", {}).get(layout_name, {})
-
-        return deep_merge(base, layout_override)
 
     def _apply_axis_style(self, chart, chart_theme):
         axis_theme = chart_theme.get("axis", {})

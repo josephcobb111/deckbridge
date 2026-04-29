@@ -14,28 +14,18 @@ def render_slots(ctx, slide):
         # -----------------------
         if slot_type == "chart":
             block = slide["content"].get(slot_key)
-            _render_chart(ctx, slot, block, chart_key=slot_key)
+            _render_chart(ctx, slot, block, slot_key)
 
         elif slot_type == "text":
-            content = resolve_text_content(slide, slot_key, slot)
-            _render_text(ctx, slot, content, slot_key)
+            text = resolve_text_content(slide, slot_key, slot)
+            _render_text(ctx, slot, text, slot_key)
 
 
-def _render_chart(ctx, slot, block, chart_key):
+def _render_chart(ctx, slot, block, slot_key):
     if not block:
         return
 
-    if ctx.backend == "pptx":
-        ctx.chart_compiler.render_chart(ctx, slot, block, chart_key)
-
-    elif ctx.backend == "gslides":
-        ctx.chart_compiler.compile(
-            presentation_id=ctx.presentation_id,
-            page_id=ctx.page_id,
-            spec=block.chart,
-            position=slot,
-            chart_key=chart_key,
-        )
+    ctx.chart_compiler.compile(ctx, slot, block, slot_key)
 
 
 def _render_text(ctx, slot, text, slot_key):

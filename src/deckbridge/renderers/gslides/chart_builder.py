@@ -7,7 +7,10 @@ class SheetsChartBuilder:
         self.sheets = sheets_service
         self.spreadsheet_id = spreadsheet_id
 
-    def create_chart(self, sheet_id, spec: ChartSpec, position: dict):
+    def create_chart(self, sheet_id, spec: ChartSpec, position: dict, chart_theme: dict):
+
+        axis_theme = chart_theme.get("axis", {})
+        font_size = axis_theme.get("font_size", 10)
 
         requests = [
             {
@@ -18,7 +21,16 @@ class SheetsChartBuilder:
                                 "chartType": self._map_chart_type(spec.chart_type),
                                 "legendPosition": "BOTTOM_LEGEND",
                                 "headerCount": 1,
-                                "axis": [{"position": "BOTTOM_AXIS", "title": spec.x}, {"position": "LEFT_AXIS", "title": spec.y}],
+                                "axis": [
+                                    {
+                                        "position": "BOTTOM_AXIS",
+                                        "title": spec.x,
+                                    },
+                                    {
+                                        "position": "LEFT_AXIS",
+                                        "title": spec.y,
+                                    },
+                                ],
                                 "domains": [
                                     {
                                         "domain": {
@@ -68,7 +80,6 @@ class SheetsChartBuilder:
                                 "heightPixels": inches_to_pixels(position["h"]),
                             }
                         },
-                        # },
                     }
                 }
             }
@@ -77,4 +88,7 @@ class SheetsChartBuilder:
         return requests
 
     def _map_chart_type(self, chart_type):
-        return {"line": "LINE", "bar": "COLUMN"}[chart_type]
+        return {
+            "line": "LINE",
+            "bar": "COLUMN",
+        }[chart_type]
