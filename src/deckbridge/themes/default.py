@@ -38,7 +38,7 @@ THEME = {
     "chart": {
         "default": {
             "axis": {"font_size": 12},
-            "legend": {"visible": True, "position": "BOTTOM", "font_size": 10},
+            "legend": {"visible": True, "position": "BOTTOM", "font_size": 14},
             "chart_title": {"has_title": False},
         },
         "layouts": {
