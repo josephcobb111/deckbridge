@@ -63,10 +63,13 @@ class PPTXChartCompiler:
                 axis.tick_labels.font.size = Pt(axis_theme["font_size"])
 
     def _apply_legend_style(self, chart, chart_theme):
-        if not chart.has_legend:
+        legend_theme = chart_theme.get("legend", {})
+
+        if not legend_theme["visible"]:
             return
 
-        legend_theme = chart_theme.get("legend", {})
+        chart.has_legend = legend_theme["visible"]
+        chart.legend.include_in_layout = False
 
         if "position" in legend_theme:
             position_map = {
