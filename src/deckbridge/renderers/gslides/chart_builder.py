@@ -37,27 +37,35 @@ class SheetsChartBuilder:
 
     def apply_chart_style(self, sheet_id, chart_id, block: ChartBlock, chart_theme: dict):
 
-        axis_theme = chart_theme.get("axis", {})
-        font_size = axis_theme.get("font_size", 10)
-
+        # chart title
         api_spec = self._build_chart_spec(sheet_id, block.chart)
         api_spec["title"] = block.chart_title if chart_theme["chart_title"]["has_title"] else None
+
+        # axes
+        axis_theme = chart_theme.get("axis", {})
         api_spec["basicChart"]["axis"] = [
             {
                 "title": block.chart.x,
                 "position": "BOTTOM_AXIS",
                 "format": {
-                    "fontSize": font_size,
+                    "fontSize": axis_theme["font_size"],
                 },
             },
             {
                 "title": block.chart.y,
                 "position": "LEFT_AXIS",
                 "format": {
-                    "fontSize": font_size,
+                    "fontSize": axis_theme["font_size"],
                 },
             },
         ]
+
+        # legend
+        legend_theme = chart_theme.get("legend", {})
+        if not legend_theme["visible"]:
+            api_spec["basicChart"]["legendPosition"] = "NO_LEGEND"
+        else:
+            api_spec["basicChart"]["legendPosition"] = legend_theme["position"] + "_LEGEND"
 
         requests = [
             {

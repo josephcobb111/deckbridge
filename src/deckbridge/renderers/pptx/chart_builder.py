@@ -79,10 +79,10 @@ class PPTXChartBuilder:
     def _apply_legend_style(self, chart, chart_theme):
         legend_theme = chart_theme.get("legend", {})
 
+        chart.has_legend = legend_theme["visible"]
         if not legend_theme["visible"]:
             return
 
-        chart.has_legend = legend_theme["visible"]
         chart.legend.include_in_layout = False
 
         if "position" in legend_theme:
