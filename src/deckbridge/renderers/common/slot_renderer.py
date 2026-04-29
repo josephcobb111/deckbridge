@@ -26,27 +26,7 @@ def _render_chart(ctx, slot, block, chart_key):
         return
 
     if ctx.backend == "pptx":
-        x = Inches(slot["x"])
-        y = Inches(slot["y"])
-        cx = Inches(slot["w"])
-        cy = Inches(slot["h"])
-
-        chart_type, chart_data = ctx.chart_compiler.compile(block.chart)
-
-        shape = ctx.slide_obj.shapes.add_chart(chart_type, x, y, cx, cy, chart_data)
-
-        try:
-            shape.name = chart_key
-        except Exception:
-            pass
-
-        chart = shape.chart
-
-        ctx.chart_compiler.apply_chart_style(
-            chart,
-            theme=ctx.theme,
-            layout_name=ctx.layout_spec.name,
-        )
+        ctx.chart_compiler.render_chart(ctx, slot, block, chart_key)
 
     elif ctx.backend == "gslides":
         ctx.chart_compiler.compile(
