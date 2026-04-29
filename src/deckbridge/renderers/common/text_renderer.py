@@ -19,20 +19,14 @@ GSLIDES_ALIGN_MAP = {
 }
 
 
-def resolve_text_content(slide, slot_key):
-    # Slide
-    content = slide.get(slot_key)
-    if content is not None:
-        return content
+def resolve_text_content(slide, slot_key, slot):
+    content_type = slot.get("content_type")
 
-    # Chart-derived
-    if slot_key.endswith("_title"):
-        chart_key = slot_key.replace("_title", "")
-        block = slide["content"].get(chart_key)
-        if block:
-            return block.chart_title
+    if content_type == "chart_title":
+        block = slide["content"].get(slot["source"])
+        return block.chart_title if block else None
 
-    return None
+    return slide.get(slot_key)
 
 
 def render_text_slot(

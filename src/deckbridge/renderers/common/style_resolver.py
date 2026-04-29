@@ -7,12 +7,7 @@ def resolve_text_style(slot_key, slot):
     DEFAULT → THEME (global) → THEME (slot) → slot
     """
 
-    # Match slot group (e.g. "chart_1_title" → "chart_title")
-    slot_group = None
-    if slot_key.endswith("_title") and "chart_" in slot_key:
-        slot_group = "chart_title"
-    else:
-        slot_group = slot_key
+    slot_group = slot.get("style_key", slot_key)
 
     style = {
         **DEFAULT_TEXT_STYLE,
