@@ -26,19 +26,31 @@ class GSlidesChartCompiler:
         # Write data
         sheet_name, sheet_id = self.writer.write_dataframe(block.chart.data, sheet_name=sheet_name)
 
-        chart_theme = resolve_chart_theme(ctx.theme, ctx.layout_spec.name)
-
         # Create chart
         requests = self.chart_builder.create_chart(
             sheet_id,
             block.chart,
             slot,
-            chart_theme,
         )
 
-        response = self.sheets.spreadsheets().batchUpdate(spreadsheetId=self.spreadsheet_id, body={"requests": requests}).execute()
+        response = self._batch_update(requests)
 
         chart_id = response["replies"][0]["addChart"]["chart"]["chartId"]
 
+        # Style chart
+        chart_theme = resolve_chart_theme(ctx.theme, ctx.layout_spec.name)
+
+        requests = self.chart_builder.apply_chart_style(
+            sheet_id,
+            chart_id,
+            block.chart,
+            chart_theme,
+        )
+
+        response = self._batch_update(requests)
+
         # Embed chart
         self.embedder.embed_chart(ctx.presentation_id, self.spreadsheet_id, chart_id, ctx.page_id, slot)
+
+    def _batch_update(self, requests):
+        return self.sheets.spreadsheets().batchUpdate(spreadsheetId=self.spreadsheet_id, body={"requests": requests}).execute()
