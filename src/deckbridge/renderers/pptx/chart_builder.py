@@ -67,6 +67,13 @@ class PPTXChartBuilder:
             if "font_size" in axis_theme:
                 axis.tick_labels.font.size = Pt(axis_theme["font_size"])
 
+        if hasattr(chart, "category_axis"):
+            axis = chart.category_axis
+
+            # Font size
+            if "font_size" in axis_theme:
+                axis.tick_labels.font.size = Pt(axis_theme["font_size"])
+
     def _apply_legend_style(self, chart, chart_theme):
         legend_theme = chart_theme.get("legend", {})
 
