@@ -1,5 +1,5 @@
 from pptx.chart.data import CategoryChartData
-from pptx.enum.chart import XL_CHART_TYPE, XL_LEGEND_POSITION
+from pptx.enum.chart import XL_CHART_TYPE, XL_LEGEND_POSITION, XL_TICK_LABEL_POSITION
 from pptx.util import Inches, Pt
 
 from deckbridge.renderers.common.style_resolver import resolve_chart_theme
@@ -15,16 +15,18 @@ class PPTXChartBuilder:
 
         return chart_type, chart_data
 
-    def apply_chart_style(self, chart, theme, layout_name, spec):
+    def apply_chart_style(self, chart, theme, layout_name, block):
         """
         Apply theme-driven styling to a chart object
         """
         chart_theme = resolve_chart_theme(theme, layout_name)
 
         self._single_series_bar_chart(chart)
-        self._set_chart_title(chart, chart_theme, spec)
+        self._set_chart_title(chart, chart_theme, block)
         self._apply_axis_style(chart, chart_theme)
         self._apply_legend_style(chart, chart_theme)
+        self._turn_gridlines_off(chart)
+        self._category_tick_label_low(chart)
 
     def _build_chart_data(self, spec):
         chart_data = CategoryChartData()
@@ -52,10 +54,15 @@ class PPTXChartBuilder:
         if chart.chart_type == self._map_chart_type("bar") and len(chart.plots[0].series) == 1:
             chart.plots[0].vary_by_categories = False
 
-    def _set_chart_title(self, chart, chart_theme, spec):
+    def _set_chart_title(self, chart, chart_theme, block):
         if chart_theme["chart_title"]["has_title"]:
             chart.has_title = True
-            chart.chart_title.text_frame.text = spec.chart_title
+            chart_title = chart.chart_title.text_frame.paragraphs[0]
+            chart_title.text = block.chart_title
+            chart_title.font.size = Pt(chart_theme["chart_title"]["font_size"])
+            chart_title.font.bold = chart_theme["chart_title"]["bold"]
+            chart_title.font.italic = chart_theme["chart_title"]["italic"]
+            chart_title.font.underline = chart_theme["chart_title"]["underline"]
         else:
             chart.has_title = False
 
@@ -97,3 +104,9 @@ class PPTXChartBuilder:
 
         if "font_size" in legend_theme:
             chart.legend.font.size = Pt(legend_theme["font_size"])
+
+    def _turn_gridlines_off(self, chart):
+        chart.value_axis.has_major_gridlines = False
+
+    def _category_tick_label_low(self, chart):
+        chart.category_axis.tick_label_position = XL_TICK_LABEL_POSITION.LOW

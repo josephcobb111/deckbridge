@@ -3,14 +3,7 @@ from pptx.util import Inches, Pt
 
 from deckbridge.renderers.common.style_resolver import resolve_text_style
 from deckbridge.renderers.gslides.utils import hex_to_slides_rgb, inches_to_emu
-from deckbridge.renderers.pptx.utils import hex_to_rgb255
-
-PPTX_ALIGN_MAP = {
-    "center": PP_ALIGN.CENTER,
-    "left": PP_ALIGN.LEFT,
-    "right": PP_ALIGN.RIGHT,
-    "justified": PP_ALIGN.JUSTIFY,
-}
+from deckbridge.renderers.pptx.utils import PPTX_ALIGN_MAP, hex_to_rgb255
 
 GSLIDES_ALIGN_MAP = {
     "center": "CENTER",
