@@ -50,6 +50,15 @@ class SheetsChartBuilder:
             }
             api_spec["titleTextPosition"] = {"horizontalAlignment": GSLIDES_ALIGN_MAP[chart_theme["chart_title"]["align"]]}
 
+            if chart_theme["chart_subtitle"]["has_title"]:
+                api_spec["subtitle"] = block.chart_subtitle
+                api_spec["subtitleTextFormat"] = {
+                    "fontSize": chart_theme["chart_subtitle"]["font_size"],
+                    "bold": chart_theme["chart_subtitle"]["bold"],
+                    "italic": chart_theme["chart_subtitle"]["italic"],
+                }
+                api_spec["subtitleTextPosition"] = {"horizontalAlignment": GSLIDES_ALIGN_MAP[chart_theme["chart_subtitle"]["align"]]}
+
         # axes
         value_axis_theme = chart_theme.get("value_axis", {})
         category_axis_theme = chart_theme.get("category_axis", {})

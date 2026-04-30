@@ -34,6 +34,13 @@ THEME = {
             "bold": True,
             "underline": True,
         },
+        "chart_subtitle": {
+            "font_size": 14,
+            "align": "center",
+            "bold": False,
+            "italic": True,
+            "underline": False,
+        },
     },
     "chart": {
         "default": {
@@ -45,13 +52,20 @@ THEME = {
                 "underline": True,
                 "align": "center",
             },
+            "chart_subtitle": {
+                "has_title": False,
+                "font_size": 12,
+                "bold": False,
+                "italic": True,
+                "underline": False,
+                "align": "center",
+            },
             "value_axis": {
                 "has_title": True,
                 "font_size": 14,
                 "bold": True,
                 "italic": False,
                 "underline": False,
-                "align": "center",
             },
             "category_axis": {
                 "has_title": True,
@@ -59,7 +73,6 @@ THEME = {
                 "bold": True,
                 "italic": False,
                 "underline": False,
-                "align": "center",
             },
             "legend": {
                 "visible": True,

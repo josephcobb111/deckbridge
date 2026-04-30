@@ -11,7 +11,31 @@ def resolve_text_content(slide, slot_key, slot):
 
     if content_type == "chart_title":
         block = slide["content"].get(slot["source"])
-        return block.chart_title if block else None
+        if not block:
+            return None
+
+        title = block.chart_title
+        subtitle = getattr(block, "chart_subtitle", None)
+
+        lines = []
+
+        if title:
+            lines.append(
+                {
+                    "text": title + ("\n" if subtitle else ""),
+                    "style_key": "chart_title",
+                }
+            )
+
+        if subtitle:
+            lines.append(
+                {
+                    "text": subtitle,
+                    "style_key": "chart_subtitle",
+                }
+            )
+
+        return lines if lines else None
 
     return slide.get(slot_key)
 
@@ -48,8 +72,6 @@ def render_text_slot(
 
 
 def _render_text_pptx(slide, slot_key, slot, text):
-    style = resolve_text_style(slot_key, slot)
-
     textbox = slide.shapes.add_textbox(
         Inches(slot["x"]),
         Inches(slot["y"]),
@@ -61,14 +83,24 @@ def _render_text_pptx(slide, slot_key, slot, text):
     tf.clear()
 
     p = tf.paragraphs[0]
-    p.text = text
 
-    p.font.size = Pt(style["font_size"])
-    p.alignment = PPTX_ALIGN_MAP[style["align"]]
-    p.font.color.rgb = hex_to_rgb255(style["font_color"])
-    p.font.bold = style["bold"]
-    p.font.italic = style["italic"]
-    p.font.underline = style["underline"]
+    lines = text if isinstance(text, list) else [{"text": text, "style_key": slot_key}]
+
+    for line in lines:
+        run = p.add_run()
+        run.text = line["text"]
+
+        style = resolve_text_style(line["style_key"], {"style_key": line["style_key"]})
+
+        run.font.size = Pt(style["font_size"])
+        run.font.bold = style["bold"]
+        run.font.italic = style["italic"]
+        run.font.underline = style["underline"]
+        run.font.color.rgb = hex_to_rgb255(style["font_color"])
+
+    # alignment applies at paragraph level
+    base_style = resolve_text_style(slot_key, slot)
+    p.alignment = PPTX_ALIGN_MAP[base_style["align"]]
 
 
 def _render_text_gslides(
@@ -79,13 +111,32 @@ def _render_text_gslides(
     slot,
     text,
 ):
-    style = resolve_text_style(slot_key, slot)
-
     object_id = f"{slot_key}_{page_id}"
 
     requests = []
 
+    lines = text if isinstance(text, list) else [{"text": text, "style_key": slot_key}]
+
+    # -----------------------
+    # Build full text + ranges
+    # -----------------------
+    full_text = ""
+    ranges = []
+
+    cursor = 0
+
+    for line in lines:
+        line_text = line["text"]
+        start = cursor
+        end = cursor + len(line_text)
+
+        ranges.append((start, end, line["style_key"]))
+        full_text += line_text
+        cursor = end
+
+    # -----------------------
     # Create box
+    # -----------------------
     requests.append(
         {
             "createShape": {
@@ -109,42 +160,58 @@ def _render_text_gslides(
         }
     )
 
-    # Insert text
+    # -----------------------
+    # Insert full text
+    # -----------------------
     requests.append(
         {
             "insertText": {
                 "objectId": object_id,
-                "text": text,
+                "text": full_text,
             }
         }
     )
 
-    api_style = {
-        "fontSize": {"magnitude": style["font_size"], "unit": "PT"},
-        "foregroundColor": {"opaqueColor": {"rgbColor": hex_to_slides_rgb(style["font_color"])}},
-        "bold": style["bold"],
-        "italic": style["italic"],
-        "underline": style["underline"],
-    }
+    # -----------------------
+    # Apply styles per range
+    # -----------------------
+    for start, end, style_key in ranges:
+        style = resolve_text_style(style_key, {"style_key": style_key})
 
-    requests.append(
-        {
-            "updateTextStyle": {
-                "objectId": object_id,
-                "textRange": {"type": "ALL"},
-                "style": api_style,
-                "fields": ",".join(api_style.keys()),
-            }
+        api_style = {
+            "fontSize": {"magnitude": style["font_size"], "unit": "PT"},
+            "foregroundColor": {"opaqueColor": {"rgbColor": hex_to_slides_rgb(style["font_color"])}},
+            "bold": style["bold"],
+            "italic": style["italic"],
+            "underline": style["underline"],
         }
-    )
 
-    # Alignment
+        requests.append(
+            {
+                "updateTextStyle": {
+                    "objectId": object_id,
+                    "textRange": {
+                        "type": "FIXED_RANGE",
+                        "startIndex": start,
+                        "endIndex": end,
+                    },
+                    "style": api_style,
+                    "fields": ",".join(api_style.keys()),
+                }
+            }
+        )
+
+    # -----------------------
+    # Alignment (whole paragraph)
+    # -----------------------
+    base_style = resolve_text_style(slot_key, slot)
+
     requests.append(
         {
             "updateParagraphStyle": {
                 "objectId": object_id,
                 "textRange": {"type": "ALL"},
-                "style": {"alignment": GSLIDES_ALIGN_MAP[style["align"]]},
+                "style": {"alignment": GSLIDES_ALIGN_MAP[base_style["align"]]},
                 "fields": "alignment",
             }
         }

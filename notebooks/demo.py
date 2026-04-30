@@ -53,6 +53,7 @@ def main():
             "chart_1": ChartBlock(
                 chart=chart1,
                 chart_title="Revenue Trend (Line) - Chart Title",
+                chart_subtitle="2024 Actuals",
                 value_axis_title="Month",
                 category_axis_title="Revenue",
             ),

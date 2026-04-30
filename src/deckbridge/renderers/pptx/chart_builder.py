@@ -23,6 +23,7 @@ class PPTXChartBuilder:
 
         self._single_series_bar_chart(chart)
         self._set_chart_title(chart, chart_theme, block)
+        self._set_chart_subtitle(chart, chart_theme, block)
         self._set_axis_title(chart, chart_theme, "value_axis", block.value_axis_title)
         self._set_axis_title(chart, chart_theme, "category_axis", block.category_axis_title)
         self._apply_legend_style(chart, chart_theme)
@@ -66,6 +67,17 @@ class PPTXChartBuilder:
             chart_title.font.underline = chart_theme["chart_title"]["underline"]
         else:
             chart.has_title = False
+
+    def _set_chart_subtitle(self, chart, chart_theme, block):
+        if chart_theme["chart_title"]["has_title"] and chart_theme["chart_subtitle"]["has_title"]:
+            chart.chart_title.text_frame.add_paragraph()
+            chart_subtitle = chart.chart_title.text_frame.paragraphs[1]
+            chart_subtitle.text = block.chart_subtitle
+            for run in chart_subtitle.runs:
+                run.font.size = Pt(chart_theme["chart_subtitle"]["font_size"])
+                run.font.bold = chart_theme["chart_subtitle"]["bold"]
+                run.font.italic = chart_theme["chart_subtitle"]["italic"]
+                run.font.underline = chart_theme["chart_subtitle"]["underline"]
 
     def _set_axis_title(self, chart, chart_theme, axis, axis_title):
         axis_theme = chart_theme.get(axis, {})
