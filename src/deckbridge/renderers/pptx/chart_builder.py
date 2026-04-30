@@ -23,7 +23,8 @@ class PPTXChartBuilder:
 
         self._single_series_bar_chart(chart)
         self._set_chart_title(chart, chart_theme, block)
-        self._apply_axis_style(chart, chart_theme)
+        self._set_axis_title(chart, chart_theme, "value_axis", block.value_axis_title)
+        self._set_axis_title(chart, chart_theme, "category_axis", block.category_axis_title)
         self._apply_legend_style(chart, chart_theme)
         self._turn_gridlines_off(chart)
         self._category_tick_label_low(chart)
@@ -66,22 +67,25 @@ class PPTXChartBuilder:
         else:
             chart.has_title = False
 
-    def _apply_axis_style(self, chart, chart_theme):
-        axis_theme = chart_theme.get("axis", {})
+    def _set_axis_title(self, chart, chart_theme, axis, axis_title):
+        axis_theme = chart_theme.get(axis, {})
 
-        if hasattr(chart, "value_axis"):
-            axis = chart.value_axis
+        if axis == "value_axis":
+            axis_obj = chart.value_axis
+        elif axis == "category_axis":
+            axis_obj = chart.category_axis
 
-            # Font size
-            if "font_size" in axis_theme:
-                axis.tick_labels.font.size = Pt(axis_theme["font_size"])
+        axis_obj.has_title = axis_theme["has_title"]
+        if axis_theme["has_title"] and axis_title:
+            axis_obj.axis_title.text_frame.text = axis_title
 
-        if hasattr(chart, "category_axis"):
-            axis = chart.category_axis
+            for paragraph in axis_obj.axis_title.text_frame.paragraphs:
+                paragraph.font.size = Pt(axis_theme["font_size"])
+                paragraph.font.bold = axis_theme["bold"]
+                paragraph.font.italic = axis_theme["italic"]
+                paragraph.font.underline = axis_theme["underline"]
 
-            # Font size
-            if "font_size" in axis_theme:
-                axis.tick_labels.font.size = Pt(axis_theme["font_size"])
+        axis_obj.tick_labels.font.size = Pt(axis_theme["font_size"])
 
     def _apply_legend_style(self, chart, chart_theme):
         legend_theme = chart_theme.get("legend", {})

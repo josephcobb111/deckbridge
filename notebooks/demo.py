@@ -51,7 +51,10 @@ def main():
         slide_title="Revenue Trend - Slide Title",
         content={
             "chart_1": ChartBlock(
-                chart=chart1, chart_title="Revenue Trend (Line) - Chart Title"
+                chart=chart1,
+                chart_title="Revenue Trend (Line) - Chart Title",
+                value_axis_title="Month",
+                category_axis_title="Revenue",
             ),
         },
     )
@@ -60,10 +63,16 @@ def main():
         slide_title="Revenue Trend - Slide Title",
         content={
             "chart_1": ChartBlock(
-                chart=chart1, chart_title="Revenue Trend (Line) - Chart Title"
+                chart=chart1,
+                chart_title="Revenue Trend (Line) - Chart Title",
+                value_axis_title="Month",
+                category_axis_title="Revenue",
             ),
             "chart_2": ChartBlock(
-                chart=chart2, chart_title="Revenue (Bar) - Chart Title"
+                chart=chart2,
+                chart_title="Revenue (Bar) - Chart Title",
+                value_axis_title="Month",
+                category_axis_title="Revenue",
             ),
         },
     )
@@ -72,13 +81,22 @@ def main():
         slide_title="Revenue Trend - Slide Title",
         content={
             "chart_1": ChartBlock(
-                chart=chart1, chart_title="Revenue Trend (Line) - Chart Title"
+                chart=chart1,
+                chart_title="Revenue Trend (Line) - Chart Title",
+                value_axis_title="Month",
+                category_axis_title="Revenue",
             ),
             "chart_2": ChartBlock(
-                chart=chart2, chart_title="Revenue (Bar) - Chart Title"
+                chart=chart2,
+                chart_title="Revenue (Bar) - Chart Title",
+                value_axis_title="Month",
+                category_axis_title="Revenue",
             ),
             "chart_3": ChartBlock(
-                chart=chart3, chart_title="Revenue Trend (Line) - Chart Title"
+                chart=chart3,
+                chart_title="Revenue Trend (Line) - Chart Title",
+                value_axis_title="Month",
+                category_axis_title="Revenue",
             ),
         },
     )

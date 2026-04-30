@@ -41,29 +41,35 @@ class SheetsChartBuilder:
 
         # chart title
         api_spec = self._build_chart_spec(sheet_id, block.chart)
-        api_spec["title"] = block.chart_title if chart_theme["chart_title"]["has_title"] else None
-        api_spec["titleTextFormat"] = {
-            "fontSize": chart_theme["chart_title"]["font_size"],
-            "bold": chart_theme["chart_title"]["bold"],
-            "italic": chart_theme["chart_title"]["italic"],
-        }
-        api_spec["titleTextPosition"] = {"horizontalAlignment": GSLIDES_ALIGN_MAP[chart_theme["chart_title"]["align"]]}
+        if chart_theme["chart_title"]["has_title"]:
+            api_spec["title"] = block.chart_title
+            api_spec["titleTextFormat"] = {
+                "fontSize": chart_theme["chart_title"]["font_size"],
+                "bold": chart_theme["chart_title"]["bold"],
+                "italic": chart_theme["chart_title"]["italic"],
+            }
+            api_spec["titleTextPosition"] = {"horizontalAlignment": GSLIDES_ALIGN_MAP[chart_theme["chart_title"]["align"]]}
 
         # axes
-        axis_theme = chart_theme.get("axis", {})
+        value_axis_theme = chart_theme.get("value_axis", {})
+        category_axis_theme = chart_theme.get("category_axis", {})
         api_spec["basicChart"]["axis"] = [
             {
-                "title": block.chart.x,
-                "position": "BOTTOM_AXIS",
+                "title": block.value_axis_title,
+                "position": "LEFT_AXIS",
                 "format": {
-                    "fontSize": axis_theme["font_size"],
+                    "fontSize": value_axis_theme["font_size"],
+                    "bold": value_axis_theme["bold"],
+                    "italic": value_axis_theme["italic"],
                 },
             },
             {
-                "title": block.chart.y,
-                "position": "LEFT_AXIS",
+                "title": block.category_axis_title,
+                "position": "BOTTOM_AXIS",
                 "format": {
-                    "fontSize": axis_theme["font_size"],
+                    "fontSize": category_axis_theme["font_size"],
+                    "bold": category_axis_theme["bold"],
+                    "italic": category_axis_theme["italic"],
                 },
             },
         ]

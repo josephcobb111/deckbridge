@@ -37,30 +37,40 @@ THEME = {
     },
     "chart": {
         "default": {
-            "axis": {"font_size": 12},
-            "legend": {"visible": True, "position": "BOTTOM", "font_size": 14},
             "chart_title": {
-                "has_title": True,
+                "has_title": False,
                 "font_size": 14,
                 "bold": True,
                 "italic": False,
                 "underline": True,
                 "align": "center",
             },
+            "value_axis": {
+                "has_title": True,
+                "font_size": 14,
+                "bold": True,
+                "italic": False,
+                "underline": False,
+                "align": "center",
+            },
+            "category_axis": {
+                "has_title": True,
+                "font_size": 14,
+                "bold": True,
+                "italic": False,
+                "underline": False,
+                "align": "center",
+            },
+            "legend": {
+                "visible": True,
+                "position": "BOTTOM",
+                "font_size": 14,
+            },
         },
         "layouts": {
-            "one_chart": {
-                "axis": {"font_size": 14},
-                "legend": {"font_size": 12},
-            },
-            "two_chart": {
-                "axis": {"font_size": 12},
-                "legend": {"font_size": 10},
-            },
-            "three_chart": {
-                "axis": {"font_size": 12},
-                "legend": {"font_size": 10},
-            },
+            "one_chart": {},
+            "two_chart": {},
+            "three_chart": {},
         },
     },
 }
