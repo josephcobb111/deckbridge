@@ -58,6 +58,7 @@ def main():
                 category_axis_title="Revenue",
             ),
         },
+        notes="Notes: Adjusted for recent acquisitions.",
     )
 
     deck.add_slide(

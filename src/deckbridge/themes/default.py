@@ -41,6 +41,9 @@ THEME = {
             "italic": True,
             "underline": False,
         },
+        "notes": {
+            "font_size": 10,
+        },
     },
     "chart": {
         "default": {
