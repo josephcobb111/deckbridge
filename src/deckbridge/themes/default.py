@@ -45,6 +45,7 @@ THEME = {
                 "bold": True,
                 "italic": False,
                 "underline": True,
+                "align": "center",
             },
         },
         "layouts": {

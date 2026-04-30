@@ -1,3 +1,5 @@
+from deckbridge.renderers.gslides.utils import GSLIDES_ALIGN_MAP
+
 from ...deck.blocks import ChartBlock
 from ...deck.specs import ChartSpec
 from .utils import inches_to_pixels
@@ -40,6 +42,12 @@ class SheetsChartBuilder:
         # chart title
         api_spec = self._build_chart_spec(sheet_id, block.chart)
         api_spec["title"] = block.chart_title if chart_theme["chart_title"]["has_title"] else None
+        api_spec["titleTextFormat"] = {
+            "fontSize": chart_theme["chart_title"]["font_size"],
+            "bold": chart_theme["chart_title"]["bold"],
+            "italic": chart_theme["chart_title"]["italic"],
+        }
+        api_spec["titleTextPosition"] = {"horizontalAlignment": GSLIDES_ALIGN_MAP[chart_theme["chart_title"]["align"]]}
 
         # axes
         axis_theme = chart_theme.get("axis", {})
