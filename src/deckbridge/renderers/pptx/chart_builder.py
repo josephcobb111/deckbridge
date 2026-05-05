@@ -29,6 +29,7 @@ class PPTXChartBuilder:
         self._apply_legend_style(chart, chart_theme)
         self._turn_gridlines_off(chart)
         self._category_tick_label_low(chart)
+        self._apply_axis_style(chart, chart_theme, block)
 
     def _build_chart_data(self, spec):
         chart_data = CategoryChartData()
@@ -126,3 +127,15 @@ class PPTXChartBuilder:
 
     def _category_tick_label_low(self, chart):
         chart.category_axis.tick_label_position = XL_TICK_LABEL_POSITION.LOW
+
+    def _apply_axis_style(self, chart, chart_theme, block):
+        spec = block.chart
+        axis = chart.value_axis
+
+        if spec.value_axis_range:
+            axis_min = spec.value_axis_range[0]
+            axis_max = spec.value_axis_range[1]
+            axis.minimum_scale = axis_min
+            axis.maximum_scale = axis_max
+
+            chart.value_axis_major_unit = (axis_max - axis_min) / 4

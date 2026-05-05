@@ -62,25 +62,33 @@ class SheetsChartBuilder:
         # axes
         value_axis_theme = chart_theme.get("value_axis", {})
         category_axis_theme = chart_theme.get("category_axis", {})
+
+        value_axis = {
+            "title": block.value_axis_title,
+            "position": "LEFT_AXIS",
+            "format": {
+                "fontSize": value_axis_theme["font_size"],
+                "bold": value_axis_theme["bold"],
+                "italic": value_axis_theme["italic"],
+            },
+        }
+        if block.chart.value_axis_range:
+            value_axis["viewWindowOptions"] = {
+                "viewWindowMin": block.chart.value_axis_range[0],
+                "viewWindowMax": block.chart.value_axis_range[1],
+            }
+        category_axis = {
+            "title": block.category_axis_title,
+            "position": "BOTTOM_AXIS",
+            "format": {
+                "fontSize": category_axis_theme["font_size"],
+                "bold": category_axis_theme["bold"],
+                "italic": category_axis_theme["italic"],
+            },
+        }
         api_spec["basicChart"]["axis"] = [
-            {
-                "title": block.value_axis_title,
-                "position": "LEFT_AXIS",
-                "format": {
-                    "fontSize": value_axis_theme["font_size"],
-                    "bold": value_axis_theme["bold"],
-                    "italic": value_axis_theme["italic"],
-                },
-            },
-            {
-                "title": block.category_axis_title,
-                "position": "BOTTOM_AXIS",
-                "format": {
-                    "fontSize": category_axis_theme["font_size"],
-                    "bold": category_axis_theme["bold"],
-                    "italic": category_axis_theme["italic"],
-                },
-            },
+            value_axis,
+            category_axis,
         ]
 
         # legend
