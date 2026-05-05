@@ -24,7 +24,10 @@ class GSlidesChartCompiler:
         sheet_name = f"{slot_key}_{uuid.uuid4().hex[:4]}"
 
         # Write data
-        sheet_name, sheet_id = self.writer.write_dataframe(block.chart.data, sheet_name=sheet_name)
+        value_axis_tick_format = block.chart.value_axis_tick_format or None
+        sheet_name, sheet_id = self.writer.write_dataframe(
+            block.chart.data, sheet_name=sheet_name, value_axis_tick_format=value_axis_tick_format
+        )
 
         # Create chart
         requests = self.chart_builder.create_chart(

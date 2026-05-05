@@ -139,3 +139,6 @@ class PPTXChartBuilder:
             axis.maximum_scale = axis_max
 
             chart.value_axis_major_unit = (axis_max - axis_min) / 4
+
+        if spec.value_axis_tick_format:
+            chart.value_axis.tick_labels.number_format = spec.value_axis_tick_format

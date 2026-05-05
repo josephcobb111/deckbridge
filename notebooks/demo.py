@@ -31,13 +31,12 @@ def main():
         data=df,
         x="month",
         y="revenue",
+        value_axis_range=(0, 100),
+        value_axis_tick_format="$0.0",
     )
 
     chart2 = ChartSpec(
-        chart_type="bar",
-        data=df,
-        x="month",
-        y="revenue",
+        chart_type="bar", data=df, x="month", y="revenue", value_axis_tick_format="0.0%"
     )
 
     chart3 = ChartSpec(
