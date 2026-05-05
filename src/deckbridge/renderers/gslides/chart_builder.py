@@ -98,6 +98,20 @@ class SheetsChartBuilder:
         else:
             api_spec["basicChart"]["legendPosition"] = legend_theme["position"] + "_LEGEND"
 
+        # data labels
+        if block.chart.show_data_labels:
+            data_labels_theme = chart_theme.get("data_labels", {})
+            for i, s in enumerate(block.chart.series):
+                api_spec["basicChart"]["series"][i]["dataLabel"] = {
+                    "type": "DATA",
+                    "placement": data_labels_theme["position"],
+                    "textFormat": {
+                        "fontSize": data_labels_theme["font_size"],
+                        "bold": data_labels_theme["bold"],
+                        "italic": data_labels_theme["italic"],
+                    },
+                }
+
         requests = [
             {
                 "updateChartSpec": {

@@ -45,6 +45,7 @@ def main():
         x="month",
         y=["revenue", "cost"],
         value_axis_tick_format="0.0%",
+        show_data_labels=True,
     )
 
     chart3 = ChartSpec(
@@ -67,7 +68,9 @@ def main():
     )
 
     long_data = df.melt(id_vars="month")
-    long_data["variable"] = pd.Categorical(long_data["variable"], categories=["revenue", "cost"], ordered=True)
+    long_data["variable"] = pd.Categorical(
+        long_data["variable"], categories=["revenue", "cost"], ordered=True
+    )
     long_data.sort_values("variable", inplace=True)
 
     chart5 = ChartSpec(

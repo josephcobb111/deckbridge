@@ -1,5 +1,5 @@
 from pptx.chart.data import CategoryChartData
-from pptx.enum.chart import XL_CHART_TYPE, XL_LEGEND_POSITION, XL_TICK_LABEL_POSITION
+from pptx.enum.chart import XL_CHART_TYPE, XL_DATA_LABEL_POSITION, XL_LEGEND_POSITION, XL_TICK_LABEL_POSITION
 from pptx.util import Inches, Pt
 
 from deckbridge.renderers.common.style_resolver import resolve_chart_theme
@@ -30,6 +30,7 @@ class PPTXChartBuilder:
         self._turn_gridlines_off(chart)
         self._category_tick_label_low(chart)
         self._apply_axis_style(chart, chart_theme, block)
+        self._set_data_labels(chart, chart_theme, block)
 
     def _build_chart_data(self, spec):
         chart_data = CategoryChartData()
@@ -143,3 +144,22 @@ class PPTXChartBuilder:
 
         if spec.value_axis_tick_format:
             chart.value_axis.tick_labels.number_format = spec.value_axis_tick_format
+
+    def _set_data_labels(self, chart, chart_theme, block):
+        data_labels_theme = chart_theme.get("data_labels", {})
+
+        spec = block.chart
+        if block.chart.show_data_labels:
+            position_map = {
+                "OUTSIDE_END": XL_DATA_LABEL_POSITION.OUTSIDE_END,
+            }
+
+            for s in chart.series:
+                s.data_labels.show_value = True
+                s.data_labels.font.size = Pt(data_labels_theme["font_size"])
+                s.data_labels.font.bold = data_labels_theme["bold"]
+                s.data_labels.font.italic = data_labels_theme["italic"]
+                s.data_labels.font.underline = data_labels_theme["underline"]
+                s.data_labels.position = position_map[data_labels_theme["position"]]
+                if spec.value_axis_tick_format:
+                    s.data_labels.number_format = spec.value_axis_tick_format

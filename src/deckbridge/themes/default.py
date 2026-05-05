@@ -82,6 +82,13 @@ THEME = {
                 "position": "BOTTOM",
                 "font_size": 14,
             },
+            "data_labels": {
+                "position": "OUTSIDE_END",
+                "font_size": 10,
+                "bold": True,
+                "italic": False,
+                "underline": False,
+            },
         },
         "layouts": {
             "one_chart": {},

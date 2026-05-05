@@ -24,6 +24,7 @@ class ChartSpec:
         value_axis_tick_format: str = None,
         data_format: str = "wide",
         series_field: str = None,
+        show_data_labels: bool = False,
     ):
         self.chart_type = chart_type
         self.x = x
@@ -60,6 +61,7 @@ class ChartSpec:
 
         self.value_axis_range = value_axis_range
         self.value_axis_tick_format = value_axis_tick_format
+        self.show_data_labels = show_data_labels
 
     def _normalize_to_wide(self, data, x, y, series_field):
         # preserve category axis data order
