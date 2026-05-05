@@ -3,7 +3,9 @@ class SheetsDataWriter:
         self.sheets = sheets_service
         self.spreadsheet_id = spreadsheet_id
 
-    def write_dataframe(self, df, sheet_name, value_axis_tick_format=None):
+    def write_dataframe(self, block, sheet_name):
+
+        df = block.chart.data
 
         # Create new sheet
         add_sheet_request = {"addSheet": {"properties": {"title": sheet_name}}}
@@ -15,7 +17,12 @@ class SheetsDataWriter:
         sheet_id = response["replies"][0]["addSheet"]["properties"]["sheetId"]
 
         # Write data
-        values = [df.columns.tolist()] + df.values.tolist()
+        series_names = [block.chart.x]
+        df_names = [block.chart.x]
+        for s in block.chart.series:
+            series_names.append(s["name"])
+            df_names.append(s["column"])
+        values = [series_names] + df[df_names].values.tolist()
 
         self.sheets.spreadsheets().values().update(
             spreadsheetId=self.spreadsheet_id, range=f"{sheet_name}!A1", valueInputOption="RAW", body={"values": values}
@@ -23,6 +30,7 @@ class SheetsDataWriter:
 
         requests = []
 
+        value_axis_tick_format = block.chart.value_axis_tick_format
         if value_axis_tick_format:
             requests.append(
                 {

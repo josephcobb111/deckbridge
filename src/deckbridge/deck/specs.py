@@ -17,8 +17,8 @@ class ChartSpec:
         chart_type: str,
         data: pd.DataFrame,
         x: str,
-        y: str,
         *,
+        y: str = None,
         series: list[dict] = None,
         value_axis_range: tuple[float] = None,
         value_axis_tick_format: str = None,
@@ -26,6 +26,9 @@ class ChartSpec:
         self.chart_type = chart_type
         self.data = data
         self.x = x
+
+        if not (y or series):
+            raise ValueError("Either y or series must be defined.")
 
         # -----------------------
         # Normalize series

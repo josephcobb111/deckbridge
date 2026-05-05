@@ -25,9 +25,7 @@ class GSlidesChartCompiler:
 
         # Write data
         value_axis_tick_format = block.chart.value_axis_tick_format or None
-        sheet_name, sheet_id = self.writer.write_dataframe(
-            block.chart.data, sheet_name=sheet_name, value_axis_tick_format=value_axis_tick_format
-        )
+        sheet_name, sheet_id = self.writer.write_dataframe(block, sheet_name=sheet_name)
 
         # Create chart
         requests = self.chart_builder.create_chart(

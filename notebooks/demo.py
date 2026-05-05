@@ -54,6 +54,18 @@ def main():
         y="revenue",
     )
 
+    chart4 = ChartSpec(
+        chart_type="line",
+        data=df,
+        x="month",
+        series=[
+            {"column": "revenue", "name": "Revenue!"},
+            {"column": "cost", "name": "Cost!"},
+        ],
+        value_axis_range=(0, 100),
+        value_axis_tick_format="$0.0",
+    )
+
     deck.add_slide(
         slide_title="Revenue Trend - Slide Title",
         content={
@@ -108,6 +120,20 @@ def main():
                 category_axis_title="Revenue",
             ),
         },
+    )
+
+    deck.add_slide(
+        slide_title="Revenue Trend - Slide Title",
+        content={
+            "chart_1": ChartBlock(
+                chart=chart4,
+                chart_title="Revenue Trend (Line) - Chart Title",
+                chart_subtitle="2024 Actuals",
+                value_axis_title="Month",
+                category_axis_title="Revenue",
+            ),
+        },
+        notes="Notes: Adjusted for recent acquisitions.",
     )
 
     # -----------------------
