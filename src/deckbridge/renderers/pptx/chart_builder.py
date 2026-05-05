@@ -35,10 +35,11 @@ class PPTXChartBuilder:
         chart_data = CategoryChartData()
 
         categories = list(spec.data[spec.x])
-        values = list(spec.data[spec.y])
-
         chart_data.categories = categories
-        chart_data.add_series(spec.y, values)
+
+        for s in spec.series:
+            values = list(spec.data[s["column"]])
+            chart_data.add_series(s["name"], values)
 
         return chart_data
 

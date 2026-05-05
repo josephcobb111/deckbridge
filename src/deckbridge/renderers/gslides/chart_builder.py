@@ -10,13 +10,13 @@ class SheetsChartBuilder:
         self.sheets = sheets_service
         self.spreadsheet_id = spreadsheet_id
 
-    def create_chart(self, sheet_id, spec: ChartSpec, position: dict):
+    def create_chart(self, sheet_id, spec: ChartSpec, block: ChartBlock, position: dict):
 
         requests = [
             {
                 "addChart": {
                     "chart": {
-                        "spec": self._build_chart_spec(sheet_id, spec),
+                        "spec": self._build_chart_spec(sheet_id, spec, block),
                         "position": {
                             "overlayPosition": {
                                 "anchorCell": {
@@ -40,7 +40,7 @@ class SheetsChartBuilder:
     def apply_chart_style(self, sheet_id, chart_id, block: ChartBlock, chart_theme: dict):
 
         # chart title
-        api_spec = self._build_chart_spec(sheet_id, block.chart)
+        api_spec = self._build_chart_spec(sheet_id, block.chart, block)
         if chart_theme["chart_title"]["has_title"]:
             api_spec["title"] = block.chart_title
             api_spec["titleTextFormat"] = {
@@ -115,8 +115,30 @@ class SheetsChartBuilder:
             "bar": "COLUMN",
         }[chart_type]
 
-    def _build_chart_spec(self, sheet_id, spec: ChartSpec):
+    def _build_chart_spec(self, sheet_id, spec: ChartSpec, block: ChartBlock):
         chart_type = self._map_chart_type(spec.chart_type)
+
+        series = []
+
+        for i, s in enumerate(spec.series):
+            series.append(
+                {
+                    "series": {
+                        "sourceRange": {
+                            "sources": [
+                                {
+                                    "sheetId": sheet_id,
+                                    "startRowIndex": 0,
+                                    "endRowIndex": len(spec.data) + 1,
+                                    "startColumnIndex": i + 1,  # assuming x is col 0
+                                    "endColumnIndex": i + 2,
+                                }
+                            ]
+                        }
+                    },
+                    "targetAxis": "LEFT_AXIS",
+                }
+            )
 
         return {
             "title": None,
@@ -127,11 +149,11 @@ class SheetsChartBuilder:
                 "axis": [
                     {
                         "position": "BOTTOM_AXIS",
-                        "title": spec.x,
+                        "title": block.category_axis_title,
                     },
                     {
                         "position": "LEFT_AXIS",
-                        "title": spec.y,
+                        "title": block.value_axis_title,
                     },
                 ],
                 "domains": [
@@ -151,22 +173,6 @@ class SheetsChartBuilder:
                         }
                     }
                 ],
-                "series": [
-                    {
-                        "series": {
-                            "sourceRange": {
-                                "sources": [
-                                    {
-                                        "sheetId": sheet_id,
-                                        "startRowIndex": 0,
-                                        "endRowIndex": len(spec.data) + 1,
-                                        "startColumnIndex": 1,
-                                        "endColumnIndex": 2,
-                                    }
-                                ]
-                            }
-                        }
-                    }
-                ],
+                "series": series,
             },
         }

@@ -11,7 +11,11 @@ from deckbridge.deck.specs import ChartSpec
 def main():
 
     df = pd.DataFrame(
-        {"month": ["Jan", "Feb", "Mar", "Apr"], "revenue": [10, 14, 9, 18]}
+        {
+            "month": ["Jan", "Feb", "Mar", "Apr"],
+            "revenue": [10, 14, 9, 18],
+            "cost": [2, 4, 3, 1],
+        }
     )
 
     deck = Deck()
@@ -30,13 +34,17 @@ def main():
         chart_type="line",
         data=df,
         x="month",
-        y="revenue",
+        y=["revenue", "cost"],
         value_axis_range=(0, 100),
         value_axis_tick_format="$0.0",
     )
 
     chart2 = ChartSpec(
-        chart_type="bar", data=df, x="month", y="revenue", value_axis_tick_format="0.0%"
+        chart_type="bar",
+        data=df,
+        x="month",
+        y=["revenue", "cost"],
+        value_axis_tick_format="0.0%",
     )
 
     chart3 = ChartSpec(

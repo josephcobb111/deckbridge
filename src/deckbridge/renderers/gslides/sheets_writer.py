@@ -32,7 +32,7 @@ class SheetsDataWriter:
                             "startRowIndex": 1,  # skip header
                             "endRowIndex": len(df) + 1,
                             "startColumnIndex": 1,  # assuming y is col 1
-                            "endColumnIndex": 2,
+                            "endColumnIndex": len(df.columns) + 1,
                         },
                         "cell": {
                             "userEnteredFormat": {

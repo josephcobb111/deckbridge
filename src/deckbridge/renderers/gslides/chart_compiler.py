@@ -33,6 +33,7 @@ class GSlidesChartCompiler:
         requests = self.chart_builder.create_chart(
             sheet_id,
             block.chart,
+            block,
             slot,
         )
 
