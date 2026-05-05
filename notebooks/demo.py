@@ -31,13 +31,12 @@ def main():
         data=df,
         x="month",
         y="revenue",
+        value_axis_range=(0, 100),
+        value_axis_tick_format="$0.0",
     )
 
     chart2 = ChartSpec(
-        chart_type="bar",
-        data=df,
-        x="month",
-        y="revenue",
+        chart_type="bar", data=df, x="month", y="revenue", value_axis_tick_format="0.0%"
     )
 
     chart3 = ChartSpec(
@@ -50,24 +49,56 @@ def main():
     deck.add_slide(
         slide_title="Revenue Trend - Slide Title",
         content={
-            "chart_1": ChartBlock(chart=chart1, chart_title="Revenue Trend (Line) - Chart Title"),
+            "chart_1": ChartBlock(
+                chart=chart1,
+                chart_title="Revenue Trend (Line) - Chart Title",
+                chart_subtitle="2024 Actuals",
+                value_axis_title="Month",
+                category_axis_title="Revenue",
+            ),
+        },
+        notes="Notes: Adjusted for recent acquisitions.",
+    )
+
+    deck.add_slide(
+        slide_title="Revenue Trend - Slide Title",
+        content={
+            "chart_1": ChartBlock(
+                chart=chart1,
+                chart_title="Revenue Trend (Line) - Chart Title",
+                value_axis_title="Month",
+                category_axis_title="Revenue",
+            ),
+            "chart_2": ChartBlock(
+                chart=chart2,
+                chart_title="Revenue (Bar) - Chart Title",
+                value_axis_title="Month",
+                category_axis_title="Revenue",
+            ),
         },
     )
 
     deck.add_slide(
         slide_title="Revenue Trend - Slide Title",
         content={
-            "chart_1": ChartBlock(chart=chart1, chart_title="Revenue Trend (Line) - Chart Title"),
-            "chart_2": ChartBlock(chart=chart2, chart_title="Revenue (Bar) - Chart Title"),
-        },
-    )
-
-    deck.add_slide(
-        slide_title="Revenue Trend - Slide Title",
-        content={
-            "chart_1": ChartBlock(chart=chart1, chart_title="Revenue Trend (Line) - Chart Title"),
-            "chart_2": ChartBlock(chart=chart2, chart_title="Revenue (Bar) - Chart Title"),
-            "chart_3": ChartBlock(chart=chart3, chart_title="Revenue Trend (Line) - Chart Title"),
+            "chart_1": ChartBlock(
+                chart=chart1,
+                chart_title="Revenue Trend (Line) - Chart Title",
+                value_axis_title="Month",
+                category_axis_title="Revenue",
+            ),
+            "chart_2": ChartBlock(
+                chart=chart2,
+                chart_title="Revenue (Bar) - Chart Title",
+                value_axis_title="Month",
+                category_axis_title="Revenue",
+            ),
+            "chart_3": ChartBlock(
+                chart=chart3,
+                chart_title="Revenue Trend (Line) - Chart Title",
+                value_axis_title="Month",
+                category_axis_title="Revenue",
+            ),
         },
     )
 

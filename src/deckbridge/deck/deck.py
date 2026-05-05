@@ -5,12 +5,19 @@ class Deck:
     def __init__(self):
         self.slides = []
 
-    def add_slide(self, layout=None, deck_title=None, deck_author=None, slide_title=None, content=None):
+    def add_slide(self, layout=None, deck_title=None, deck_author=None, slide_title=None, content=None, notes=None):
         if layout is None:
             layout = self._infer_layout(content)
 
         self.slides.append(
-            {"layout": layout, "deck_title": deck_title, "deck_author": deck_author, "slide_title": slide_title, "content": content or []}
+            {
+                "layout": layout,
+                "deck_title": deck_title,
+                "deck_author": deck_author,
+                "slide_title": slide_title,
+                "content": content or [],
+                "notes": notes,
+            }
         )
 
     def _infer_layout(self, content):

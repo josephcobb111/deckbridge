@@ -1,4 +1,12 @@
 from deckbridge.themes.default import DEFAULT_TEXT_STYLE, THEME
+from deckbridge.utils import deep_merge
+
+
+def resolve_chart_theme(theme, layout_name):
+    base = theme.get("chart", {}).get("default", {})
+    layout_override = theme.get("chart", {}).get("layouts", {}).get(layout_name, {})
+
+    return deep_merge(base, layout_override)
 
 
 def resolve_text_style(slot_key, slot):

@@ -1,36 +1,45 @@
 from pptx.chart.data import CategoryChartData
-from pptx.enum.chart import XL_CHART_TYPE
+from pptx.enum.chart import XL_CHART_TYPE, XL_LEGEND_POSITION
+from pptx.util import Inches, Pt
 
-from ...deck.specs import ChartSpec
+from deckbridge.utils import deep_merge
+
+from .chart_builder import PPTXChartBuilder
 
 
 class PPTXChartCompiler:
-    """
-    Converts ChartSpec → native python-pptx chart objects
-    (fully editable in PowerPoint)
-    """
+    def __init__(self):
+        self.builder = PPTXChartBuilder()
 
-    def compile(self, spec: ChartSpec):
-        chart_data = CategoryChartData()
+    def compile(self, ctx, slot, block, chart_key):
+        # -----------------------
+        # Position
+        # -----------------------
+        x = Inches(slot["x"])
+        y = Inches(slot["y"])
+        cx = Inches(slot["w"])
+        cy = Inches(slot["h"])
 
-        # Extract categories (x-axis)
-        categories = list(spec.data[spec.x])
-        values = list(spec.data[spec.y])
+        # -----------------------
+        # Build
+        # -----------------------
+        chart_type, chart_data = self.builder.build_chart_data(block.chart)
 
-        chart_data.categories = categories
-        chart_data.add_series(spec.y, values)
+        shape = ctx.slide_obj.shapes.add_chart(chart_type, x, y, cx, cy, chart_data)
 
-        chart_type = self._map_chart_type(spec.chart_type)
+        try:
+            shape.name = chart_key
+        except Exception:
+            pass
 
-        return chart_type, chart_data
+        chart = shape.chart
 
-    def _map_chart_type(self, chart_type: str):
-        mapping = {
-            "line": XL_CHART_TYPE.LINE,
-            "bar": XL_CHART_TYPE.COLUMN_CLUSTERED,
-        }
-
-        if chart_type not in mapping:
-            raise ValueError(f"Unsupported chart type: {chart_type}")
-
-        return mapping[chart_type]
+        # -----------------------
+        # Style
+        # -----------------------
+        self.builder.apply_chart_style(
+            chart,
+            theme=ctx.theme,
+            layout_name=ctx.layout_spec.name,
+            block=block,
+        )

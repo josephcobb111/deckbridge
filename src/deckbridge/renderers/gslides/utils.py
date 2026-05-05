@@ -3,6 +3,13 @@ PIXEL_PER_INCH = 96
 
 DEFAULT_PPTX_TO_GOOGLE_SCALE_FACTOR = 1
 
+GSLIDES_ALIGN_MAP = {
+    "center": "CENTER",
+    "left": "START",
+    "right": "END",
+    "justified": "JUSTIFIED",
+}
+
 
 def inches_to_emu(inches):
     return int(inches * EMU_PER_INCH * DEFAULT_PPTX_TO_GOOGLE_SCALE_FACTOR)

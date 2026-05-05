@@ -1,5 +1,7 @@
 import uuid
 
+from deckbridge.renderers.common.style_resolver import resolve_chart_theme
+
 from ...deck.specs import ChartSpec
 from .chart_builder import SheetsChartBuilder
 from .chart_embedder import SlidesChartEmbedder
@@ -16,24 +18,42 @@ class GSlidesChartCompiler:
         self.chart_builder = SheetsChartBuilder(sheets_service, spreadsheet_id)
         self.embedder = SlidesChartEmbedder(slides_service)
 
-    def compile(self, presentation_id, page_id, spec: ChartSpec, position: dict, chart_key: str):
+    def compile(self, ctx, slot, block, slot_key):
 
         # Create unique sheet name
-        sheet_name = f"{chart_key}_{uuid.uuid4().hex[:4]}"
+        sheet_name = f"{slot_key}_{uuid.uuid4().hex[:4]}"
 
         # Write data
-        sheet_name, sheet_id = self.writer.write_dataframe(spec.data, sheet_name=sheet_name)
+        value_axis_tick_format = block.chart.value_axis_tick_format or None
+        sheet_name, sheet_id = self.writer.write_dataframe(
+            block.chart.data, sheet_name=sheet_name, value_axis_tick_format=value_axis_tick_format
+        )
 
         # Create chart
         requests = self.chart_builder.create_chart(
             sheet_id,
-            spec,
-            position,
+            block.chart,
+            slot,
         )
 
-        response = self.sheets.spreadsheets().batchUpdate(spreadsheetId=self.spreadsheet_id, body={"requests": requests}).execute()
+        response = self._batch_update(requests)
 
         chart_id = response["replies"][0]["addChart"]["chart"]["chartId"]
 
+        # Style chart
+        chart_theme = resolve_chart_theme(ctx.theme, ctx.layout_spec.name)
+
+        requests = self.chart_builder.apply_chart_style(
+            sheet_id,
+            chart_id,
+            block,
+            chart_theme,
+        )
+
+        response = self._batch_update(requests)
+
         # Embed chart
-        self.embedder.embed_chart(presentation_id, self.spreadsheet_id, chart_id, page_id, position)
+        self.embedder.embed_chart(ctx.presentation_id, self.spreadsheet_id, chart_id, ctx.page_id, slot)
+
+    def _batch_update(self, requests):
+        return self.sheets.spreadsheets().batchUpdate(spreadsheetId=self.spreadsheet_id, body={"requests": requests}).execute()

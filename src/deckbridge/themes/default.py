@@ -10,10 +10,7 @@ DEFAULT_TEXT_STYLE = {
 
 
 THEME = {
-    "text": {
-        "font_family": "Arial",
-        "font_color": "#000000",
-    },
+    "text": {},
     "slots": {
         "deck_title": {
             "font_size": 32,
@@ -36,6 +33,60 @@ THEME = {
             "align": "center",
             "bold": True,
             "underline": True,
+        },
+        "chart_subtitle": {
+            "font_size": 14,
+            "align": "center",
+            "bold": False,
+            "italic": True,
+            "underline": False,
+        },
+        "notes": {
+            "font_size": 10,
+        },
+    },
+    "chart": {
+        "default": {
+            "chart_title": {
+                "has_title": False,
+                "font_size": 14,
+                "bold": True,
+                "italic": False,
+                "underline": True,
+                "align": "center",
+            },
+            "chart_subtitle": {
+                "has_title": False,
+                "font_size": 12,
+                "bold": False,
+                "italic": True,
+                "underline": False,
+                "align": "center",
+            },
+            "value_axis": {
+                "has_title": True,
+                "font_size": 14,
+                "bold": True,
+                "italic": False,
+                "underline": False,
+            },
+            "category_axis": {
+                "has_title": True,
+                "font_size": 14,
+                "bold": True,
+                "italic": False,
+                "underline": False,
+            },
+            "legend": {
+                "visible": True,
+                "position": "BOTTOM",
+                "font_size": 14,
+            },
+        },
+        "layouts": {
+            "one_chart": {},
+            "two_chart": {},
+            "three_chart": {},
         },
     },
 }
