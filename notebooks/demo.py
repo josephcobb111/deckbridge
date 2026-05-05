@@ -66,6 +66,36 @@ def main():
         value_axis_tick_format="$0.0",
     )
 
+    long_data = df.melt(id_vars="month")
+    long_data["variable"] = pd.Categorical(long_data["variable"], categories=["revenue", "cost"], ordered=True)
+    long_data.sort_values("variable", inplace=True)
+
+    chart5 = ChartSpec(
+        chart_type="line",
+        data=long_data,
+        x="month",
+        y="value",
+        series_field="variable",
+        data_format="long",
+        value_axis_range=(0, 100),
+        value_axis_tick_format="$0.0",
+    )
+
+    chart6 = ChartSpec(
+        chart_type="line",
+        data=df.melt(id_vars="month"),
+        x="month",
+        y="value",
+        series=[
+            {"column": "revenue", "name": "Revenue!"},
+            {"column": "cost", "name": "Cost!"},
+        ],
+        series_field="variable",
+        data_format="long",
+        value_axis_range=(0, 100),
+        value_axis_tick_format="$0.0",
+    )
+
     deck.add_slide(
         slide_title="Revenue Trend - Slide Title",
         content={
@@ -123,10 +153,24 @@ def main():
     )
 
     deck.add_slide(
-        slide_title="Revenue Trend - Slide Title",
+        slide_title="These should all be the same (except for legend names)",
         content={
             "chart_1": ChartBlock(
                 chart=chart4,
+                chart_title="Revenue Trend (Line) - Chart Title",
+                chart_subtitle="2024 Actuals",
+                value_axis_title="Month",
+                category_axis_title="Revenue",
+            ),
+            "chart_2": ChartBlock(
+                chart=chart5,
+                chart_title="Revenue Trend (Line) - Chart Title",
+                chart_subtitle="2024 Actuals",
+                value_axis_title="Month",
+                category_axis_title="Revenue",
+            ),
+            "chart_3": ChartBlock(
+                chart=chart6,
                 chart_title="Revenue Trend (Line) - Chart Title",
                 chart_subtitle="2024 Actuals",
                 value_axis_title="Month",
