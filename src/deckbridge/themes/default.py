@@ -82,6 +82,24 @@ THEME = {
                 "position": "BOTTOM",
                 "font_size": 14,
             },
+            "data_labels": {
+                "position": "OUTSIDE_END",
+                "font_size": 10,
+                "bold": True,
+                "italic": False,
+                "underline": False,
+            },
+            "series_colors": [
+                "#4E79A7",
+                "#F28E2B",
+                "#E15759",
+                "#76B7B2",
+                "#59A14F",
+            ],
+            "series_defaults": {
+                "dash_style": "dash",
+                "line_width": 2,
+            },
         },
         "layouts": {
             "one_chart": {},

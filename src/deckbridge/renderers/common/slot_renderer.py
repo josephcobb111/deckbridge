@@ -1,5 +1,6 @@
 from pptx.util import Inches
 
+from deckbridge.renderers.common.legend_renderer import render_dash_legend
 from deckbridge.renderers.common.text_renderer import render_text_slot, resolve_text_content
 
 
@@ -19,6 +20,9 @@ def render_slots(ctx, slide):
         elif slot_type == "text":
             text = resolve_text_content(slide, slot_key, slot)
             _render_text(ctx, slot, text, slot_key)
+
+        elif slot_type == "dash_legend":
+            render_dash_legend(ctx, slot_key, slot, slide)
 
 
 def _render_chart(ctx, slot, block, slot_key):
