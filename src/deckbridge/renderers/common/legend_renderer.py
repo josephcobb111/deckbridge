@@ -12,26 +12,17 @@ from deckbridge.renderers.pptx.utils import PPTX_DASH_MAP, hex_to_rgb255
 
 
 def render_dash_legend(ctx, slot_key, slot, slide):
-    source_key = slot["source"]
 
-    block = slide["content"].get(source_key)
+    dash_legend = slide.get("dash_legend", [])
 
-    if not block:
+    if not dash_legend:
         return
-
-    chart = block.chart
-
-    chart_theme = resolve_chart_theme(
-        ctx.theme,
-        ctx.layout_spec.name,
-    )
 
     if ctx.backend == "pptx":
         _render_dash_legend_pptx(
             ctx,
             slot,
-            chart,
-            chart_theme,
+            dash_legend,
         )
 
     elif ctx.backend == "gslides":
@@ -39,22 +30,22 @@ def render_dash_legend(ctx, slot_key, slot, slide):
             ctx,
             slot_key,
             slot,
-            chart,
-            chart_theme,
+            dash_legend,
         )
 
 
-def _render_dash_legend_pptx(ctx, slot, chart, chart_theme):
+def _render_dash_legend_pptx(ctx, slot, dash_legend):
     x = slot["x"]
     y = slot["y"]
 
     line_w = 0.35
     row_h = 0.25
 
-    for i, series in enumerate(chart.series):
-        color = resolve_series_color(series, i, chart_theme)
-        dash = resolve_series_dash(series, chart_theme)
-        width = resolve_series_width(series, chart_theme)
+    for i, _series in enumerate(dash_legend):
+        label = _series.get("label", "")
+        color = _series.get("color", "#999999")
+        dash = _series.get("dash_style", "solid")
+        width = _series.get("width", 2)
 
         y_i = y + i * row_h
 
@@ -80,11 +71,11 @@ def _render_dash_legend_pptx(ctx, slot, chart, chart_theme):
             Inches(0.3),
         )
 
-        textbox.text_frame.text = series.get("name", series["column"])
+        textbox.text_frame.text = label
         textbox.text_frame.paragraphs[0].font.size = Pt(12)
 
 
-def _render_dash_legend_gslides(ctx, slot_key, slot, chart, chart_theme):
+def _render_dash_legend_gslides(ctx, slot_key, slot, dash_legend):
     requests = []
 
     x = slot["x"]
@@ -93,10 +84,11 @@ def _render_dash_legend_gslides(ctx, slot_key, slot, chart, chart_theme):
     line_w = 0.35
     row_h = 0.25
 
-    for i, series in enumerate(chart.series):
-        color = resolve_series_color(series, i, chart_theme)
-        dash = resolve_series_dash(series, chart_theme)
-        width = resolve_series_width(series, chart_theme)
+    for i, _series in enumerate(dash_legend):
+        label = _series.get("label", "")
+        color = _series.get("color", "#999999")
+        dash = _series.get("dash_style", "solid")
+        width = _series.get("width", 2)
 
         y_i = y + i * row_h
 
@@ -183,7 +175,7 @@ def _render_dash_legend_gslides(ctx, slot_key, slot, chart, chart_theme):
             {
                 "insertText": {
                     "objectId": text_id,
-                    "text": series.get("name", series["column"]),
+                    "text": label,
                 }
             }
         )

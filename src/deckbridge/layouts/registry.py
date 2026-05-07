@@ -32,9 +32,8 @@ LAYOUTS = {
                 "w": 12.5,
                 "h": 0.5,
             },
-            "chart_1_legend": {
-                "type": "legend",
-                "source": "chart_1",
+            "dash_legend": {
+                "type": "dash_legend",
                 "x": 11,
                 "y": 1.0,
                 "w": 2.0,

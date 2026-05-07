@@ -110,6 +110,18 @@ def main():
                 category_axis_title="Revenue",
             ),
         },
+        dash_legend=[
+            {
+                "label": "Revenue",
+                "dash_style": "solid",
+                "color": "#999999",
+            },
+            {
+                "label": "Cost",
+                "dash_style": "dash",
+                "color": "#999999",
+            },
+        ],
         notes="Notes: Adjusted for recent acquisitions.",
     )
 

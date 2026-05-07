@@ -21,7 +21,7 @@ def render_slots(ctx, slide):
             text = resolve_text_content(slide, slot_key, slot)
             _render_text(ctx, slot, text, slot_key)
 
-        elif slot_type == "legend":
+        elif slot_type == "dash_legend":
             render_dash_legend(ctx, slot_key, slot, slide)
 
 
