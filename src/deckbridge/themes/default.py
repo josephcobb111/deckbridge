@@ -97,7 +97,8 @@ THEME = {
                 "#59A14F",
             ],
             "series_defaults": {
-                "series_dash": "dash",
+                "dash_style": "dash",
+                "line_width": 2,
             },
         },
         "layouts": {

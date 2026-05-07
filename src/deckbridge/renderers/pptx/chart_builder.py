@@ -2,7 +2,12 @@ from pptx.chart.data import CategoryChartData
 from pptx.enum.chart import XL_CHART_TYPE, XL_DATA_LABEL_POSITION, XL_LEGEND_POSITION, XL_TICK_LABEL_POSITION
 from pptx.util import Inches, Pt
 
-from deckbridge.renderers.common.style_resolver import resolve_chart_theme, resolve_series_color, resolve_series_dash
+from deckbridge.renderers.common.style_resolver import (
+    resolve_chart_theme,
+    resolve_series_color,
+    resolve_series_dash,
+    resolve_series_line_width,
+)
 from deckbridge.renderers.pptx.utils import PPTX_DASH_MAP, hex_to_rgb255
 
 
@@ -34,6 +39,7 @@ class PPTXChartBuilder:
         self._set_data_labels(chart, chart_theme, block)
         self._set_series_colors(chart, chart_theme, block)
         self._set_series_dashes(chart, chart_theme, block)
+        self._set_series_line_width(chart, chart_theme, block)
 
     def _build_chart_data(self, spec):
         chart_data = CategoryChartData()
@@ -192,3 +198,10 @@ class PPTXChartBuilder:
             for i, s in enumerate(chart.series):
                 dash = resolve_series_dash(spec.series[i], chart_theme)
                 s.format.line.dash_style = PPTX_DASH_MAP[dash]
+
+    def _set_series_line_width(self, chart, chart_theme, block):
+        spec = block.chart
+
+        if spec.chart_type == "line":
+            for i, s in enumerate(chart.series):
+                s.format.line.width = Pt(resolve_series_line_width(spec.series[i], chart_theme))

@@ -55,7 +55,14 @@ def resolve_series_color(series, index, chart_theme):
 
 
 def resolve_series_dash(series, chart_theme):
-    if series.get("series_dash"):
-        return series["series_dash"]
+    if series.get("dash_style"):
+        return series["dash_style"]
 
-    return chart_theme.get("series_defaults", {}).get("series_dash", "solid")
+    return chart_theme.get("series_defaults", {}).get("dash_style", "solid")
+
+
+def resolve_series_line_width(series, chart_theme):
+    if series.get("line_width"):
+        return series["line_width"]
+
+    return chart_theme.get("series_defaults", {}).get("line_width", 2.25)
