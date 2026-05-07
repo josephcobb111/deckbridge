@@ -89,6 +89,13 @@ THEME = {
                 "italic": False,
                 "underline": False,
             },
+            "series_colors": [
+                "#4E79A7",
+                "#F28E2B",
+                "#E15759",
+                "#76B7B2",
+                "#59A14F",
+            ],
         },
         "layouts": {
             "one_chart": {},

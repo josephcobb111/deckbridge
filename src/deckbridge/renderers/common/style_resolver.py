@@ -39,3 +39,16 @@ def resolve_text_style(slot_key, slot):
             raise ValueError(f"Missing required style key: {key}")
 
     return style
+
+
+def resolve_series_color(series, index, chart_theme):
+    # Explicit series override wins
+    if series.get("color"):
+        return series["color"]
+
+    palette = chart_theme.get("series_colors", [])
+
+    if not palette:
+        return "#4E79A7"  # safe fallback
+
+    return palette[index % len(palette)]

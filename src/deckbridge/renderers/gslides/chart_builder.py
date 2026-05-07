@@ -1,8 +1,9 @@
+from deckbridge.renderers.common.style_resolver import resolve_series_color
 from deckbridge.renderers.gslides.utils import GSLIDES_ALIGN_MAP
 
 from ...deck.blocks import ChartBlock
 from ...deck.specs import ChartSpec
-from .utils import inches_to_pixels
+from .utils import hex_to_slides_rgb, inches_to_pixels
 
 
 class SheetsChartBuilder:
@@ -111,6 +112,11 @@ class SheetsChartBuilder:
                         "italic": data_labels_theme["italic"],
                     },
                 }
+
+        # series colors
+        for i, s in enumerate(block.chart.series):
+            color = resolve_series_color(block.chart.series[i], i, chart_theme)
+            api_spec["basicChart"]["series"][i]["color"] = hex_to_slides_rgb(color)
 
         requests = [
             {

@@ -2,7 +2,8 @@ from pptx.chart.data import CategoryChartData
 from pptx.enum.chart import XL_CHART_TYPE, XL_DATA_LABEL_POSITION, XL_LEGEND_POSITION, XL_TICK_LABEL_POSITION
 from pptx.util import Inches, Pt
 
-from deckbridge.renderers.common.style_resolver import resolve_chart_theme
+from deckbridge.renderers.common.style_resolver import resolve_chart_theme, resolve_series_color
+from deckbridge.renderers.pptx.utils import hex_to_rgb255
 
 
 class PPTXChartBuilder:
@@ -31,6 +32,7 @@ class PPTXChartBuilder:
         self._category_tick_label_low(chart)
         self._apply_axis_style(chart, chart_theme, block)
         self._set_data_labels(chart, chart_theme, block)
+        self._set_series_colors(chart, chart_theme, block)
 
     def _build_chart_data(self, spec):
         chart_data = CategoryChartData()
@@ -163,3 +165,21 @@ class PPTXChartBuilder:
                 s.data_labels.position = position_map[data_labels_theme["position"]]
                 if spec.value_axis_tick_format:
                     s.data_labels.number_format = spec.value_axis_tick_format
+
+    def _set_series_colors(self, chart, chart_theme, block):
+        spec = block.chart
+
+        for i, s in enumerate(chart.series):
+            color = resolve_series_color(
+                spec.series[i],
+                i,
+                chart_theme,
+            )
+
+            if hasattr(s, "invert_if_negative"):
+                s.invert_if_negative = False
+
+            s.format.fill.solid()
+            s.format.fill.fore_color.rgb = hex_to_rgb255(color)
+            s.format.line.fill.solid()
+            s.format.line.color.rgb = hex_to_rgb255(color)
