@@ -61,7 +61,7 @@ def resolve_series_dash(series, chart_theme):
     return chart_theme.get("series_defaults", {}).get("dash_style", "solid")
 
 
-def resolve_series_line_width(series, chart_theme):
+def resolve_series_width(series, chart_theme):
     if series.get("line_width"):
         return series["line_width"]
 

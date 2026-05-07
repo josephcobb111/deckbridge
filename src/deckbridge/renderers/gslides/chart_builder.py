@@ -1,5 +1,5 @@
-from deckbridge.renderers.common.style_resolver import resolve_series_color, resolve_series_dash, resolve_series_line_width
-from deckbridge.renderers.gslides.utils import GSLIDES_ALIGN_MAP, GSLIDES_DASH_MAP
+from deckbridge.renderers.common.style_resolver import resolve_series_color, resolve_series_dash, resolve_series_width
+from deckbridge.renderers.gslides.utils import GSHEETS_CHART_DASH_MAP, GSLIDES_ALIGN_MAP
 
 from ...deck.blocks import ChartBlock
 from ...deck.specs import ChartSpec
@@ -119,8 +119,8 @@ class SheetsChartBuilder:
             api_spec["basicChart"]["series"][i]["color"] = hex_to_slides_rgb(color)
             if block.chart.chart_type == "line":
                 api_spec["basicChart"]["series"][i]["lineStyle"] = {
-                    "type": GSLIDES_DASH_MAP[resolve_series_dash(block.chart.series[i], chart_theme)],
-                    "width": resolve_series_line_width(block.chart.series[i], chart_theme),
+                    "type": GSHEETS_CHART_DASH_MAP[resolve_series_dash(block.chart.series[i], chart_theme)],
+                    "width": resolve_series_width(block.chart.series[i], chart_theme),
                 }
 
         requests = [

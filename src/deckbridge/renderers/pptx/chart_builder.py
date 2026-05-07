@@ -6,7 +6,7 @@ from deckbridge.renderers.common.style_resolver import (
     resolve_chart_theme,
     resolve_series_color,
     resolve_series_dash,
-    resolve_series_line_width,
+    resolve_series_width,
 )
 from deckbridge.renderers.pptx.utils import PPTX_DASH_MAP, hex_to_rgb255
 
@@ -204,4 +204,4 @@ class PPTXChartBuilder:
 
         if spec.chart_type == "line":
             for i, s in enumerate(chart.series):
-                s.format.line.width = Pt(resolve_series_line_width(spec.series[i], chart_theme))
+                s.format.line.width = Pt(resolve_series_width(spec.series[i], chart_theme))
