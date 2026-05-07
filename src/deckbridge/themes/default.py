@@ -96,6 +96,9 @@ THEME = {
                 "#76B7B2",
                 "#59A14F",
             ],
+            "series_defaults": {
+                "series_dash": "dash",
+            },
         },
         "layouts": {
             "one_chart": {},

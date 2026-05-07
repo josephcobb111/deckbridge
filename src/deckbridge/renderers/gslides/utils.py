@@ -10,6 +10,13 @@ GSLIDES_ALIGN_MAP = {
     "justified": "JUSTIFIED",
 }
 
+GSLIDES_DASH_MAP = {
+    "solid": "SOLID",
+    "dash": "MEDIUM_DASHED",
+    "dot": "DOTTED",
+    "dash_dot": "MEDIUM_DASHED_DOTTED",
+}
+
 
 def inches_to_emu(inches):
     return int(inches * EMU_PER_INCH * DEFAULT_PPTX_TO_GOOGLE_SCALE_FACTOR)

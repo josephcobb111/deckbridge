@@ -52,3 +52,10 @@ def resolve_series_color(series, index, chart_theme):
         return "#4E79A7"  # safe fallback
 
     return palette[index % len(palette)]
+
+
+def resolve_series_dash(series, chart_theme):
+    if series.get("series_dash"):
+        return series["series_dash"]
+
+    return chart_theme.get("series_defaults", {}).get("series_dash", "solid")
