@@ -1,6 +1,6 @@
 from pptx.util import Inches
 
-from deckbridge.renderers.common.legend_renderer import render_dash_legend
+from deckbridge.renderers.common.legend_renderer import render_color_legend, render_dash_legend
 from deckbridge.renderers.common.text_renderer import render_text_slot, resolve_text_content
 
 
@@ -21,6 +21,13 @@ def render_slots(ctx, slide):
             text = resolve_text_content(slide, slot_key, slot)
             _render_text(ctx, slot, text, slot_key)
 
+        elif slot_type == "color_legend":
+            render_color_legend(
+                ctx,
+                slot_key,
+                slot,
+                slide,
+            )
         elif slot_type == "dash_legend":
             render_dash_legend(ctx, slot_key, slot, slide)
 

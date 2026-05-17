@@ -113,6 +113,24 @@ def main():
                 category_axis_title="Revenue",
             ),
         },
+        color_legend=[
+            {
+                "label": "Revenue",
+                "color": "#C00000",
+            },
+            {
+                "label": "Cost",
+                "color": "#7030A0",
+            },
+            {
+                "label": "Revenue",
+                "color": "#C00000",
+            },
+            {
+                "label": "Cost",
+                "color": "#7030A0",
+            },
+        ],
         dash_legend=[
             {
                 "label": "Revenue",

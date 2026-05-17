@@ -32,6 +32,7 @@ LAYOUTS = {
                 "w": 12.5,
                 "h": 0.5,
             },
+            "color_legend": {"type": "color_legend", "x": 7.5, "y": 6.85, "w": 2.0, "h": 1.0},
             "dash_legend": {"type": "dash_legend", "x": 11, "y": 1.0, "w": 2.0, "h": 0.8},
             "notes": {"type": "text", "x": 0.5, "y": 6.85, "w": 12.5, "h": 0.4},
         },

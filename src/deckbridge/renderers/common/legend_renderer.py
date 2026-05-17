@@ -1,4 +1,4 @@
-from pptx.enum.shapes import MSO_CONNECTOR
+from pptx.enum.shapes import MSO_AUTO_SHAPE_TYPE, MSO_CONNECTOR
 from pptx.util import Inches, Pt
 
 from deckbridge.renderers.common.style_resolver import (
@@ -7,8 +7,173 @@ from deckbridge.renderers.common.style_resolver import (
     resolve_series_dash,
     resolve_series_width,
 )
+from deckbridge.renderers.common.text_renderer import (
+    render_text_slot,
+)
 from deckbridge.renderers.gslides.utils import GSLIDES_LINE_DASH_MAP, hex_to_slides_rgb, inches_to_emu
 from deckbridge.renderers.pptx.utils import PPTX_DASH_MAP, hex_to_rgb255
+
+
+def render_color_legend(ctx, slot_key, slot, slide):
+
+    color_legend = slide.get("color_legend", [])
+
+    if not color_legend:
+        return
+
+    if ctx.backend == "pptx":
+        _render_color_legend_pptx(
+            ctx,
+            slot,
+            color_legend,
+        )
+
+    elif ctx.backend == "gslides":
+        _render_color_legend_gslides(
+            ctx,
+            slot_key,
+            slot,
+            color_legend,
+        )
+
+
+def _render_color_legend_pptx(
+    ctx,
+    slot,
+    color_legend,
+):
+
+    x = slot["x"]
+    y = slot["y"]
+
+    max_rows = 2
+    col_w = 1.75
+    row_h = 0.25
+    box_size = 0.18
+
+    for i, _series in enumerate(color_legend):
+        color = _series.get("color", "#999999")
+
+        row = i % max_rows
+        col = i // max_rows
+
+        x_i = x + (col * col_w)
+        y_i = y + (row * row_h)
+
+        square = ctx.slide_obj.shapes.add_shape(
+            MSO_AUTO_SHAPE_TYPE.RECTANGLE,
+            Inches(x_i),
+            Inches(y_i),
+            Inches(box_size),
+            Inches(box_size),
+        )
+
+        square.fill.solid()
+        square.fill.fore_color.rgb = hex_to_rgb255(color)
+
+        square.line.fill.background()
+        square.shadow.inherit = False
+
+        textbox = ctx.slide_obj.shapes.add_textbox(
+            Inches(x_i + 0.14),
+            Inches(y_i - 0.09),
+            Inches(1.5),
+            Inches(0.3),
+        )
+
+        textbox.text_frame.text = _series.get("name") or _series.get("column") or _series["label"]
+        textbox.text_frame.paragraphs[0].font.size = Pt(12)
+
+
+def _render_color_legend_gslides(
+    ctx,
+    slot_key,
+    slot,
+    color_legend,
+):
+
+    requests = []
+
+    x = slot["x"]
+    y = slot["y"]
+
+    max_rows = 2
+    col_w = 1.75
+    row_h = 0.25
+    box_size = 0.18
+
+    for i, _series in enumerate(color_legend):
+        color = _series.get("color", "#999999")
+
+        row = i % max_rows
+        col = i // max_rows
+
+        x_i = x + (col * col_w)
+        y_i = y + (row * row_h)
+
+        box_id = f"{slot_key}_box_{i}_{ctx.page_id}"
+
+        requests.append(
+            {
+                "createShape": {
+                    "objectId": box_id,
+                    "shapeType": "RECTANGLE",
+                    "elementProperties": {
+                        "pageObjectId": ctx.page_id,
+                        "size": {
+                            "height": {
+                                "magnitude": inches_to_emu(box_size),
+                                "unit": "EMU",
+                            },
+                            "width": {
+                                "magnitude": inches_to_emu(box_size),
+                                "unit": "EMU",
+                            },
+                        },
+                        "transform": {
+                            "scaleX": 1,
+                            "scaleY": 1,
+                            "translateX": inches_to_emu(x_i),
+                            "translateY": inches_to_emu(y_i),
+                            "unit": "EMU",
+                        },
+                    },
+                }
+            }
+        )
+
+        requests.append(
+            {
+                "updateShapeProperties": {
+                    "objectId": box_id,
+                    "shapeProperties": {"shapeBackgroundFill": {"solidFill": {"color": {"rgbColor": hex_to_slides_rgb(color)}}}},
+                    "fields": "shapeBackgroundFill",
+                }
+            }
+        )
+
+        text_slot = {
+            "x": x_i + 0.14,
+            "y": y_i - 0.09,
+            "w": 1.5,
+            "h": 0.3,
+        }
+
+        render_text_slot(
+            backend="gslides",
+            slot_key=f"{slot_key}_text_{i}",
+            slot=text_slot,
+            text=(_series.get("name") or _series.get("column") or _series["label"]),
+            slides_service=ctx.slides_service,
+            presentation_id=ctx.presentation_id,
+            page_id=ctx.page_id,
+        )
+
+    if requests:
+        ctx.slides_service.presentations().batchUpdate(
+            presentationId=ctx.presentation_id,
+            body={"requests": requests},
+        ).execute()
 
 
 def render_dash_legend(ctx, slot_key, slot, slide):
