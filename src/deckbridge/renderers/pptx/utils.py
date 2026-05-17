@@ -1,4 +1,5 @@
 from pptx.dml.color import RGBColor
+from pptx.enum.dml import MSO_LINE_DASH_STYLE
 from pptx.enum.text import PP_ALIGN
 
 PPTX_ALIGN_MAP = {
@@ -6,6 +7,13 @@ PPTX_ALIGN_MAP = {
     "left": PP_ALIGN.LEFT,
     "right": PP_ALIGN.RIGHT,
     "justified": PP_ALIGN.JUSTIFY,
+}
+
+PPTX_DASH_MAP = {
+    "solid": MSO_LINE_DASH_STYLE.SOLID,
+    "dash": MSO_LINE_DASH_STYLE.DASH,
+    "dot": MSO_LINE_DASH_STYLE.ROUND_DOT,
+    "dash_dot": MSO_LINE_DASH_STYLE.DASH_DOT,
 }
 
 

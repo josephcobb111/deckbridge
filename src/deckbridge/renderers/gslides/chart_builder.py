@@ -1,8 +1,9 @@
-from deckbridge.renderers.gslides.utils import GSLIDES_ALIGN_MAP
+from deckbridge.renderers.common.style_resolver import resolve_series_color, resolve_series_dash, resolve_series_width
+from deckbridge.renderers.gslides.utils import GSHEETS_CHART_DASH_MAP, GSLIDES_ALIGN_MAP
 
 from ...deck.blocks import ChartBlock
 from ...deck.specs import ChartSpec
-from .utils import inches_to_pixels
+from .utils import hex_to_slides_rgb, inches_to_pixels
 
 
 class SheetsChartBuilder:
@@ -10,13 +11,13 @@ class SheetsChartBuilder:
         self.sheets = sheets_service
         self.spreadsheet_id = spreadsheet_id
 
-    def create_chart(self, sheet_id, spec: ChartSpec, position: dict):
+    def create_chart(self, sheet_id, spec: ChartSpec, block: ChartBlock, position: dict):
 
         requests = [
             {
                 "addChart": {
                     "chart": {
-                        "spec": self._build_chart_spec(sheet_id, spec),
+                        "spec": self._build_chart_spec(sheet_id, spec, block),
                         "position": {
                             "overlayPosition": {
                                 "anchorCell": {
@@ -40,7 +41,7 @@ class SheetsChartBuilder:
     def apply_chart_style(self, sheet_id, chart_id, block: ChartBlock, chart_theme: dict):
 
         # chart title
-        api_spec = self._build_chart_spec(sheet_id, block.chart)
+        api_spec = self._build_chart_spec(sheet_id, block.chart, block)
         if chart_theme["chart_title"]["has_title"]:
             api_spec["title"] = block.chart_title
             api_spec["titleTextFormat"] = {
@@ -98,6 +99,30 @@ class SheetsChartBuilder:
         else:
             api_spec["basicChart"]["legendPosition"] = legend_theme["position"] + "_LEGEND"
 
+        # data labels
+        if block.chart.show_data_labels:
+            data_labels_theme = chart_theme.get("data_labels", {})
+            for i, s in enumerate(block.chart.series):
+                api_spec["basicChart"]["series"][i]["dataLabel"] = {
+                    "type": "DATA",
+                    "placement": data_labels_theme["position"],
+                    "textFormat": {
+                        "fontSize": data_labels_theme["font_size"],
+                        "bold": data_labels_theme["bold"],
+                        "italic": data_labels_theme["italic"],
+                    },
+                }
+
+        # series colors, dashes
+        for i, s in enumerate(block.chart.series):
+            color = resolve_series_color(block.chart.series[i], i, chart_theme)
+            api_spec["basicChart"]["series"][i]["color"] = hex_to_slides_rgb(color)
+            if block.chart.chart_type == "line":
+                api_spec["basicChart"]["series"][i]["lineStyle"] = {
+                    "type": GSHEETS_CHART_DASH_MAP[resolve_series_dash(block.chart.series[i], chart_theme)],
+                    "width": resolve_series_width(block.chart.series[i], chart_theme),
+                }
+
         requests = [
             {
                 "updateChartSpec": {
@@ -115,8 +140,30 @@ class SheetsChartBuilder:
             "bar": "COLUMN",
         }[chart_type]
 
-    def _build_chart_spec(self, sheet_id, spec: ChartSpec):
+    def _build_chart_spec(self, sheet_id, spec: ChartSpec, block: ChartBlock):
         chart_type = self._map_chart_type(spec.chart_type)
+
+        series = []
+
+        for i, s in enumerate(spec.series):
+            series.append(
+                {
+                    "series": {
+                        "sourceRange": {
+                            "sources": [
+                                {
+                                    "sheetId": sheet_id,
+                                    "startRowIndex": 0,
+                                    "endRowIndex": len(spec.data) + 1,
+                                    "startColumnIndex": i + 1,  # assuming x is col 0
+                                    "endColumnIndex": i + 2,
+                                }
+                            ]
+                        }
+                    },
+                    "targetAxis": "LEFT_AXIS",
+                }
+            )
 
         return {
             "title": None,
@@ -127,11 +174,11 @@ class SheetsChartBuilder:
                 "axis": [
                     {
                         "position": "BOTTOM_AXIS",
-                        "title": spec.x,
+                        "title": block.category_axis_title,
                     },
                     {
                         "position": "LEFT_AXIS",
-                        "title": spec.y,
+                        "title": block.value_axis_title,
                     },
                 ],
                 "domains": [
@@ -151,22 +198,6 @@ class SheetsChartBuilder:
                         }
                     }
                 ],
-                "series": [
-                    {
-                        "series": {
-                            "sourceRange": {
-                                "sources": [
-                                    {
-                                        "sheetId": sheet_id,
-                                        "startRowIndex": 0,
-                                        "endRowIndex": len(spec.data) + 1,
-                                        "startColumnIndex": 1,
-                                        "endColumnIndex": 2,
-                                    }
-                                ]
-                            }
-                        }
-                    }
-                ],
+                "series": series,
             },
         }
