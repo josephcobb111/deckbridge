@@ -34,7 +34,10 @@ def main():
         chart_type="line",
         data=df,
         x="month",
-        y=["revenue", "cost"],
+        series=[
+            {"column": "revenue", "name": "Revenue!", "color": "#C00000", "dash_style": "solid"},
+            {"column": "cost", "name": "Cost!", "color": "#7030A0"},
+        ],
         value_axis_range=(0, 100),
         value_axis_tick_format="$0.0",
     )
@@ -114,12 +117,12 @@ def main():
             {
                 "label": "Revenue",
                 "dash_style": "solid",
-                "color": "#999999",
+                "color": "#C00000",
             },
             {
                 "label": "Cost",
                 "dash_style": "dash",
-                "color": "#999999",
+                "color": "#7030A0",
             },
         ],
         notes="Notes: Adjusted for recent acquisitions.",
