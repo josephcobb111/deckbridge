@@ -57,6 +57,11 @@ class PPTXChartBuilder:
         mapping = {
             "line": XL_CHART_TYPE.LINE,
             "bar": XL_CHART_TYPE.COLUMN_CLUSTERED,
+            "area_stacked": XL_CHART_TYPE.AREA_STACKED,
+            "area_stacked_100": XL_CHART_TYPE.AREA_STACKED_100,
+            "bar_stacked": XL_CHART_TYPE.BAR_STACKED,
+            "column_stacked": XL_CHART_TYPE.COLUMN_STACKED,
+            # "smooth_scatter": XL_CHART_TYPE.XY_SCATTER_SMOOTH_NO_MARKERS,  # TO DO: enable scatter
         }
 
         if chart_type not in mapping:

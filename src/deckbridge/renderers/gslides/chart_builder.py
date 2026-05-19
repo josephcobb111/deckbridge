@@ -138,6 +138,7 @@ class SheetsChartBuilder:
         return {
             "line": "LINE",
             "bar": "COLUMN",
+            # TO DO: add other gslide types
         }[chart_type]
 
     def _build_chart_spec(self, sheet_id, spec: ChartSpec, block: ChartBlock):
