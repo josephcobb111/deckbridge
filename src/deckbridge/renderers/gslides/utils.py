@@ -10,6 +10,12 @@ GSLIDES_ALIGN_MAP = {
     "justified": "JUSTIFIED",
 }
 
+GSLIDES_VERTICAL_ALIGN_MAP = {
+    "TOP": "TOP",
+    "MIDDLE": "MIDDLE",
+    "BOTTOM": "BOTTOM",
+}
+
 GSHEETS_CHART_DASH_MAP = {
     "solid": "SOLID",
     "dash": "MEDIUM_DASHED",

@@ -184,6 +184,7 @@ def _render_color_legend_gslides(
             "y": y_i + LEGEND_STYLE["text_y_offset"],
             "w": LEGEND_STYLE["text_box_w"],
             "h": LEGEND_STYLE["text_box_h"],
+            "vertical_align": "MIDDLE",
         }
 
         render_text_slot(
@@ -347,6 +348,7 @@ def _render_dash_legend_gslides(
             "y": y_i + LEGEND_STYLE["line_text_y_offset"],
             "w": 1.5,
             "h": 0.3,
+            "vertical_align": "MIDDLE",
         }
 
         render_text_slot(

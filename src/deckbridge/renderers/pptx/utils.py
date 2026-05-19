@@ -1,12 +1,18 @@
 from pptx.dml.color import RGBColor
 from pptx.enum.dml import MSO_LINE_DASH_STYLE
-from pptx.enum.text import PP_ALIGN
+from pptx.enum.text import MSO_VERTICAL_ANCHOR, PP_ALIGN
 
 PPTX_ALIGN_MAP = {
     "center": PP_ALIGN.CENTER,
     "left": PP_ALIGN.LEFT,
     "right": PP_ALIGN.RIGHT,
     "justified": PP_ALIGN.JUSTIFY,
+}
+
+PPTX_VERTICAL_ALIGN_MAP = {
+    "TOP": MSO_VERTICAL_ANCHOR.TOP,
+    "MIDDLE": MSO_VERTICAL_ANCHOR.MIDDLE,
+    "BOTTOM": MSO_VERTICAL_ANCHOR.BOTTOM,
 }
 
 PPTX_DASH_MAP = {
