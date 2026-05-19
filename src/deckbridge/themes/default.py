@@ -41,6 +41,20 @@ THEME = {
             "italic": True,
             "underline": False,
         },
+        "color_legend": {
+            "font_size": 12,
+            "vertical_align": "MIDDLE",
+            "bold": False,
+            "italic": False,
+            "underline": False,
+        },
+        "dash_legend": {
+            "font_size": 12,
+            "vertical_align": "MIDDLE",
+            "bold": False,
+            "italic": False,
+            "underline": False,
+        },
         "notes": {
             "font_size": 10,
         },

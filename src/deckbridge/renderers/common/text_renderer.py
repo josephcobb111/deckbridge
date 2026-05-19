@@ -1,9 +1,8 @@
-from pptx.enum.text import PP_ALIGN
 from pptx.util import Inches, Pt
 
 from deckbridge.renderers.common.style_resolver import resolve_text_style
-from deckbridge.renderers.gslides.utils import GSLIDES_ALIGN_MAP, hex_to_slides_rgb, inches_to_emu
-from deckbridge.renderers.pptx.utils import PPTX_ALIGN_MAP, hex_to_rgb255
+from deckbridge.renderers.gslides.utils import GSLIDES_ALIGN_MAP, GSLIDES_VERTICAL_ALIGN_MAP, hex_to_slides_rgb, inches_to_emu
+from deckbridge.renderers.pptx.utils import PPTX_ALIGN_MAP, PPTX_VERTICAL_ALIGN_MAP, hex_to_rgb255
 
 
 def resolve_text_content(slide, slot_key, slot):
@@ -82,6 +81,9 @@ def _render_text_pptx(slide, slot_key, slot, text):
     tf = textbox.text_frame
     tf.clear()
 
+    base_style = resolve_text_style(slot_key, slot)
+    tf.vertical_anchor = PPTX_VERTICAL_ALIGN_MAP[base_style.get("vertical_align", "TOP")]
+
     p = tf.paragraphs[0]
 
     lines = text if isinstance(text, list) else [{"text": text, "style_key": slot_key}]
@@ -99,7 +101,6 @@ def _render_text_pptx(slide, slot_key, slot, text):
         run.font.color.rgb = hex_to_rgb255(style["font_color"])
 
     # alignment applies at paragraph level
-    base_style = resolve_text_style(slot_key, slot)
     p.alignment = PPTX_ALIGN_MAP[base_style["align"]]
 
 
@@ -213,6 +214,20 @@ def _render_text_gslides(
                 "textRange": {"type": "ALL"},
                 "style": {"alignment": GSLIDES_ALIGN_MAP[base_style["align"]]},
                 "fields": "alignment",
+            }
+        }
+    )
+
+    vertical_align = base_style.get("vertical_align", "TOP")
+
+    requests.append(
+        {
+            "updateShapeProperties": {
+                "objectId": object_id,
+                "shapeProperties": {
+                    "contentAlignment": GSLIDES_VERTICAL_ALIGN_MAP[vertical_align],
+                },
+                "fields": "contentAlignment",
             }
         }
     )
