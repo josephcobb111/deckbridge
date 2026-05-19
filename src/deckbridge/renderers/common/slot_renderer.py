@@ -22,12 +22,8 @@ def render_slots(ctx, slide):
             _render_text(ctx, slot, text, slot_key)
 
         elif slot_type == "color_legend":
-            render_color_legend(
-                ctx,
-                slot_key,
-                slot,
-                slide,
-            )
+            render_color_legend(ctx, slot_key, slot, slide)
+
         elif slot_type == "dash_legend":
             render_dash_legend(ctx, slot_key, slot, slide)
 

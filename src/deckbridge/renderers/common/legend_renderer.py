@@ -2,18 +2,10 @@ from pptx.enum.shapes import MSO_AUTO_SHAPE_TYPE, MSO_CONNECTOR
 from pptx.util import Inches, Pt
 
 from deckbridge.renderers.common.text_renderer import render_text_slot
-from deckbridge.renderers.gslides.utils import (
-    GSLIDES_LINE_DASH_MAP,
-    hex_to_slides_rgb,
-    inches_to_emu,
-)
-from deckbridge.renderers.pptx.utils import (
-    PPTX_DASH_MAP,
-    hex_to_rgb255,
-)
+from deckbridge.renderers.gslides.utils import GSLIDES_LINE_DASH_MAP, hex_to_slides_rgb, inches_to_emu
+from deckbridge.renderers.pptx.utils import PPTX_DASH_MAP, hex_to_rgb255
 
 LEGEND_STYLE = {
-    "font_size": 12,
     # Layout
     "max_rows": 2,
     "col_w": 1.15,
@@ -44,10 +36,7 @@ def _grid_position(i, x, y):
     row = i % LEGEND_STYLE["max_rows"]
     col = i // LEGEND_STYLE["max_rows"]
 
-    return (
-        x + col * LEGEND_STYLE["col_w"],
-        y + row * LEGEND_STYLE["row_h"],
-    )
+    return (x + col * LEGEND_STYLE["col_w"], y + row * LEGEND_STYLE["row_h"])
 
 
 def _line_position(i, y):
@@ -67,26 +56,13 @@ def render_color_legend(ctx, slot_key, slot, slide):
         return
 
     if ctx.backend == "pptx":
-        _render_color_legend_pptx(
-            ctx,
-            slot,
-            legend,
-        )
+        _render_color_legend_pptx(ctx, slot, legend)
 
     elif ctx.backend == "gslides":
-        _render_color_legend_gslides(
-            ctx,
-            slot_key,
-            slot,
-            legend,
-        )
+        _render_color_legend_gslides(ctx, slot_key, slot, legend)
 
 
-def _render_color_legend_pptx(
-    ctx,
-    slot,
-    legend,
-):
+def _render_color_legend_pptx(ctx, slot, legend):
 
     x = slot["x"]
     y = slot["y"]
@@ -110,23 +86,23 @@ def _render_color_legend_pptx(
         square.line.fill.background()
         square.shadow.inherit = False
 
-        textbox = ctx.slide_obj.shapes.add_textbox(
-            Inches(x_i + LEGEND_STYLE["text_x_offset"]),
-            Inches(y_i + LEGEND_STYLE["text_y_offset"]),
-            Inches(LEGEND_STYLE["text_box_w"]),
-            Inches(LEGEND_STYLE["text_box_h"]),
+        text_slot = slot | {
+            "x": x_i + LEGEND_STYLE["text_x_offset"],
+            "y": y_i + LEGEND_STYLE["text_y_offset"],
+            "w": LEGEND_STYLE["text_box_w"],
+            "h": LEGEND_STYLE["text_box_h"],
+        }
+
+        render_text_slot(
+            backend="pptx",
+            slot_key=f"color_legend_text_{i}",
+            slot=text_slot,
+            text=[{"text": _get_label(item), "style_key": "color_legend"}],
+            slide_obj=ctx.slide_obj,
         )
 
-        textbox.text_frame.text = _get_label(item)
-        textbox.text_frame.paragraphs[0].font.size = Pt(LEGEND_STYLE["font_size"])
 
-
-def _render_color_legend_gslides(
-    ctx,
-    slot_key,
-    slot,
-    legend,
-):
+def _render_color_legend_gslides(ctx, slot_key, slot, legend):
 
     requests = []
 
@@ -179,19 +155,18 @@ def _render_color_legend_gslides(
             }
         )
 
-        text_slot = {
+        text_slot = slot | {
             "x": x_i + LEGEND_STYLE["text_x_offset"],
             "y": y_i + LEGEND_STYLE["text_y_offset"],
             "w": LEGEND_STYLE["text_box_w"],
             "h": LEGEND_STYLE["text_box_h"],
-            "vertical_align": "MIDDLE",
         }
 
         render_text_slot(
             backend="gslides",
             slot_key=f"{slot_key}_text_{i}",
             slot=text_slot,
-            text=_get_label(item),
+            text=[{"text": _get_label(item), "style_key": "color_legend"}],
             slides_service=ctx.slides_service,
             presentation_id=ctx.presentation_id,
             page_id=ctx.page_id,
@@ -217,26 +192,13 @@ def render_dash_legend(ctx, slot_key, slot, slide):
         return
 
     if ctx.backend == "pptx":
-        _render_dash_legend_pptx(
-            ctx,
-            slot,
-            legend,
-        )
+        _render_dash_legend_pptx(ctx, slot, legend)
 
     elif ctx.backend == "gslides":
-        _render_dash_legend_gslides(
-            ctx,
-            slot_key,
-            slot,
-            legend,
-        )
+        _render_dash_legend_gslides(ctx, slot_key, slot, legend)
 
 
-def _render_dash_legend_pptx(
-    ctx,
-    slot,
-    legend,
-):
+def _render_dash_legend_pptx(ctx, slot, legend):
 
     x = slot["x"]
     y = slot["y"]
@@ -264,15 +226,20 @@ def _render_dash_legend_pptx(
         if dash != "solid":
             line.line.dash_style = PPTX_DASH_MAP[dash]
 
-        textbox = ctx.slide_obj.shapes.add_textbox(
-            Inches(x + LEGEND_STYLE["line_text_x_offset"]),
-            Inches(y_i + LEGEND_STYLE["line_text_y_offset"]),
-            Inches(1.5),
-            Inches(0.3),
-        )
+        text_slot = slot | {
+            "x": x + LEGEND_STYLE["line_text_x_offset"],
+            "y": y_i + LEGEND_STYLE["line_text_y_offset"],
+            "w": 1.5,
+            "h": 0.3,
+        }
 
-        textbox.text_frame.text = label
-        textbox.text_frame.paragraphs[0].font.size = Pt(LEGEND_STYLE["font_size"])
+        render_text_slot(
+            backend="pptx",
+            slot_key=f"dash_legend_text_{i}",
+            slot=text_slot,
+            text=[{"text": label, "style_key": "dash_legend"}],
+            slide_obj=ctx.slide_obj,
+        )
 
 
 def _render_dash_legend_gslides(
@@ -343,19 +310,18 @@ def _render_dash_legend_gslides(
             }
         )
 
-        text_slot = {
+        text_slot = slot | {
             "x": x + LEGEND_STYLE["line_text_x_offset"],
             "y": y_i + LEGEND_STYLE["line_text_y_offset"],
             "w": 1.5,
             "h": 0.3,
-            "vertical_align": "MIDDLE",
         }
 
         render_text_slot(
             backend="gslides",
             slot_key=f"{slot_key}_text_{i}",
             slot=text_slot,
-            text=label,
+            text=[{"text": label, "style_key": "dash_legend"}],
             slides_service=ctx.slides_service,
             presentation_id=ctx.presentation_id,
             page_id=ctx.page_id,

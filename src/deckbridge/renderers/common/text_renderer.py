@@ -81,7 +81,8 @@ def _render_text_pptx(slide, slot_key, slot, text):
     tf = textbox.text_frame
     tf.clear()
 
-    tf.vertical_anchor = PPTX_VERTICAL_ALIGN_MAP[slot.get("vertical_align", "TOP")]
+    base_style = resolve_text_style(slot_key, slot)
+    tf.vertical_anchor = PPTX_VERTICAL_ALIGN_MAP[base_style.get("vertical_align", "TOP")]
 
     p = tf.paragraphs[0]
 
@@ -100,7 +101,6 @@ def _render_text_pptx(slide, slot_key, slot, text):
         run.font.color.rgb = hex_to_rgb255(style["font_color"])
 
     # alignment applies at paragraph level
-    base_style = resolve_text_style(slot_key, slot)
     p.alignment = PPTX_ALIGN_MAP[base_style["align"]]
 
 
@@ -218,7 +218,7 @@ def _render_text_gslides(
         }
     )
 
-    vertical_align = slot.get("vertical_align", "TOP")
+    vertical_align = base_style.get("vertical_align", "TOP")
 
     requests.append(
         {
