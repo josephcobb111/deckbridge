@@ -3,7 +3,6 @@ from importlib import resources
 from pptx import Presentation
 
 from deckbridge.layouts.registry import LAYOUTS
-from deckbridge.renderers.common.axis_resolver import resolve_shared_axis_ranges
 from deckbridge.renderers.common.context import RenderContext
 from deckbridge.renderers.common.slot_renderer import render_slots
 from deckbridge.themes.default import THEME
