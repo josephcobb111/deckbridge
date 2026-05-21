@@ -241,7 +241,36 @@ def main():
                 category_axis_title="Revenue",
             ),
         },
-        value_axis_sync={"mode": "shared"},
+        sync_value_axis=True,
+        notes="Notes: Adjusted for recent acquisitions.",
+    )
+
+    deck.add_slide(
+        slide_title="These should all be the same (except for legend names)",
+        content={
+            "chart_1": ChartBlock(
+                chart=chart4,
+                chart_title="Revenue Trend (Line) - Chart Title",
+                chart_subtitle="2024 Actuals",
+                value_axis_title="Month",
+                category_axis_title="Revenue",
+            ),
+            "chart_2": ChartBlock(
+                chart=chart5,
+                chart_title="Revenue Trend (Line) - Chart Title",
+                chart_subtitle="2024 Actuals",
+                value_axis_title="Month",
+                category_axis_title="Revenue",
+            ),
+            "chart_3": ChartBlock(
+                chart=chart6,
+                chart_title="Revenue Trend (Line) - Chart Title",
+                chart_subtitle="2024 Actuals",
+                value_axis_title="Month",
+                category_axis_title="Revenue",
+            ),
+        },
+        sync_value_axis=(0, 30),
         notes="Notes: Adjusted for recent acquisitions.",
     )
 

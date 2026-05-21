@@ -21,7 +21,7 @@ class PPTXChartBuilder:
 
         return chart_type, chart_data
 
-    def apply_chart_style(self, chart, theme, layout_name, block):
+    def apply_chart_style(self, chart, theme, layout_name, block, value_axis_override):
         """
         Apply theme-driven styling to a chart object
         """
@@ -35,7 +35,7 @@ class PPTXChartBuilder:
         self._apply_legend_style(chart, chart_theme)
         self._turn_gridlines_off(chart)
         self._category_tick_label_low(chart)
-        self._apply_axis_style(chart, chart_theme, block)
+        self._apply_axis_style(chart, chart_theme, block, value_axis_override)
         self._set_data_labels(chart, chart_theme, block)
         self._set_series_colors(chart, chart_theme, block)
         self._set_series_dashes(chart, chart_theme, block)
@@ -139,13 +139,15 @@ class PPTXChartBuilder:
     def _category_tick_label_low(self, chart):
         chart.category_axis.tick_label_position = XL_TICK_LABEL_POSITION.LOW
 
-    def _apply_axis_style(self, chart, chart_theme, block):
+    def _apply_axis_style(self, chart, chart_theme, block, value_axis_override):
         spec = block.chart
         axis = chart.value_axis
 
-        if spec.value_axis_range:
-            axis_min = spec.value_axis_range[0]
-            axis_max = spec.value_axis_range[1]
+        if spec.value_axis_range or value_axis_override:
+            value_axis_range = spec.value_axis_range
+            value_axis_range = value_axis_override if value_axis_override else value_axis_range
+            axis_min = value_axis_range[0]
+            axis_max = value_axis_range[1]
             axis.minimum_scale = axis_min
             axis.maximum_scale = axis_max
 

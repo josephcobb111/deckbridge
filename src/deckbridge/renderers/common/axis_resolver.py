@@ -3,41 +3,42 @@ import math
 
 def resolve_shared_axis_ranges(slide):
 
-    sync = slide.get("value_axis_sync")
+    sync = slide.get("sync_value_axis")
 
     if not sync:
         return
 
-    all_values = []
+    if sync is True:
+        sync = {}
 
-    for block in slide["content"].values():
-        if not hasattr(block, "chart"):
-            continue
+    if isinstance(sync, tuple):
+        return sync
+    else:
+        all_values = []
 
-        chart = block.chart
+        for block in slide["content"].values():
+            if not hasattr(block, "chart"):
+                continue
 
-        for series in chart.series:
-            all_values.extend(chart.data[series["column"]])
+            chart = block.chart
 
-    if not all_values:
-        return
+            for series in chart.series:
+                all_values.extend(chart.data[series["column"]])
 
-    min_val = min(all_values)
-    max_val = max(all_values)
+        if not all_values:
+            return
 
-    padding = (max_val - min_val) * 0.05
+        min_val = min(all_values)
+        max_val = max(all_values)
 
-    min_val -= padding
-    max_val += padding
+        padding = (max_val - min_val) * 0.05
 
-    round_to = sync.get("round_to", 10)
+        min_val -= padding
+        max_val += padding
 
-    min_val = math.floor(min_val / round_to) * round_to
+        round_to = sync.get("round_to", 10)
 
-    max_val = math.ceil(max_val / round_to) * round_to
+        min_val = math.floor(min_val / round_to) * round_to
+        max_val = math.ceil(max_val / round_to) * round_to
 
-    for block in slide["content"].values():
-        if not hasattr(block, "chart"):
-            continue
-
-        block.chart.value_axis_range = (min_val, max_val)
+    return (min_val, max_val)

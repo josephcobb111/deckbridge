@@ -1,5 +1,4 @@
 from deckbridge.layouts.registry import LAYOUTS
-from deckbridge.renderers.common.axis_resolver import resolve_shared_axis_ranges
 from deckbridge.renderers.common.context import RenderContext
 from deckbridge.renderers.common.slot_renderer import render_slots
 from deckbridge.renderers.gslides.chart_compiler import GSlidesChartCompiler
@@ -60,8 +59,6 @@ class GSlidesRenderer:
             chart_compiler=self.chart_compiler,
             theme=THEME,
         )
-
-        resolve_shared_axis_ranges(slide)
 
         render_slots(ctx, slide)
 

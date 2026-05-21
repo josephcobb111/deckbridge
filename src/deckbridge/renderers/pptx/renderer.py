@@ -36,8 +36,6 @@ class PPTXRenderer:
                 theme=THEME,
             )
 
-            resolve_shared_axis_ranges(slide)
-
             render_slots(ctx, slide)
 
         prs.save(output_path)

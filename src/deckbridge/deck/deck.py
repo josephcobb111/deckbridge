@@ -14,7 +14,7 @@ class Deck:
         content=None,
         color_legend=None,
         dash_legend=None,
-        value_axis_sync=None,
+        sync_value_axis=None,
         notes=None,
     ):
         if layout is None:
@@ -29,7 +29,7 @@ class Deck:
                 "content": content or [],
                 "color_legend": color_legend or [],
                 "dash_legend": dash_legend or [],
-                "value_axis_sync": value_axis_sync or {},
+                "sync_value_axis": sync_value_axis or {},
                 "notes": notes,
             }
         )

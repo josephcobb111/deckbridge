@@ -18,7 +18,7 @@ class GSlidesChartCompiler:
         self.chart_builder = SheetsChartBuilder(sheets_service, spreadsheet_id)
         self.embedder = SlidesChartEmbedder(slides_service)
 
-    def compile(self, ctx, slot, block, slot_key):
+    def compile(self, ctx, slot, block, slot_key, value_axis_override=None):
 
         # Create unique sheet name
         sheet_name = f"{slot_key}_{uuid.uuid4().hex[:4]}"
@@ -47,6 +47,7 @@ class GSlidesChartCompiler:
             chart_id,
             block,
             chart_theme,
+            value_axis_override,
         )
 
         response = self._batch_update(requests)

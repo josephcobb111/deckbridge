@@ -38,7 +38,7 @@ class SheetsChartBuilder:
 
         return requests
 
-    def apply_chart_style(self, sheet_id, chart_id, block: ChartBlock, chart_theme: dict):
+    def apply_chart_style(self, sheet_id, chart_id, block: ChartBlock, chart_theme: dict, value_axis_override):
 
         # chart title
         api_spec = self._build_chart_spec(sheet_id, block.chart, block)
@@ -73,10 +73,12 @@ class SheetsChartBuilder:
                 "italic": value_axis_theme["italic"],
             },
         }
-        if block.chart.value_axis_range:
+        if block.chart.value_axis_range or value_axis_override:
+            value_axis_range = block.chart.value_axis_range
+            value_axis_range = value_axis_override if value_axis_override else value_axis_range
             value_axis["viewWindowOptions"] = {
-                "viewWindowMin": block.chart.value_axis_range[0],
-                "viewWindowMax": block.chart.value_axis_range[1],
+                "viewWindowMin": value_axis_range[0],
+                "viewWindowMax": value_axis_range[1],
             }
         category_axis = {
             "title": block.category_axis_title,
