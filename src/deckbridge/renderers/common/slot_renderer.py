@@ -1,5 +1,6 @@
 from pptx.util import Inches
 
+from deckbridge.renderers.common.axis_resolver import resolve_shared_axis_ranges
 from deckbridge.renderers.common.legend_renderer import render_color_legend, render_dash_legend
 from deckbridge.renderers.common.text_renderer import render_text_slot, resolve_text_content
 
@@ -15,7 +16,7 @@ def render_slots(ctx, slide):
         # -----------------------
         if slot_type == "chart":
             block = slide["content"].get(slot_key)
-            _render_chart(ctx, slot, block, slot_key)
+            _render_chart(ctx, slot, block, slot_key, slide)
 
         elif slot_type == "text":
             text = resolve_text_content(slide, slot_key, slot)
@@ -28,11 +29,12 @@ def render_slots(ctx, slide):
             render_dash_legend(ctx, slot_key, slot, slide)
 
 
-def _render_chart(ctx, slot, block, slot_key):
+def _render_chart(ctx, slot, block, slot_key, slide):
     if not block:
         return
 
-    ctx.chart_compiler.compile(ctx, slot, block, slot_key)
+    shared_axis = resolve_shared_axis_ranges(slide)
+    ctx.chart_compiler.compile(ctx, slot, block, slot_key, shared_axis)
 
 
 def _render_text(ctx, slot, text, slot_key):

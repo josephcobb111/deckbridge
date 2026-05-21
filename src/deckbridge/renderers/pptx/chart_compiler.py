@@ -11,7 +11,7 @@ class PPTXChartCompiler:
     def __init__(self):
         self.builder = PPTXChartBuilder()
 
-    def compile(self, ctx, slot, block, chart_key):
+    def compile(self, ctx, slot, block, chart_key, value_axis_override=None):
         # -----------------------
         # Position
         # -----------------------
@@ -42,4 +42,5 @@ class PPTXChartCompiler:
             theme=ctx.theme,
             layout_name=ctx.layout_spec.name,
             block=block,
+            value_axis_override=value_axis_override,
         )
