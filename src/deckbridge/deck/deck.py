@@ -29,7 +29,7 @@ class Deck:
                 "content": content or [],
                 "color_legend": color_legend or [],
                 "dash_legend": dash_legend or [],
-                "sync_value_axis": sync_value_axis or {},
+                "sync_value_axis": sync_value_axis or (),
                 "notes": notes,
             }
         )
