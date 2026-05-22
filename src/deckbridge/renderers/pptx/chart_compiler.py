@@ -1,8 +1,4 @@
-from pptx.chart.data import CategoryChartData
-from pptx.enum.chart import XL_CHART_TYPE, XL_LEGEND_POSITION
-from pptx.util import Inches, Pt
-
-from deckbridge.utils import deep_merge
+from pptx.util import Inches
 
 from .chart_builder import PPTXChartBuilder
 

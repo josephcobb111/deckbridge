@@ -76,10 +76,11 @@ class SheetsChartBuilder:
         if block.chart.value_axis_range or value_axis_override:
             value_axis_range = block.chart.value_axis_range
             value_axis_range = value_axis_override if value_axis_override else value_axis_range
-            value_axis["viewWindowOptions"] = {
-                "viewWindowMin": value_axis_range[0],
-                "viewWindowMax": value_axis_range[1],
-            }
+            if value_axis_range is not None:
+                value_axis["viewWindowOptions"] = {
+                    "viewWindowMin": value_axis_range[0],
+                    "viewWindowMax": value_axis_range[1],
+                }
         category_axis = {
             "title": block.category_axis_title,
             "position": "BOTTOM_AXIS",
@@ -143,7 +144,6 @@ class SheetsChartBuilder:
         }[chart_type]
 
     def _build_chart_spec(self, sheet_id, spec: ChartSpec, block: ChartBlock):
-        chart_type = self._map_chart_type(spec.chart_type)
 
         series = []
 

@@ -2,7 +2,6 @@ import uuid
 
 from deckbridge.renderers.common.style_resolver import resolve_chart_theme
 
-from ...deck.specs import ChartSpec
 from .chart_builder import SheetsChartBuilder
 from .chart_embedder import SlidesChartEmbedder
 from .sheets_writer import SheetsDataWriter
@@ -24,7 +23,6 @@ class GSlidesChartCompiler:
         sheet_name = f"{slot_key}_{uuid.uuid4().hex[:4]}"
 
         # Write data
-        value_axis_tick_format = block.chart.value_axis_tick_format or None
         sheet_name, sheet_id = self.writer.write_dataframe(block, sheet_name=sheet_name)
 
         # Create chart

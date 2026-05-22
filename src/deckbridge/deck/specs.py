@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Dict
+from typing import Dict, Optional
 
 import pandas as pd
 
@@ -18,12 +18,12 @@ class ChartSpec:
         data: pd.DataFrame,
         x: str,
         *,
-        y: str = None,
-        series: list[dict] = None,
-        value_axis_range: tuple[float] = None,
-        value_axis_tick_format: str = None,
+        y: Optional[str] = None,
+        series: Optional[list[dict]] = None,
+        value_axis_range: Optional[tuple[float, float]] = None,
+        value_axis_tick_format: Optional[str] = None,
         data_format: str = "wide",
-        series_field: str = None,
+        series_field: Optional[str] = None,
         show_data_labels: bool = False,
     ):
         self.chart_type = chart_type
