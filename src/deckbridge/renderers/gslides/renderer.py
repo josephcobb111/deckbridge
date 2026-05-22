@@ -1,8 +1,6 @@
-from deckbridge.layouts.registry import LAYOUTS
 from deckbridge.renderers.common.context import RenderContext
 from deckbridge.renderers.common.slot_renderer import render_slots
 from deckbridge.renderers.gslides.chart_compiler import GSlidesChartCompiler
-from deckbridge.themes.default import THEME
 
 
 class GSlidesRenderer:
@@ -48,7 +46,7 @@ class GSlidesRenderer:
     # RENDER CONTENT
     # =========================================================
     def _render_content(self, slide, presentation_id, page_id):
-        layout_spec = LAYOUTS[slide["layout"]]
+        layout_spec = self.layouts[slide["layout"]]
 
         ctx = RenderContext(
             backend="gslides",
@@ -57,7 +55,7 @@ class GSlidesRenderer:
             presentation_id=presentation_id,
             page_id=page_id,
             chart_compiler=self.chart_compiler,
-            theme=THEME,
+            theme=self.theme,
         )
 
         render_slots(ctx, slide)

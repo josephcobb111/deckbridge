@@ -9,7 +9,7 @@ def resolve_chart_theme(theme, layout_name):
     return deep_merge(base, layout_override)
 
 
-def resolve_text_style(slot_key, slot):
+def resolve_text_style(slot_key, slot, theme, layout_name):
     """
     Merge style layers:
     DEFAULT → THEME (global) → THEME (slot) → slot
@@ -17,10 +17,13 @@ def resolve_text_style(slot_key, slot):
 
     slot_group = slot.get("style_key", slot_key)
 
+    chart_theme = resolve_chart_theme(theme, layout_name) if "chart" in slot_key else {}
+
     style = {
         **DEFAULT_TEXT_STYLE,
-        **THEME.get("text", {}),
-        **THEME.get("slots", {}).get(slot_group, {}),
+        **theme.get("text", {}),
+        **theme.get("slots", {}).get(slot_group, {}),
+        **chart_theme.get(slot_group, {}),
         **slot,
     }
 

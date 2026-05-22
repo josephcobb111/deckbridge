@@ -3,6 +3,7 @@ from pptx.util import Inches, Pt
 from deckbridge.renderers.common.style_resolver import resolve_text_style
 from deckbridge.renderers.gslides.utils import GSLIDES_ALIGN_MAP, GSLIDES_VERTICAL_ALIGN_MAP, hex_to_slides_rgb, inches_to_emu
 from deckbridge.renderers.pptx.utils import PPTX_ALIGN_MAP, PPTX_VERTICAL_ALIGN_MAP, hex_to_rgb255
+from deckbridge.themes.default import THEME
 
 
 def resolve_text_content(slide, slot_key, slot):
@@ -49,12 +50,14 @@ def render_text_slot(
     slides_service=None,
     presentation_id=None,
     page_id=None,
+    theme=THEME,
+    layout_name="",
 ):
     if not text:
         return
 
     if backend == "pptx":
-        _render_text_pptx(slide_obj, slot_key, slot, text)
+        _render_text_pptx(slide_obj, slot_key, slot, text, theme, layout_name)
 
     elif backend == "gslides":
         _render_text_gslides(
@@ -64,13 +67,15 @@ def render_text_slot(
             slot_key,
             slot,
             text,
+            theme,
+            layout_name,
         )
 
     else:
         raise ValueError(f"Unsupported backend: {backend}")
 
 
-def _render_text_pptx(slide, slot_key, slot, text):
+def _render_text_pptx(slide, slot_key, slot, text, theme, layout_name):
     textbox = slide.shapes.add_textbox(
         Inches(slot["x"]),
         Inches(slot["y"]),
@@ -81,7 +86,7 @@ def _render_text_pptx(slide, slot_key, slot, text):
     tf = textbox.text_frame
     tf.clear()
 
-    base_style = resolve_text_style(slot_key, slot)
+    base_style = resolve_text_style(slot_key, slot, theme, layout_name)
     tf.vertical_anchor = PPTX_VERTICAL_ALIGN_MAP[base_style.get("vertical_align", "TOP")]
 
     p = tf.paragraphs[0]
@@ -92,7 +97,7 @@ def _render_text_pptx(slide, slot_key, slot, text):
         run = p.add_run()
         run.text = line["text"]
 
-        style = resolve_text_style(line["style_key"], {"style_key": line["style_key"]})
+        style = resolve_text_style(line["style_key"], {"style_key": line["style_key"]}, theme, layout_name)
 
         run.font.size = Pt(style["font_size"])
         run.font.bold = style["bold"]
@@ -111,6 +116,8 @@ def _render_text_gslides(
     slot_key,
     slot,
     text,
+    theme,
+    layout_name,
 ):
     object_id = f"{slot_key}_{page_id}"
 
@@ -177,7 +184,7 @@ def _render_text_gslides(
     # Apply styles per range
     # -----------------------
     for start, end, style_key in ranges:
-        style = resolve_text_style(style_key, {"style_key": style_key})
+        style = resolve_text_style(style_key, {"style_key": style_key}, theme, layout_name)
 
         api_style = {
             "fontSize": {"magnitude": style["font_size"], "unit": "PT"},
@@ -205,7 +212,7 @@ def _render_text_gslides(
     # -----------------------
     # Alignment (whole paragraph)
     # -----------------------
-    base_style = resolve_text_style(slot_key, slot)
+    base_style = resolve_text_style(slot_key, slot, theme, layout_name)
 
     requests.append(
         {

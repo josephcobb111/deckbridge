@@ -47,4 +47,5 @@ def _render_text(ctx, slot, text, slot_key):
         slides_service=ctx.slides_service,
         presentation_id=ctx.presentation_id,
         page_id=ctx.page_id,
+        layout_name=ctx.layout_spec.name,
     )

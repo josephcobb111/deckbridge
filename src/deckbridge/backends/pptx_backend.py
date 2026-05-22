@@ -8,4 +8,8 @@ class PPTXBackend(BaseBackend):
         self.template_path = template_path
 
     def render(self, deck):
-        PPTXRenderer(template_path=self.template_path).render(deck, self.output_path)
+        renderer = PPTXRenderer(template_path=self.template_path)
+        renderer.theme = deck.config.theme
+        renderer.layouts = deck.config.layouts
+
+        renderer.render(deck, self.output_path)
