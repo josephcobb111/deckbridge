@@ -212,3 +212,7 @@ good-names = ["df", "f"]
 [tool.pylint.miscellaneous]
 # List of note tags to take in consideration, separated by a comma
 notes = ["FIXME", "XXX", "TODO"]
+
+[tool.pylint.design]
+max-args = 10
+max-positional-arguments = 10
