@@ -161,6 +161,7 @@ ignore = [
     "UP035",  # `typing.x` is deprecated, use `x` instead.
     "UP006",  # `typing.x` is deprecated, use `x` instead.
     "C901",  # McCabe complexity
+    "D100",  # Missing docstring in public module
 ]
 
 [tool.ruff.lint.per-file-ignores]
@@ -199,7 +200,13 @@ logging-format-style = "new"
 fail-under = 9.5
 
 [tool.pylint."messages control"]
-disable = ["unspecified-encoding", "logging-too-many-args", "logging-fstring-interpolation", "too-few-public-methods"]
+disable = [
+    "unspecified-encoding",
+    "logging-too-many-args",
+    "logging-fstring-interpolation",
+    "too-few-public-methods",
+    "missing-module-docstring",
+]
 good-names = ["df", "f"]
 
 [tool.pylint.miscellaneous]

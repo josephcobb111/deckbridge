@@ -1,4 +1,4 @@
-from deckbridge.themes.default import DEFAULT_TEXT_STYLE, THEME
+from deckbridge.themes.default import DEFAULT_TEXT_STYLE
 from deckbridge.utils import deep_merge
 
 

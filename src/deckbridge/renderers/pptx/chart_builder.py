@@ -1,6 +1,6 @@
 from pptx.chart.data import CategoryChartData
 from pptx.enum.chart import XL_CHART_TYPE, XL_DATA_LABEL_POSITION, XL_LEGEND_POSITION, XL_TICK_LABEL_POSITION
-from pptx.util import Inches, Pt
+from pptx.util import Pt
 
 from deckbridge.renderers.common.style_resolver import (
     resolve_chart_theme,

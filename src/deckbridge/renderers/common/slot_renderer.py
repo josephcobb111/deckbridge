@@ -1,5 +1,3 @@
-from pptx.util import Inches
-
 from deckbridge.renderers.common.axis_resolver import resolve_shared_axis_ranges
 from deckbridge.renderers.common.legend_renderer import render_color_legend, render_dash_legend
 from deckbridge.renderers.common.text_renderer import render_text_slot, resolve_text_content
