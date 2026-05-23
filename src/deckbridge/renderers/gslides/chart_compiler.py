@@ -5,6 +5,7 @@ from deckbridge.renderers.common.style_resolver import resolve_chart_theme
 from .chart_builder import SheetsChartBuilder
 from .chart_embedder import SlidesChartEmbedder
 from .sheets_writer import SheetsDataWriter
+from .utils import text_to_number
 
 
 class GSlidesChartCompiler:
@@ -23,7 +24,7 @@ class GSlidesChartCompiler:
         # Create ids
         # -------------------------
         sheet_name = f"{slot_key}_{uuid.uuid4().hex[:4]}"
-        chart_id = ctx.allocate_chart_id()
+        chart_id = text_to_number(f"{sheet_name}_chart")
 
         # -------------------------
         # Write sheet data
@@ -34,7 +35,7 @@ class GSlidesChartCompiler:
         # Create chart
         # -------------------------
         requests = self.chart_builder.create_chart(chart_id, sheet_id, block.chart, block, slot)
-        ctx.add_sheet_requests(requests)
+        ctx.add_create_chart_requests(requests)
 
         # -------------------------
         # Style chart

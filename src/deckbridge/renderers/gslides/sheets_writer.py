@@ -1,8 +1,4 @@
-import zlib
-
-
-def sheet_id_from_name(sheet_name):
-    return zlib.crc32(sheet_name.encode()) & 0x7FFFFFFF
+from .utils import text_to_number
 
 
 class SheetsDataWriter:
@@ -15,7 +11,7 @@ class SheetsDataWriter:
         df = block.chart.data
 
         # Create new sheet
-        sheet_id = sheet_id_from_name(sheet_name)
+        sheet_id = text_to_number(sheet_name)
         ctx.add_create_sheet_requests({"addSheet": {"properties": {"sheetId": sheet_id, "title": sheet_name}}})
 
         # Write data

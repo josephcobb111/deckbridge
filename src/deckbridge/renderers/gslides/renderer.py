@@ -12,6 +12,7 @@ class GSlidesRenderer:
         self.create_sheet_requests = []
         self.create_values_requests = []
         self.format_values_requests = []
+        self.create_chart_requests = []
 
         self.chart_compiler = GSlidesChartCompiler(slides_service, sheets_service, spreadsheet_id)
 
@@ -48,6 +49,12 @@ class GSlidesRenderer:
             self.sheets.spreadsheets().batchUpdate(
                 spreadsheetId=self.spreadsheet_id,
                 body={"requests": self.format_values_requests},
+            ).execute()
+
+        if self.create_chart_requests:
+            self.sheets.spreadsheets().batchUpdate(
+                spreadsheetId=self.spreadsheet_id,
+                body={"requests": self.create_chart_requests},
             ).execute()
 
     # =========================================================
@@ -91,6 +98,7 @@ class GSlidesRenderer:
         self.create_sheet_requests.extend(ctx.create_sheet_requests)
         self.create_values_requests.extend(ctx.create_values_requests)
         self.format_values_requests.extend(ctx.format_values_requests)
+        self.create_chart_requests.extend(ctx.create_chart_requests)
 
         # if ctx.sheet_requests:
         #     self.sheets.spreadsheets().batchUpdate(

@@ -27,6 +27,8 @@ class RenderContext:
     create_sheet_requests: list = field(default_factory=list)
     create_values_requests: list = field(default_factory=list)
     format_values_requests: list = field(default_factory=list)
+    create_chart_requests: list = field(default_factory=list)
+
     sheet_requests: list = field(default_factory=list)
     sheet_values: list = field(default_factory=list)
     slide_requests: list = field(default_factory=list)
@@ -67,6 +69,15 @@ class RenderContext:
             self.format_values_requests.extend(requests)
         else:
             self.format_values_requests.append(requests)
+
+    def add_create_chart_requests(self, requests):
+        if not requests:
+            return
+
+        if isinstance(requests, list):
+            self.create_chart_requests.extend(requests)
+        else:
+            self.create_chart_requests.append(requests)
 
     def add_sheet_requests(self, requests):
         if not requests:
