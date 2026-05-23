@@ -1,4 +1,4 @@
-from pptx.chart.data import CategoryChartData
+from pptx.chart.data import CategoryChartData, XyChartData
 from pptx.enum.chart import XL_CHART_TYPE, XL_DATA_LABEL_POSITION, XL_LEGEND_POSITION, XL_TICK_LABEL_POSITION
 from pptx.util import Pt
 
@@ -8,7 +8,7 @@ from deckbridge.renderers.common.style_resolver import (
     resolve_series_dash,
     resolve_series_width,
 )
-from deckbridge.renderers.pptx.utils import PPTX_DASH_MAP, hex_to_rgb255
+from deckbridge.renderers.pptx.utils import PPTX_DASH_MAP, _validate_xy_numeric, hex_to_rgb255
 
 
 class PPTXChartBuilder:
@@ -40,16 +40,30 @@ class PPTXChartBuilder:
         self._set_series_colors(chart, chart_theme, block)
         self._set_series_dashes(chart, chart_theme, block)
         self._set_series_line_width(chart, chart_theme, block)
+        self._no_lines_scatter_chart(chart)
 
     def _build_chart_data(self, spec):
-        chart_data = CategoryChartData()
+        if spec.chart_type == "scatter":
+            chart_data = XyChartData()
 
-        categories = list(spec.data[spec.x])
-        chart_data.categories = categories
+            x_values = list(spec.data[spec.x])
 
-        for s in spec.series:
-            values = list(spec.data[s["column"]])
-            chart_data.add_series(s["name"], values)
+            for s in spec.series:
+                y_values = list(spec.data[s["column"]])
+                _validate_xy_numeric(x_values, y_values, spec.x, s["column"])
+                series = chart_data.add_series(s["name"])
+
+                for x, y in zip(x_values, y_values):
+                    series.add_data_point(x, y)
+        else:
+            chart_data = CategoryChartData()
+
+            categories = list(spec.data[spec.x])
+            chart_data.categories = categories
+
+            for s in spec.series:
+                values = list(spec.data[s["column"]])
+                chart_data.add_series(s["name"], values)
 
         return chart_data
 
@@ -57,6 +71,11 @@ class PPTXChartBuilder:
         mapping = {
             "line": XL_CHART_TYPE.LINE,
             "bar": XL_CHART_TYPE.COLUMN_CLUSTERED,
+            "area_stacked": XL_CHART_TYPE.AREA_STACKED,
+            "area_stacked_100": XL_CHART_TYPE.AREA_STACKED_100,
+            "bar_stacked": XL_CHART_TYPE.BAR_STACKED,
+            "column_stacked": XL_CHART_TYPE.COLUMN_STACKED,
+            "scatter": XL_CHART_TYPE.XY_SCATTER_SMOOTH,
         }
 
         if chart_type not in mapping:
@@ -67,6 +86,12 @@ class PPTXChartBuilder:
     def _single_series_bar_chart(self, chart):
         if chart.chart_type == self._map_chart_type("bar") and len(chart.plots[0].series) == 1:
             chart.plots[0].vary_by_categories = False
+
+    def _no_lines_scatter_chart(self, chart):
+        if chart.chart_type == self._map_chart_type("scatter"):
+            for s in chart.series:
+                s.format.line.visible = False
+                s.format.line.fill.background()
 
     def _set_chart_title(self, chart, chart_theme, block):
         if chart_theme["chart_title"]["has_title"]:
@@ -108,6 +133,8 @@ class PPTXChartBuilder:
                 paragraph.font.bold = axis_theme["bold"]
                 paragraph.font.italic = axis_theme["italic"]
                 paragraph.font.underline = axis_theme["underline"]
+        else:
+            axis_obj.has_title = False
 
         axis_obj.tick_labels.font.size = Pt(axis_theme["font_size"])
 
@@ -192,6 +219,14 @@ class PPTXChartBuilder:
             s.format.fill.fore_color.rgb = hex_to_rgb255(color)
             s.format.line.fill.solid()
             s.format.line.color.rgb = hex_to_rgb255(color)
+
+            if chart.chart_type == self._map_chart_type("scatter"):
+                s.marker.style = 8  # automatic / circle depending on PPT
+
+                s.marker.format.fill.solid()
+                s.marker.format.fill.fore_color.rgb = hex_to_rgb255(color)
+
+                s.marker.format.line.color.rgb = hex_to_rgb255(color)
 
     def _set_series_dashes(self, chart, chart_theme, block):
         spec = block.chart
