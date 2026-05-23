@@ -11,12 +11,13 @@ class SheetsChartBuilder:
         self.sheets = sheets_service
         self.spreadsheet_id = spreadsheet_id
 
-    def create_chart(self, sheet_id, spec: ChartSpec, block: ChartBlock, position: dict):
+    def create_chart(self, chart_id, sheet_id, spec: ChartSpec, block: ChartBlock, position: dict):
 
         requests = [
             {
                 "addChart": {
                     "chart": {
+                        "chartId": chart_id,
                         "spec": self._build_chart_spec(sheet_id, spec, block),
                         "position": {
                             "overlayPosition": {

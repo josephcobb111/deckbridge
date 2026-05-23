@@ -19,9 +19,36 @@ class RenderContext:
 
     chart_compiler: object = None
 
+    # object IDs
+    next_sheet_id: int = 1000
+    next_chart_id: int = 1000
+
     # Request queues
+    create_sheet_requests: list = field(default_factory=list)
+    add_values_requests: list = field(default_factory=list)
+    format_values_requests: list = field(default_factory=list)
     sheet_requests: list = field(default_factory=list)
+    sheet_values: list = field(default_factory=list)
     slide_requests: list = field(default_factory=list)
+
+    def allocate_sheet_id(self):
+        sheet_id = self.next_sheet_id
+        self.next_sheet_id += 1
+        return sheet_id
+
+    def allocate_chart_id(self):
+        chart_id = self.next_chart_id
+        self.next_chart_id += 1
+        return chart_id
+
+    def add_create_sheet_requests(self, requests):
+        if not requests:
+            return
+
+        if isinstance(requests, list):
+            self.create_sheet_requests.extend(requests)
+        else:
+            self.create_sheet_requests.append(requests)
 
     def add_sheet_requests(self, requests):
         if not requests:
@@ -31,6 +58,9 @@ class RenderContext:
             self.sheet_requests.extend(requests)
         else:
             self.sheet_requests.append(requests)
+
+    def add_sheet_values(self, values):
+        self.sheet_values.append(values)
 
     def add_slide_requests(self, requests):
         if not requests:

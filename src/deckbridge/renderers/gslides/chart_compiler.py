@@ -19,25 +19,26 @@ class GSlidesChartCompiler:
 
     def compile(self, ctx, slot, block, slot_key, value_axis_override=None):
 
-        # Create unique sheet name
+        # -------------------------
+        # Create ids
+        # -------------------------
         sheet_name = f"{slot_key}_{uuid.uuid4().hex[:4]}"
+        chart_id = ctx.allocate_chart_id()
 
-        # Write data
-        sheet_name, sheet_id = self.writer.write_dataframe(block, sheet_name=sheet_name)
+        # -------------------------
+        # Write sheet data
+        # -------------------------
+        sheet_name, sheet_id = self.writer.write_dataframe(ctx, block, sheet_name=sheet_name)
 
+        # -------------------------
         # Create chart
-        requests = self.chart_builder.create_chart(
-            sheet_id,
-            block.chart,
-            block,
-            slot,
-        )
+        # -------------------------
+        requests = self.chart_builder.create_chart(chart_id, sheet_id, block.chart, block, slot)
+        ctx.add_sheet_requests(requests)
 
-        response = self._batch_update(requests)
-
-        chart_id = response["replies"][0]["addChart"]["chart"]["chartId"]
-
+        # -------------------------
         # Style chart
+        # -------------------------
         chart_theme = resolve_chart_theme(ctx.theme, ctx.layout_spec.name)
 
         requests = self.chart_builder.apply_chart_style(
@@ -47,11 +48,10 @@ class GSlidesChartCompiler:
             chart_theme,
             value_axis_override,
         )
+        ctx.add_sheet_requests(requests)
 
-        response = self._batch_update(requests)
-
-        # Embed chart
+        # -------------------------
+        # Embed in slide
+        # -------------------------
         self.embedder.embed_chart(ctx.presentation_id, self.spreadsheet_id, chart_id, ctx.page_id, slot)
-
-    def _batch_update(self, requests):
-        return self.sheets.spreadsheets().batchUpdate(spreadsheetId=self.spreadsheet_id, body={"requests": requests}).execute()
+        ctx.add_slide_requests(requests)
