@@ -4,7 +4,7 @@ from deckbridge.renderers.gslides.chart_compiler import GSlidesChartCompiler
 
 
 class GSlidesRenderer:
-    def __init__(self, slides_service, sheets_service, spreadsheet_id, presentation_id):
+    def __init__(self, slides_service, sheets_service, spreadsheet_id, presentation_id, execute_requests):
         self.slides = slides_service
         self.sheets = sheets_service
         self.spreadsheet_id = spreadsheet_id
@@ -24,6 +24,8 @@ class GSlidesRenderer:
 
         self.chart_compiler = GSlidesChartCompiler(slides_service, sheets_service, spreadsheet_id)
 
+        self.execute_requests = execute_requests
+
     def render(self, deck):
 
         # -----------------------------
@@ -40,7 +42,8 @@ class GSlidesRenderer:
         # -----------------------------
         # Execute requests
         # -----------------------------
-        self._execute_requests()
+        if self.execute_requests:
+            self._execute_requests()
 
     # =========================================================
     # CREATE SLIDES
@@ -93,6 +96,10 @@ class GSlidesRenderer:
     def _batch_update(self, _id, requests, service):
         if service == "sheets":
             self.sheets.spreadsheets().batchUpdate(spreadsheetId=_id, body={"requests": requests}).execute()
+        if service == "sheets_values":
+            self.sheets.spreadsheets().values().batchUpdate(
+                spreadsheetId=self.spreadsheet_id, body={"valueInputOption": "RAW", "data": requests}
+            ).execute()
         elif service == "slides":
             self.slides.presentations().batchUpdate(presentationId=_id, body={"requests": requests}).execute()
 
@@ -100,15 +107,8 @@ class GSlidesRenderer:
         if self.create_sheet_requests:
             self._batch_update(self.spreadsheet_id, self.create_sheet_requests, "sheets")
 
-        for value_update in self.create_values_requests:
-            self.sheets.spreadsheets().values().update(
-                spreadsheetId=self.spreadsheet_id,
-                range=value_update["range"],
-                valueInputOption="RAW",
-                body={
-                    "values": value_update["values"],
-                },
-            ).execute()
+        if self.create_values_requests:
+            self._batch_update(self.spreadsheet_id, self.create_values_requests, "sheets_values")
 
         if self.format_values_requests:
             self._batch_update(self.spreadsheet_id, self.format_values_requests, "sheets")

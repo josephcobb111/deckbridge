@@ -22,12 +22,7 @@ class SheetsDataWriter:
             df_names.append(s["column"])
         values = [series_names] + df[df_names].values.tolist()
 
-        ctx.add_create_values_requests(
-            {
-                "range": f"{sheet_name}!A1",
-                "values": values,
-            }
-        )
+        ctx.add_create_values_requests({"range": f"{sheet_name}!A1", "values": values})
 
         value_axis_tick_format = block.chart.value_axis_tick_format
         if value_axis_tick_format:
