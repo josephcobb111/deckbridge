@@ -35,7 +35,7 @@ class SheetsDataWriter:
 
         value_axis_tick_format = block.chart.value_axis_tick_format
         if value_axis_tick_format:
-            ctx.add_sheet_requests(
+            ctx.add_format_values_requests(
                 {
                     "repeatCell": {
                         "range": {

@@ -59,6 +59,15 @@ class RenderContext:
         else:
             self.create_values_requests.append(requests)
 
+    def add_format_values_requests(self, requests):
+        if not requests:
+            return
+
+        if isinstance(requests, list):
+            self.format_values_requests.extend(requests)
+        else:
+            self.format_values_requests.append(requests)
+
     def add_sheet_requests(self, requests):
         if not requests:
             return
