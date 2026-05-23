@@ -3,7 +3,7 @@ from deckbridge.renderers.gslides.utils import GSHEETS_CHART_DASH_MAP, GSLIDES_A
 
 from ...deck.blocks import ChartBlock
 from ...deck.specs import ChartSpec
-from .utils import hex_to_slides_rgb, inches_to_pixels
+from .utils import GSHEETS_CHART_STACKING_MAP, GSHEETS_CHART_TYPE_MAP, hex_to_slides_rgb, inches_to_pixels
 
 
 class SheetsChartBuilder:
@@ -138,13 +138,6 @@ class SheetsChartBuilder:
 
         return requests
 
-    def _map_chart_type(self, chart_type):
-        return {
-            "line": "LINE",
-            "bar": "COLUMN",
-            # TO DO: add other gslide types
-        }[chart_type]
-
     def _build_chart_spec(self, sheet_id, spec: ChartSpec, block: ChartBlock):
 
         series = []
@@ -165,14 +158,14 @@ class SheetsChartBuilder:
                             ]
                         }
                     },
-                    "targetAxis": "LEFT_AXIS",
+                    "targetAxis": "BOTTOM_AXIS" if spec.chart_type == "bar_stacked" else "LEFT_AXIS",
                 }
             )
 
-        return {
+        api_spec = {
             "title": None,
             "basicChart": {
-                "chartType": self._map_chart_type(spec.chart_type),
+                "chartType": GSHEETS_CHART_TYPE_MAP[spec.chart_type],
                 "legendPosition": "BOTTOM_LEGEND",
                 "headerCount": 1,
                 "axis": [
@@ -205,3 +198,7 @@ class SheetsChartBuilder:
                 "series": series,
             },
         }
+        if GSHEETS_CHART_STACKING_MAP[spec.chart_type] != "NOT_STACKED":
+            api_spec["basicChart"]["stackedType"] = GSHEETS_CHART_STACKING_MAP[spec.chart_type]
+
+        return api_spec

@@ -32,6 +32,26 @@ GSLIDES_LINE_DASH_MAP = {
     "dash_dot": "DASH_DOT",
 }
 
+GSHEETS_CHART_TYPE_MAP = {
+    "line": "LINE",
+    "bar": "COLUMN",
+    "area_stacked": "AREA",
+    "area_stacked_100": "AREA",
+    "bar_stacked": "BAR",
+    "column_stacked": "COLUMN",
+    "scatter": "SCATTER",
+}
+
+GSHEETS_CHART_STACKING_MAP = {
+    "line": "NOT_STACKED",
+    "bar": "NOT_STACKED",
+    "area_stacked": "STACKED",
+    "area_stacked_100": "PERCENT_STACKED",
+    "bar_stacked": "STACKED",
+    "column_stacked": "STACKED",
+    "scatter": "NOT_STACKED",
+}
+
 
 def inches_to_emu(inches):
     return int(inches * EMU_PER_INCH * DEFAULT_PPTX_TO_GOOGLE_SCALE_FACTOR)
