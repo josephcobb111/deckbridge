@@ -9,10 +9,12 @@ class GSlidesBackend(BaseBackend):
         self.slides_service = slides_service
         self.sheets_service = sheets_service
 
-        self.renderer = GSlidesRenderer(slides_service=slides_service, sheets_service=sheets_service, spreadsheet_id=spreadsheet_id)
+        self.renderer = GSlidesRenderer(
+            slides_service=slides_service, sheets_service=sheets_service, spreadsheet_id=spreadsheet_id, presentation_id=presentation_id
+        )
 
     def render(self, deck):
         self.renderer.theme = deck.config.theme
         self.renderer.layouts = deck.config.layouts
 
-        self.renderer.render(deck, self.presentation_id)
+        self.renderer.render(deck)
