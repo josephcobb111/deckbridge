@@ -12,7 +12,9 @@ def resolve_text_content(slide, slot_key, slot):
     if content_type == "chart_title":
         block = slide["content"].get(slot["source"])
         if not block:
-            return None
+            return None, None
+
+        style_overrides = block.style_overrides
 
         title = block.chart_title
         subtitle = getattr(block, "chart_subtitle", None)
@@ -35,26 +37,26 @@ def resolve_text_content(slide, slot_key, slot):
                 }
             )
 
-        return lines if lines else None
+        return (lines, style_overrides) if lines else (None, None)
 
-    return slide.get(slot_key)
+    return slide.get(slot_key), None
 
 
-def render_text_slot(ctx, slot, text, slot_key):
+def render_text_slot(ctx, slot, text, slot_key, style_overrides):
     if not text:
         return
 
     if ctx.backend == "pptx":
-        _render_text_pptx(ctx, slot, text, slot_key)
+        _render_text_pptx(ctx, slot, text, slot_key, style_overrides)
 
     elif ctx.backend == "gslides":
-        _render_text_gslides(ctx, slot, text, slot_key)
+        _render_text_gslides(ctx, slot, text, slot_key, style_overrides)
 
     else:
         raise ValueError(f"Unsupported backend: {ctx.backend}")
 
 
-def _render_text_pptx(ctx, slot, text, slot_key):
+def _render_text_pptx(ctx, slot, text, slot_key, style_overrides):
     textbox = ctx.slide_obj.shapes.add_textbox(
         Inches(slot["x"]),
         Inches(slot["y"]),
@@ -65,7 +67,7 @@ def _render_text_pptx(ctx, slot, text, slot_key):
     tf = textbox.text_frame
     tf.clear()
 
-    base_style = resolve_text_style(slot_key, slot, ctx.theme, ctx.layout_spec.name)
+    base_style = resolve_text_style(slot_key, slot, ctx.theme, ctx.layout_spec.name, style_overrides)
     tf.vertical_anchor = PPTX_VERTICAL_ALIGN_MAP[base_style.get("vertical_align", "TOP")]
 
     p = tf.paragraphs[0]
@@ -76,7 +78,7 @@ def _render_text_pptx(ctx, slot, text, slot_key):
         run = p.add_run()
         run.text = line["text"]
 
-        style = resolve_text_style(line["style_key"], {"style_key": line["style_key"]}, ctx.theme, ctx.layout_spec.name)
+        style = resolve_text_style(line["style_key"], {"style_key": line["style_key"]}, ctx.theme, ctx.layout_spec.name, style_overrides)
 
         run.font.size = Pt(style["font_size"])
         run.font.bold = style["bold"]
@@ -88,7 +90,7 @@ def _render_text_pptx(ctx, slot, text, slot_key):
     p.alignment = PPTX_ALIGN_MAP[base_style["align"]]
 
 
-def _render_text_gslides(ctx, slot, text, slot_key):
+def _render_text_gslides(ctx, slot, text, slot_key, style_overrides):
     object_id = f"{slot_key}_{ctx.page_id}"
 
     requests = []
@@ -154,7 +156,7 @@ def _render_text_gslides(ctx, slot, text, slot_key):
     # Apply styles per range
     # -----------------------
     for start, end, style_key in ranges:
-        style = resolve_text_style(style_key, {"style_key": style_key}, ctx.theme, ctx.layout_spec.name)
+        style = resolve_text_style(style_key, {"style_key": style_key}, ctx.theme, ctx.layout_spec.name, style_overrides)
 
         api_style = {
             "fontSize": {"magnitude": style["font_size"], "unit": "PT"},
@@ -182,7 +184,7 @@ def _render_text_gslides(ctx, slot, text, slot_key):
     # -----------------------
     # Alignment (whole paragraph)
     # -----------------------
-    base_style = resolve_text_style(slot_key, slot, ctx.theme, ctx.layout_spec.name)
+    base_style = resolve_text_style(slot_key, slot, ctx.theme, ctx.layout_spec.name, style_overrides)
 
     requests.append(
         {

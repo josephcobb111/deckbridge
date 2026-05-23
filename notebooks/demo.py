@@ -344,6 +344,10 @@ def main():
                 chart_title="Revenue (Bar) - Chart Title",
                 value_axis_title="Month",
                 category_axis_title="Revenue",
+                style_overrides={
+                    "chart_title": {"font_size": 16},
+                    "legend": {"visible": False},
+                },
             ),
         },
     )

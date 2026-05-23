@@ -17,8 +17,8 @@ def render_slots(ctx, slide):
             _render_chart(ctx, slot, block, slot_key, slide)
 
         elif slot_type == "text":
-            text = resolve_text_content(slide, slot_key, slot)
-            _render_text(ctx, slot, text, slot_key)
+            text, style_overrides = resolve_text_content(slide, slot_key, slot)
+            _render_text(ctx, slot, text, slot_key, style_overrides)
 
         elif slot_type == "color_legend":
             render_color_legend(ctx, slot_key, slot, slide)
@@ -35,5 +35,5 @@ def _render_chart(ctx, slot, block, slot_key, slide):
     ctx.chart_compiler.compile(ctx, slot, block, slot_key, shared_axis)
 
 
-def _render_text(ctx, slot, text, slot_key):
-    render_text_slot(ctx, slot, text, slot_key)
+def _render_text(ctx, slot, text, slot_key, style_overrides=None):
+    render_text_slot(ctx, slot, text, slot_key, style_overrides)

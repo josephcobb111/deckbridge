@@ -2,14 +2,18 @@ from deckbridge.themes.default import DEFAULT_TEXT_STYLE
 from deckbridge.utils import deep_merge
 
 
-def resolve_chart_theme(theme, layout_name):
+def resolve_chart_theme(theme, layout_name, style_overrides=None):
     base = theme.get("chart", {}).get("default", {})
     layout_override = theme.get("chart", {}).get("layouts", {}).get(layout_name, {})
 
-    return deep_merge(base, layout_override)
+    resolved = deep_merge(base, layout_override)
+    if style_overrides:
+        resolved = deep_merge(resolved, style_overrides)
+
+    return resolved
 
 
-def resolve_text_style(slot_key, slot, theme, layout_name):
+def resolve_text_style(slot_key, slot, theme, layout_name, style_overrides):
     """
     Merge style layers:
     DEFAULT → THEME (global) → THEME (slot) → slot
@@ -17,7 +21,7 @@ def resolve_text_style(slot_key, slot, theme, layout_name):
 
     slot_group = slot.get("style_key", slot_key)
 
-    chart_theme = resolve_chart_theme(theme, layout_name) if "chart" in slot_key else {}
+    chart_theme = resolve_chart_theme(theme, layout_name, style_overrides) if "chart" in slot_key else {}
 
     style = {
         **DEFAULT_TEXT_STYLE,

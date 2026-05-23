@@ -10,3 +10,4 @@ class ChartBlock:
     chart_subtitle: str = ""
     value_axis_title: str = ""
     category_axis_title: str = ""
+    style_overrides: dict | None = None
