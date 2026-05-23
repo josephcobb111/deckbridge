@@ -9,10 +9,14 @@ class GSlidesRenderer:
         self.sheets = sheets_service
         self.spreadsheet_id = spreadsheet_id
 
+        # sheet requests
         self.create_sheet_requests = []
         self.create_values_requests = []
         self.format_values_requests = []
         self.create_chart_requests = []
+
+        # slides requests
+        self.create_slide_requests = []
 
         self.chart_compiler = GSlidesChartCompiler(slides_service, sheets_service, spreadsheet_id)
 
@@ -21,7 +25,7 @@ class GSlidesRenderer:
         # -----------------------------
         # Create slides
         # -----------------------------
-        page_id_map = self._create_slides(deck, presentation_id)
+        page_id_map = self._create_slides(deck)
 
         # -----------------------------
         # Render content for each slide
@@ -29,11 +33,11 @@ class GSlidesRenderer:
         for i, slide in enumerate(deck.slides):
             self._render_content(slide, presentation_id, page_id_map[i])
 
+        # -----------------------------
+        # Execute requests
+        # -----------------------------
         if self.create_sheet_requests:
-            self.sheets.spreadsheets().batchUpdate(
-                spreadsheetId=self.spreadsheet_id,
-                body={"requests": self.create_sheet_requests},
-            ).execute()
+            self._batch_update(self.spreadsheet_id, self.create_sheet_requests, "sheets")
 
         for value_update in self.create_values_requests:
             self.sheets.spreadsheets().values().update(
@@ -46,32 +50,26 @@ class GSlidesRenderer:
             ).execute()
 
         if self.format_values_requests:
-            self.sheets.spreadsheets().batchUpdate(
-                spreadsheetId=self.spreadsheet_id,
-                body={"requests": self.format_values_requests},
-            ).execute()
+            self._batch_update(self.spreadsheet_id, self.format_values_requests, "sheets")
 
         if self.create_chart_requests:
-            self.sheets.spreadsheets().batchUpdate(
-                spreadsheetId=self.spreadsheet_id,
-                body={"requests": self.create_chart_requests},
-            ).execute()
+            self._batch_update(self.spreadsheet_id, self.create_chart_requests, "sheets")
+
+        if self.create_slide_requests:
+            self._batch_update(presentation_id, self.create_slide_requests, "slides")
 
     # =========================================================
     # CREATE SLIDES
     # =========================================================
-    def _create_slides(self, deck, presentation_id):
-        requests = []
+    def _create_slides(self, deck):
         page_ids = {}
 
         for i, _ in enumerate(deck.slides):
             slide_id = f"slide_{i}"
 
-            requests.append({"createSlide": {"objectId": slide_id, "slideLayoutReference": {"predefinedLayout": "BLANK"}}})
+            self.create_slide_requests.append({"createSlide": {"objectId": slide_id, "slideLayoutReference": {"predefinedLayout": "BLANK"}}})
 
             page_ids[i] = slide_id
-
-        self._batch_update(presentation_id, requests)
 
         return page_ids
 
@@ -125,5 +123,8 @@ class GSlidesRenderer:
     # =========================================================
     # BATCH HELPER
     # =========================================================
-    def _batch_update(self, presentation_id, requests):
-        self.slides.presentations().batchUpdate(presentationId=presentation_id, body={"requests": requests}).execute()
+    def _batch_update(self, _id, requests, service):
+        if service == "sheets":
+            self.sheets.spreadsheets().batchUpdate(spreadsheetId=_id, body={"requests": requests}).execute()
+        elif service == "slides":
+            self.slides.presentations().batchUpdate(presentationId=_id, body={"requests": requests}).execute()
