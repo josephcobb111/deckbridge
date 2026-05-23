@@ -1,23 +1,42 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Optional
 
 
 @dataclass
 class RenderContext:
-    backend: str  # "pptx" | "gslides"
-
+    backend: str
+    layout_spec: object
     theme: dict
 
-    # Shared
-    layout_spec: Optional[object] = None
+    # Optional renderer-specific fields
+    slide_obj: object = None
+    slides_service: object = None
+    sheets_service: object = None
 
-    # PPTX
-    slide_obj: Optional[object] = None
+    presentation_id: str = None
+    spreadsheet_id: str = None
+    page_id: str = None
 
-    # GSlides
-    slides_service: Optional[object] = None
-    presentation_id: Optional[str] = None
-    page_id: Optional[str] = None
+    chart_compiler: object = None
 
-    # Shared utilities
-    chart_compiler: Optional[object] = None
+    # Request queues
+    slide_requests: list = field(default_factory=list)
+    sheet_requests: list = field(default_factory=list)
+
+    def add_slide_requests(self, requests):
+        if not requests:
+            return
+
+        if isinstance(requests, list):
+            self.slide_requests.extend(requests)
+        else:
+            self.slide_requests.append(requests)
+
+    def add_sheet_requests(self, requests):
+        if not requests:
+            return
+
+        if isinstance(requests, list):
+            self.sheet_requests.extend(requests)
+        else:
+            self.sheet_requests.append(requests)

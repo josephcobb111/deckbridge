@@ -51,14 +51,28 @@ class GSlidesRenderer:
         ctx = RenderContext(
             backend="gslides",
             layout_spec=layout_spec,
+            theme=self.theme,
             slides_service=self.slides,
+            sheets_service=self.sheets,
             presentation_id=presentation_id,
+            spreadsheet_id=self.spreadsheet_id,
             page_id=page_id,
             chart_compiler=self.chart_compiler,
-            theme=self.theme,
         )
 
         render_slots(ctx, slide)
+
+        if ctx.sheet_requests:
+            self.sheets.spreadsheets().batchUpdate(
+                spreadsheetId=self.spreadsheet_id,
+                body={"requests": ctx.sheet_requests},
+            ).execute()
+
+        if ctx.slide_requests:
+            self.slides.presentations().batchUpdate(
+                presentationId=presentation_id,
+                body={"requests": ctx.slide_requests},
+            ).execute()
 
     # =========================================================
     # BATCH HELPER

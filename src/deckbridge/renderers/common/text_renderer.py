@@ -40,43 +40,22 @@ def resolve_text_content(slide, slot_key, slot):
     return slide.get(slot_key)
 
 
-def render_text_slot(
-    backend,
-    slot_key,
-    slot,
-    text,
-    *,
-    slide_obj=None,
-    slides_service=None,
-    presentation_id=None,
-    page_id=None,
-    theme=THEME,
-    layout_name="",
-):
+def render_text_slot(ctx, slot, text, slot_key):
     if not text:
         return
 
-    if backend == "pptx":
-        _render_text_pptx(slide_obj, slot_key, slot, text, theme, layout_name)
+    if ctx.backend == "pptx":
+        _render_text_pptx(ctx, slot, text, slot_key)
 
-    elif backend == "gslides":
-        _render_text_gslides(
-            slides_service,
-            presentation_id,
-            page_id,
-            slot_key,
-            slot,
-            text,
-            theme,
-            layout_name,
-        )
+    elif ctx.backend == "gslides":
+        _render_text_gslides(ctx, slot, text, slot_key)
 
     else:
-        raise ValueError(f"Unsupported backend: {backend}")
+        raise ValueError(f"Unsupported backend: {ctx.backend}")
 
 
-def _render_text_pptx(slide, slot_key, slot, text, theme, layout_name):
-    textbox = slide.shapes.add_textbox(
+def _render_text_pptx(ctx, slot, text, slot_key):
+    textbox = ctx.slide_obj.shapes.add_textbox(
         Inches(slot["x"]),
         Inches(slot["y"]),
         Inches(slot["w"]),
@@ -86,7 +65,7 @@ def _render_text_pptx(slide, slot_key, slot, text, theme, layout_name):
     tf = textbox.text_frame
     tf.clear()
 
-    base_style = resolve_text_style(slot_key, slot, theme, layout_name)
+    base_style = resolve_text_style(slot_key, slot, ctx.theme, ctx.layout_spec.name)
     tf.vertical_anchor = PPTX_VERTICAL_ALIGN_MAP[base_style.get("vertical_align", "TOP")]
 
     p = tf.paragraphs[0]
@@ -97,7 +76,7 @@ def _render_text_pptx(slide, slot_key, slot, text, theme, layout_name):
         run = p.add_run()
         run.text = line["text"]
 
-        style = resolve_text_style(line["style_key"], {"style_key": line["style_key"]}, theme, layout_name)
+        style = resolve_text_style(line["style_key"], {"style_key": line["style_key"]}, ctx.theme, ctx.layout_spec.name)
 
         run.font.size = Pt(style["font_size"])
         run.font.bold = style["bold"]
@@ -109,17 +88,8 @@ def _render_text_pptx(slide, slot_key, slot, text, theme, layout_name):
     p.alignment = PPTX_ALIGN_MAP[base_style["align"]]
 
 
-def _render_text_gslides(
-    slides_service,
-    presentation_id,
-    page_id,
-    slot_key,
-    slot,
-    text,
-    theme,
-    layout_name,
-):
-    object_id = f"{slot_key}_{page_id}"
+def _render_text_gslides(ctx, slot, text, slot_key):
+    object_id = f"{slot_key}_{ctx.page_id}"
 
     requests = []
 
@@ -151,7 +121,7 @@ def _render_text_gslides(
                 "objectId": object_id,
                 "shapeType": "TEXT_BOX",
                 "elementProperties": {
-                    "pageObjectId": page_id,
+                    "pageObjectId": ctx.page_id,
                     "size": {
                         "height": {"magnitude": inches_to_emu(slot["h"]), "unit": "EMU"},
                         "width": {"magnitude": inches_to_emu(slot["w"]), "unit": "EMU"},
@@ -184,7 +154,7 @@ def _render_text_gslides(
     # Apply styles per range
     # -----------------------
     for start, end, style_key in ranges:
-        style = resolve_text_style(style_key, {"style_key": style_key}, theme, layout_name)
+        style = resolve_text_style(style_key, {"style_key": style_key}, ctx.theme, ctx.layout_spec.name)
 
         api_style = {
             "fontSize": {"magnitude": style["font_size"], "unit": "PT"},
@@ -212,7 +182,7 @@ def _render_text_gslides(
     # -----------------------
     # Alignment (whole paragraph)
     # -----------------------
-    base_style = resolve_text_style(slot_key, slot, theme, layout_name)
+    base_style = resolve_text_style(slot_key, slot, ctx.theme, ctx.layout_spec.name)
 
     requests.append(
         {
@@ -239,7 +209,4 @@ def _render_text_gslides(
         }
     )
 
-    slides_service.presentations().batchUpdate(
-        presentationId=presentation_id,
-        body={"requests": requests},
-    ).execute()
+    ctx.add_slide_requests(requests)

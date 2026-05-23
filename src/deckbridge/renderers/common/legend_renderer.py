@@ -94,11 +94,10 @@ def _render_color_legend_pptx(ctx, slot, legend):
         }
 
         render_text_slot(
-            backend="pptx",
-            slot_key=f"color_legend_text_{i}",
+            ctx=ctx,
             slot=text_slot,
             text=[{"text": _get_label(item), "style_key": "color_legend"}],
-            slide_obj=ctx.slide_obj,
+            slot_key=f"color_legend_text_{i}",
         )
 
 
@@ -163,13 +162,10 @@ def _render_color_legend_gslides(ctx, slot_key, slot, legend):
         }
 
         render_text_slot(
-            backend="gslides",
-            slot_key=f"{slot_key}_text_{i}",
+            ctx=ctx,
             slot=text_slot,
             text=[{"text": _get_label(item), "style_key": "color_legend"}],
-            slides_service=ctx.slides_service,
-            presentation_id=ctx.presentation_id,
-            page_id=ctx.page_id,
+            slot_key=f"{slot_key}_text_{i}",
         )
 
     if requests:
@@ -234,11 +230,10 @@ def _render_dash_legend_pptx(ctx, slot, legend):
         }
 
         render_text_slot(
-            backend="pptx",
-            slot_key=f"dash_legend_text_{i}",
+            ctx=ctx,
             slot=text_slot,
             text=[{"text": label, "style_key": "dash_legend"}],
-            slide_obj=ctx.slide_obj,
+            slot_key=f"dash_legend_text_{i}",
         )
 
 
@@ -318,13 +313,10 @@ def _render_dash_legend_gslides(
         }
 
         render_text_slot(
-            backend="gslides",
-            slot_key=f"{slot_key}_text_{i}",
+            ctx=ctx,
             slot=text_slot,
             text=[{"text": label, "style_key": "dash_legend"}],
-            slides_service=ctx.slides_service,
-            presentation_id=ctx.presentation_id,
-            page_id=ctx.page_id,
+            slot_key=f"{slot_key}_text_{i}",
         )
 
     if requests:
