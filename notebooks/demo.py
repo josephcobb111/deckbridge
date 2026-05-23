@@ -4,8 +4,12 @@ from deckbridge.auth.session import create_gslides_session
 from deckbridge.backends.gslides_backend import GSlidesBackend
 from deckbridge.backends.pptx_backend import PPTXBackend
 from deckbridge.deck.blocks import ChartBlock
-from deckbridge.deck.deck import Deck
+from deckbridge.deck.deck import Deck, DeckConfig
 from deckbridge.deck.specs import ChartSpec
+
+from deckbridge.themes.default import THEME
+from deckbridge.layouts.registry import LAYOUTS
+from deckbridge.deck.specs import LayoutSpec
 
 
 def main():
@@ -18,7 +22,81 @@ def main():
         }
     )
 
-    deck = Deck()
+    custom_theme = THEME
+    custom_theme["slots"]["deck_title"]["font_size"] = 44
+    custom_theme["chart"]["layouts"]["four_chart"] = {
+        "chart_title": {
+            "font_size": 12
+        },
+        "chart_subtitle": {
+            "font_size": 10
+        }
+    }
+
+    custom_layouts = LAYOUTS
+    custom_layouts["four_chart"] = LayoutSpec(
+        name="four_chart",
+        slots={
+            # Slide title
+            "slide_title": {"type": "text", "x": 0.5, "y": 0.1, "w": 12.5, "h": 0.8},
+            # Chart 1
+            "chart_1": {"type": "chart", "x": 0.5, "y": 1.6, "w": 3.13, "h": 5.25},
+            "chart_1_title": {
+                "type": "text",
+                "content_type": "chart_title",
+                "style_key": "chart_title",
+                "source": "chart_1",
+                "x": 0.5,
+                "y": 1.1,
+                "w": 3.13,
+                "h": 0.5,
+            },
+            # Chart 2
+            "chart_2": {"type": "chart", "x": 3.63, "y": 1.6, "w": 3.13, "h": 5.25},
+            "chart_2_title": {
+                "type": "text",
+                "content_type": "chart_title",
+                "style_key": "chart_title",
+                "source": "chart_2",
+                "x": 3.63,
+                "y": 1.1,
+                "w": 3.13,
+                "h": 0.5,
+            },
+            # Chart 3
+            "chart_3": {"type": "chart", "x": 6.76, "y": 1.6, "w": 3.13, "h": 5.25},
+            "chart_3_title": {
+                "type": "text",
+                "content_type": "chart_title",
+                "style_key": "chart_title",
+                "source": "chart_3",
+                "x": 6.76,
+                "y": 1.1,
+                "w": 3.13,
+                "h": 0.5,
+            },
+            # Chart 4
+            "chart_4": {"type": "chart", "x": 9.89, "y": 1.6, "w": 3.13, "h": 5.25},
+            "chart_4_title": {
+                "type": "text",
+                "content_type": "chart_title",
+                "style_key": "chart_title",
+                "source": "chart_4",
+                "x": 9.89,
+                "y": 1.1,
+                "w": 3.13,
+                "h": 0.5,
+            },
+            "color_legend": {"type": "color_legend", "style_key": "color_legend", "x": 7.5, "y": 6.85, "w": 2.0, "h": 1.0},
+            "dash_legend": {"type": "dash_legend", "style_key": "dash_legend", "x": 11, "y": 1.0, "w": 2.0, "h": 0.8},
+            "notes": {"type": "text", "x": 0.5, "y": 6.85, "w": 12.5, "h": 0.4},
+        },
+    )
+
+    deck = Deck(config=DeckConfig(
+        theme=custom_theme,
+        layouts=custom_layouts,
+    ))
 
     # -----------------------
     # Title slide
@@ -213,6 +291,101 @@ def main():
                 category_axis_title="Revenue",
             ),
         },
+        notes="Notes: Adjusted for recent acquisitions.",
+    )
+
+    deck.add_slide(
+        slide_title="These should all be the same (except for legend names)",
+        content={
+            "chart_1": ChartBlock(
+                chart=chart4,
+                chart_title="Revenue Trend (Line) - Chart Title",
+                chart_subtitle="2024 Actuals",
+                value_axis_title="Month",
+                category_axis_title="Revenue",
+            ),
+            "chart_2": ChartBlock(
+                chart=chart5,
+                chart_title="Revenue Trend (Line) - Chart Title",
+                chart_subtitle="2024 Actuals",
+                value_axis_title="Month",
+                category_axis_title="Revenue",
+            ),
+            "chart_3": ChartBlock(
+                chart=chart6,
+                chart_title="Revenue Trend (Line) - Chart Title",
+                chart_subtitle="2024 Actuals",
+                value_axis_title="Month",
+                category_axis_title="Revenue",
+            ),
+        },
+        sync_value_axis=True,
+        notes="Notes: Adjusted for recent acquisitions.",
+    )
+
+    deck.add_slide(
+        slide_title="These should all be the same (except for legend names)",
+        content={
+            "chart_1": ChartBlock(
+                chart=chart4,
+                chart_title="Revenue Trend (Line) - Chart Title",
+                chart_subtitle="2024 Actuals",
+                value_axis_title="Month",
+                category_axis_title="Revenue",
+            ),
+            "chart_2": ChartBlock(
+                chart=chart5,
+                chart_title="Revenue Trend (Line) - Chart Title",
+                chart_subtitle="2024 Actuals",
+                value_axis_title="Month",
+                category_axis_title="Revenue",
+            ),
+            "chart_3": ChartBlock(
+                chart=chart6,
+                chart_title="Revenue Trend (Line) - Chart Title",
+                chart_subtitle="2024 Actuals",
+                value_axis_title="Month",
+                category_axis_title="Revenue",
+            ),
+        },
+        sync_value_axis=(0, 30),
+        notes="Notes: Adjusted for recent acquisitions.",
+    )
+
+    deck.add_slide(
+        slide_title="These should all be the same (except for legend names)",
+        layout="four_chart",
+        content={
+            "chart_1": ChartBlock(
+                chart=chart4,
+                chart_title="Revenue Trend (Line) - Chart Title",
+                chart_subtitle="2024 Actuals",
+                value_axis_title="Month",
+                category_axis_title="Revenue",
+            ),
+            "chart_2": ChartBlock(
+                chart=chart5,
+                chart_title="Revenue Trend (Line) - Chart Title",
+                chart_subtitle="2024 Actuals",
+                value_axis_title="Month",
+                category_axis_title="Revenue",
+            ),
+            "chart_3": ChartBlock(
+                chart=chart6,
+                chart_title="Revenue Trend (Line) - Chart Title",
+                chart_subtitle="2024 Actuals",
+                value_axis_title="Month",
+                category_axis_title="Revenue",
+            ),
+            "chart_4": ChartBlock(
+                chart=chart6,
+                chart_title="Revenue Trend (Line) - Chart Title",
+                chart_subtitle="2024 Actuals",
+                value_axis_title="Month",
+                category_axis_title="Revenue",
+            ),
+        },
+        sync_value_axis=(0, 30),
         notes="Notes: Adjusted for recent acquisitions.",
     )
 

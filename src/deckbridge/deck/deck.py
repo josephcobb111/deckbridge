@@ -1,8 +1,28 @@
+from deckbridge.layouts.registry import LAYOUTS
+from deckbridge.themes.default import THEME
+
 from ..backends.base import BaseBackend
 
 
+class DeckConfig:
+    def __init__(
+        self,
+        theme=None,
+        layouts=None,
+        pptx_template=None,
+        gslides_template=None,
+    ):
+
+        self.theme = theme or THEME
+        self.layouts = layouts or LAYOUTS
+
+        self.pptx_template = pptx_template
+        self.gslides_template = gslides_template
+
+
 class Deck:
-    def __init__(self):
+    def __init__(self, *, config=None):
+        self.config = config or DeckConfig()
         self.slides = []
 
     def add_slide(
@@ -14,6 +34,7 @@ class Deck:
         content=None,
         color_legend=None,
         dash_legend=None,
+        sync_value_axis=None,
         notes=None,
     ):
         if layout is None:
@@ -28,6 +49,7 @@ class Deck:
                 "content": content or [],
                 "color_legend": color_legend or [],
                 "dash_legend": dash_legend or [],
+                "sync_value_axis": sync_value_axis or (),
                 "notes": notes,
             }
         )

@@ -2,10 +2,10 @@ import uuid
 
 from deckbridge.renderers.common.style_resolver import resolve_chart_theme
 
-from ...deck.specs import ChartSpec
 from .chart_builder import SheetsChartBuilder
 from .chart_embedder import SlidesChartEmbedder
 from .sheets_writer import SheetsDataWriter
+from .utils import text_to_number
 
 
 class GSlidesChartCompiler:
@@ -18,28 +18,28 @@ class GSlidesChartCompiler:
         self.chart_builder = SheetsChartBuilder(sheets_service, spreadsheet_id)
         self.embedder = SlidesChartEmbedder(slides_service)
 
-    def compile(self, ctx, slot, block, slot_key):
+    def compile(self, ctx, slot, block, slot_key, value_axis_override=None):
 
-        # Create unique sheet name
+        # -------------------------
+        # Create ids
+        # -------------------------
         sheet_name = f"{slot_key}_{uuid.uuid4().hex[:4]}"
+        chart_id = text_to_number(f"{sheet_name}_chart")
 
-        # Write data
-        value_axis_tick_format = block.chart.value_axis_tick_format or None
-        sheet_name, sheet_id = self.writer.write_dataframe(block, sheet_name=sheet_name)
+        # -------------------------
+        # Write sheet data
+        # -------------------------
+        sheet_name, sheet_id = self.writer.write_dataframe(ctx, block, sheet_name=sheet_name)
 
+        # -------------------------
         # Create chart
-        requests = self.chart_builder.create_chart(
-            sheet_id,
-            block.chart,
-            block,
-            slot,
-        )
+        # -------------------------
+        requests = self.chart_builder.create_chart(chart_id, sheet_id, block.chart, block, slot)
+        ctx.add_create_chart_requests(requests)
 
-        response = self._batch_update(requests)
-
-        chart_id = response["replies"][0]["addChart"]["chart"]["chartId"]
-
+        # -------------------------
         # Style chart
+        # -------------------------
         chart_theme = resolve_chart_theme(ctx.theme, ctx.layout_spec.name)
 
         requests = self.chart_builder.apply_chart_style(
@@ -47,12 +47,12 @@ class GSlidesChartCompiler:
             chart_id,
             block,
             chart_theme,
+            value_axis_override,
         )
+        ctx.add_create_chart_requests(requests)
 
-        response = self._batch_update(requests)
-
-        # Embed chart
-        self.embedder.embed_chart(ctx.presentation_id, self.spreadsheet_id, chart_id, ctx.page_id, slot)
-
-    def _batch_update(self, requests):
-        return self.sheets.spreadsheets().batchUpdate(spreadsheetId=self.spreadsheet_id, body={"requests": requests}).execute()
+        # -------------------------
+        # Embed in slide
+        # -------------------------
+        requests = self.embedder.embed_chart(ctx.presentation_id, self.spreadsheet_id, chart_id, ctx.page_id, slot)
+        ctx.add_embed_chart_requests(requests)

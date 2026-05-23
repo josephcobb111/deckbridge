@@ -31,4 +31,4 @@ class SlidesChartEmbedder:
             },
         ]
 
-        self.slides.presentations().batchUpdate(presentationId=presentation_id, body={"requests": requests}).execute()
+        return requests

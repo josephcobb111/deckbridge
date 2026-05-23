@@ -11,12 +11,13 @@ class SheetsChartBuilder:
         self.sheets = sheets_service
         self.spreadsheet_id = spreadsheet_id
 
-    def create_chart(self, sheet_id, spec: ChartSpec, block: ChartBlock, position: dict):
+    def create_chart(self, chart_id, sheet_id, spec: ChartSpec, block: ChartBlock, position: dict):
 
         requests = [
             {
                 "addChart": {
                     "chart": {
+                        "chartId": chart_id,
                         "spec": self._build_chart_spec(sheet_id, spec, block),
                         "position": {
                             "overlayPosition": {
@@ -38,7 +39,7 @@ class SheetsChartBuilder:
 
         return requests
 
-    def apply_chart_style(self, sheet_id, chart_id, block: ChartBlock, chart_theme: dict):
+    def apply_chart_style(self, sheet_id, chart_id, block: ChartBlock, chart_theme: dict, value_axis_override):
 
         # chart title
         api_spec = self._build_chart_spec(sheet_id, block.chart, block)
@@ -73,11 +74,14 @@ class SheetsChartBuilder:
                 "italic": value_axis_theme["italic"],
             },
         }
-        if block.chart.value_axis_range:
-            value_axis["viewWindowOptions"] = {
-                "viewWindowMin": block.chart.value_axis_range[0],
-                "viewWindowMax": block.chart.value_axis_range[1],
-            }
+        if block.chart.value_axis_range or value_axis_override:
+            value_axis_range = block.chart.value_axis_range
+            value_axis_range = value_axis_override if value_axis_override else value_axis_range
+            if value_axis_range is not None:
+                value_axis["viewWindowOptions"] = {
+                    "viewWindowMin": value_axis_range[0],
+                    "viewWindowMax": value_axis_range[1],
+                }
         category_axis = {
             "title": block.category_axis_title,
             "position": "BOTTOM_AXIS",
@@ -142,7 +146,6 @@ class SheetsChartBuilder:
         }[chart_type]
 
     def _build_chart_spec(self, sheet_id, spec: ChartSpec, block: ChartBlock):
-        chart_type = self._map_chart_type(spec.chart_type)
 
         series = []
 

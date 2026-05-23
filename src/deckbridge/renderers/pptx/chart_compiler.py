@@ -1,8 +1,4 @@
-from pptx.chart.data import CategoryChartData
-from pptx.enum.chart import XL_CHART_TYPE, XL_LEGEND_POSITION
-from pptx.util import Inches, Pt
-
-from deckbridge.utils import deep_merge
+from pptx.util import Inches
 
 from .chart_builder import PPTXChartBuilder
 
@@ -11,7 +7,7 @@ class PPTXChartCompiler:
     def __init__(self):
         self.builder = PPTXChartBuilder()
 
-    def compile(self, ctx, slot, block, chart_key):
+    def compile(self, ctx, slot, block, chart_key, value_axis_override=None):
         # -----------------------
         # Position
         # -----------------------
@@ -42,4 +38,5 @@ class PPTXChartCompiler:
             theme=ctx.theme,
             layout_name=ctx.layout_spec.name,
             block=block,
+            value_axis_override=value_axis_override,
         )

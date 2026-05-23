@@ -2,10 +2,8 @@ from importlib import resources
 
 from pptx import Presentation
 
-from deckbridge.layouts.registry import LAYOUTS
 from deckbridge.renderers.common.context import RenderContext
 from deckbridge.renderers.common.slot_renderer import render_slots
-from deckbridge.themes.default import THEME
 
 from .chart_compiler import PPTXChartCompiler
 
@@ -25,14 +23,14 @@ class PPTXRenderer:
         for slide in deck.slides:
             s = prs.slides.add_slide(prs.slide_layouts[3])
 
-            layout_spec = LAYOUTS[slide["layout"]]
+            layout_spec = self.layouts[slide["layout"]]
 
             ctx = RenderContext(
                 backend="pptx",
                 slide_obj=s,
                 layout_spec=layout_spec,
                 chart_compiler=self.compiler,
-                theme=THEME,
+                theme=self.theme,
             )
 
             render_slots(ctx, slide)
