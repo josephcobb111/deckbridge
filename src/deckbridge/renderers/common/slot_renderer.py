@@ -36,14 +36,4 @@ def _render_chart(ctx, slot, block, slot_key, slide):
 
 
 def _render_text(ctx, slot, text, slot_key):
-    render_text_slot(
-        backend=ctx.backend,
-        slot_key=slot_key,
-        slot=slot,
-        text=text,
-        slide_obj=ctx.slide_obj,
-        slides_service=ctx.slides_service,
-        presentation_id=ctx.presentation_id,
-        page_id=ctx.page_id,
-        layout_name=ctx.layout_spec.name,
-    )
+    render_text_slot(ctx, slot, text, slot_key)

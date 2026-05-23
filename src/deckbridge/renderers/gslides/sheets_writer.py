@@ -1,20 +1,18 @@
+from .utils import text_to_number
+
+
 class SheetsDataWriter:
     def __init__(self, sheets_service, spreadsheet_id):
         self.sheets = sheets_service
         self.spreadsheet_id = spreadsheet_id
 
-    def write_dataframe(self, block, sheet_name):
+    def write_dataframe(self, ctx, block, sheet_name):
 
         df = block.chart.data
 
         # Create new sheet
-        add_sheet_request = {"addSheet": {"properties": {"title": sheet_name}}}
-
-        response = (
-            self.sheets.spreadsheets().batchUpdate(spreadsheetId=self.spreadsheet_id, body={"requests": [add_sheet_request]}).execute()
-        )
-
-        sheet_id = response["replies"][0]["addSheet"]["properties"]["sheetId"]
+        sheet_id = text_to_number(sheet_name)
+        ctx.add_create_sheet_requests({"addSheet": {"properties": {"sheetId": sheet_id, "title": sheet_name}}})
 
         # Write data
         series_names = [block.chart.x]
@@ -24,15 +22,11 @@ class SheetsDataWriter:
             df_names.append(s["column"])
         values = [series_names] + df[df_names].values.tolist()
 
-        self.sheets.spreadsheets().values().update(
-            spreadsheetId=self.spreadsheet_id, range=f"{sheet_name}!A1", valueInputOption="RAW", body={"values": values}
-        ).execute()
-
-        requests = []
+        ctx.add_create_values_requests({"range": f"{sheet_name}!A1", "values": values})
 
         value_axis_tick_format = block.chart.value_axis_tick_format
         if value_axis_tick_format:
-            requests.append(
+            ctx.add_format_values_requests(
                 {
                     "repeatCell": {
                         "range": {
@@ -54,11 +48,5 @@ class SheetsDataWriter:
                     }
                 }
             )
-
-        if requests:
-            self.sheets.spreadsheets().batchUpdate(
-                spreadsheetId=self.spreadsheet_id,
-                body={"requests": requests},
-            ).execute()
 
         return sheet_name, sheet_id

@@ -1,3 +1,5 @@
+import zlib
+
 EMU_PER_INCH = 914400
 PIXEL_PER_INCH = 96
 
@@ -54,3 +56,7 @@ def hex_to_slides_rgb(hex_color: str) -> dict:
     b = int(hex_color[4:6], 16) / 255
 
     return {"red": r, "green": g, "blue": b}
+
+
+def text_to_number(text):
+    return zlib.crc32(text.encode()) & 0x7FFFFFFF
