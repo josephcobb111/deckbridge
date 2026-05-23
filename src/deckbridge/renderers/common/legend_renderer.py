@@ -168,11 +168,7 @@ def _render_color_legend_gslides(ctx, slot_key, slot, legend):
             slot_key=f"{slot_key}_text_{i}",
         )
 
-    if requests:
-        ctx.slides_service.presentations().batchUpdate(
-            presentationId=ctx.presentation_id,
-            body={"requests": requests},
-        ).execute()
+    ctx.add_slide_requests(requests)
 
 
 # =========================================================
@@ -319,8 +315,4 @@ def _render_dash_legend_gslides(
             slot_key=f"{slot_key}_text_{i}",
         )
 
-    if requests:
-        ctx.slides_service.presentations().batchUpdate(
-            presentationId=ctx.presentation_id,
-            body={"requests": requests},
-        ).execute()
+    ctx.add_slide_requests(requests)
