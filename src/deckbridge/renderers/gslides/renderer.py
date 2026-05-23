@@ -67,7 +67,9 @@ class GSlidesRenderer:
         for i, _ in enumerate(deck.slides):
             slide_id = f"slide_{i}"
 
-            self.create_slide_requests.append({"createSlide": {"objectId": slide_id, "slideLayoutReference": {"predefinedLayout": "BLANK"}}})
+            self.create_slide_requests.append(
+                {"createSlide": {"objectId": slide_id, "slideLayoutReference": {"predefinedLayout": "BLANK"}}}
+            )
 
             page_ids[i] = slide_id
 
