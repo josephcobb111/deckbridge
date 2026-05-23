@@ -25,7 +25,7 @@ class PPTXChartBuilder:
         """
         Apply theme-driven styling to a chart object
         """
-        chart_theme = resolve_chart_theme(theme, layout_name)
+        chart_theme = resolve_chart_theme(theme, layout_name, block.style_overrides)
 
         self._single_series_bar_chart(chart)
         self._set_chart_title(chart, chart_theme, block)

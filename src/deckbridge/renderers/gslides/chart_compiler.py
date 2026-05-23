@@ -40,7 +40,7 @@ class GSlidesChartCompiler:
         # -------------------------
         # Style chart
         # -------------------------
-        chart_theme = resolve_chart_theme(ctx.theme, ctx.layout_spec.name)
+        chart_theme = resolve_chart_theme(ctx.theme, ctx.layout_spec.name, block.style_overrides)
 
         requests = self.chart_builder.apply_chart_style(
             sheet_id,

@@ -98,6 +98,7 @@ def _render_color_legend_pptx(ctx, slot, legend):
             slot=text_slot,
             text=[{"text": _get_label(item), "style_key": "color_legend"}],
             slot_key=f"color_legend_text_{i}",
+            style_overrides=None,
         )
 
 
@@ -166,6 +167,7 @@ def _render_color_legend_gslides(ctx, slot_key, slot, legend):
             slot=text_slot,
             text=[{"text": _get_label(item), "style_key": "color_legend"}],
             slot_key=f"{slot_key}_text_{i}",
+            style_overrides=None,
         )
 
     ctx.add_create_legend_requests(requests)
@@ -230,6 +232,7 @@ def _render_dash_legend_pptx(ctx, slot, legend):
             slot=text_slot,
             text=[{"text": label, "style_key": "dash_legend"}],
             slot_key=f"dash_legend_text_{i}",
+            style_overrides=None,
         )
 
 
@@ -313,6 +316,7 @@ def _render_dash_legend_gslides(
             slot=text_slot,
             text=[{"text": label, "style_key": "dash_legend"}],
             slot_key=f"{slot_key}_text_{i}",
+            style_overrides=None,
         )
 
     ctx.add_create_legend_requests(requests)
