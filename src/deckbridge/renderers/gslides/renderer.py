@@ -10,6 +10,7 @@ class GSlidesRenderer:
         self.spreadsheet_id = spreadsheet_id
 
         self.create_sheet_requests = []
+        self.create_values_requests = []
 
         self.chart_compiler = GSlidesChartCompiler(slides_service, sheets_service, spreadsheet_id)
 
@@ -30,6 +31,16 @@ class GSlidesRenderer:
             self.sheets.spreadsheets().batchUpdate(
                 spreadsheetId=self.spreadsheet_id,
                 body={"requests": self.create_sheet_requests},
+            ).execute()
+
+        for value_update in self.create_values_requests:
+            self.sheets.spreadsheets().values().update(
+                spreadsheetId=self.spreadsheet_id,
+                range=value_update["range"],
+                valueInputOption="RAW",
+                body={
+                    "values": value_update["values"],
+                },
             ).execute()
 
     # =========================================================
@@ -71,6 +82,7 @@ class GSlidesRenderer:
         render_slots(ctx, slide)
 
         self.create_sheet_requests.extend(ctx.create_sheet_requests)
+        self.create_values_requests.extend(ctx.create_values_requests)
 
         # if ctx.sheet_requests:
         #     self.sheets.spreadsheets().batchUpdate(

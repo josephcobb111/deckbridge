@@ -26,7 +26,7 @@ class SheetsDataWriter:
             df_names.append(s["column"])
         values = [series_names] + df[df_names].values.tolist()
 
-        ctx.add_sheet_values(
+        ctx.add_create_values_requests(
             {
                 "range": f"{sheet_name}!A1",
                 "values": values,

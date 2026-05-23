@@ -25,7 +25,7 @@ class RenderContext:
 
     # Request queues
     create_sheet_requests: list = field(default_factory=list)
-    add_values_requests: list = field(default_factory=list)
+    create_values_requests: list = field(default_factory=list)
     format_values_requests: list = field(default_factory=list)
     sheet_requests: list = field(default_factory=list)
     sheet_values: list = field(default_factory=list)
@@ -49,6 +49,15 @@ class RenderContext:
             self.create_sheet_requests.extend(requests)
         else:
             self.create_sheet_requests.append(requests)
+
+    def add_create_values_requests(self, requests):
+        if not requests:
+            return
+
+        if isinstance(requests, list):
+            self.create_values_requests.extend(requests)
+        else:
+            self.create_values_requests.append(requests)
 
     def add_sheet_requests(self, requests):
         if not requests:
