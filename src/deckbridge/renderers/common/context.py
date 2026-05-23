@@ -19,31 +19,16 @@ class RenderContext:
 
     chart_compiler: object = None
 
-    # object IDs
-    next_sheet_id: int = 1000
-    next_chart_id: int = 1000
-
-    # Request queues
+    # Request queues - sheets
     create_sheet_requests: list = field(default_factory=list)
     create_values_requests: list = field(default_factory=list)
     format_values_requests: list = field(default_factory=list)
     create_chart_requests: list = field(default_factory=list)
 
+    # Request queues - slides
     embed_chart_requests: list = field(default_factory=list)
-
-    sheet_requests: list = field(default_factory=list)
-    sheet_values: list = field(default_factory=list)
-    slide_requests: list = field(default_factory=list)
-
-    def allocate_sheet_id(self):
-        sheet_id = self.next_sheet_id
-        self.next_sheet_id += 1
-        return sheet_id
-
-    def allocate_chart_id(self):
-        chart_id = self.next_chart_id
-        self.next_chart_id += 1
-        return chart_id
+    create_text_requests: list = field(default_factory=list)
+    create_legend_requests: list = field(default_factory=list)
 
     def add_create_sheet_requests(self, requests):
         if not requests:
@@ -90,23 +75,20 @@ class RenderContext:
         else:
             self.embed_chart_requests.append(requests)
 
-    def add_sheet_requests(self, requests):
+    def add_create_text_requests(self, requests):
         if not requests:
             return
 
         if isinstance(requests, list):
-            self.sheet_requests.extend(requests)
+            self.create_text_requests.extend(requests)
         else:
-            self.sheet_requests.append(requests)
+            self.create_text_requests.append(requests)
 
-    def add_sheet_values(self, values):
-        self.sheet_values.append(values)
-
-    def add_slide_requests(self, requests):
+    def add_create_legend_requests(self, requests):
         if not requests:
             return
 
         if isinstance(requests, list):
-            self.slide_requests.extend(requests)
+            self.create_legend_requests.extend(requests)
         else:
-            self.slide_requests.append(requests)
+            self.create_legend_requests.append(requests)

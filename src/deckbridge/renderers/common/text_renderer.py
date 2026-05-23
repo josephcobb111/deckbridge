@@ -209,4 +209,4 @@ def _render_text_gslides(ctx, slot, text, slot_key):
         }
     )
 
-    ctx.add_slide_requests(requests)
+    ctx.add_create_text_requests(requests)

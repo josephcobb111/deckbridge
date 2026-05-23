@@ -168,7 +168,7 @@ def _render_color_legend_gslides(ctx, slot_key, slot, legend):
             slot_key=f"{slot_key}_text_{i}",
         )
 
-    ctx.add_slide_requests(requests)
+    ctx.add_create_legend_requests(requests)
 
 
 # =========================================================
@@ -315,4 +315,4 @@ def _render_dash_legend_gslides(
             slot_key=f"{slot_key}_text_{i}",
         )
 
-    ctx.add_slide_requests(requests)
+    ctx.add_create_legend_requests(requests)

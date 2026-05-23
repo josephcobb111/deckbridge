@@ -18,6 +18,8 @@ class GSlidesRenderer:
         # slides requests
         self.create_slide_requests = []
         self.embed_chart_requests = []
+        self.create_text_requests = []
+        self.create_legend_requests = []
 
         self.chart_compiler = GSlidesChartCompiler(slides_service, sheets_service, spreadsheet_id)
 
@@ -62,6 +64,12 @@ class GSlidesRenderer:
         if self.embed_chart_requests:
             self._batch_update(presentation_id, self.embed_chart_requests, "slides")
 
+        if self.create_text_requests:
+            self._batch_update(presentation_id, self.create_text_requests, "slides")
+
+        if self.create_legend_requests:
+            self._batch_update(presentation_id, self.create_legend_requests, "slides")
+
     # =========================================================
     # CREATE SLIDES
     # =========================================================
@@ -104,28 +112,7 @@ class GSlidesRenderer:
         self.format_values_requests.extend(ctx.format_values_requests)
         self.create_chart_requests.extend(ctx.create_chart_requests)
         self.embed_chart_requests.extend(ctx.embed_chart_requests)
-
-        # if ctx.sheet_requests:
-        #     self.sheets.spreadsheets().batchUpdate(
-        #         spreadsheetId=self.spreadsheet_id,
-        #         body={"requests": ctx.sheet_requests},
-        #     ).execute()
-
-        # for value_update in ctx.sheet_values:
-        #     self.sheets.spreadsheets().values().update(
-        #         spreadsheetId=self.spreadsheet_id,
-        #         range=value_update["range"],
-        #         valueInputOption="RAW",
-        #         body={
-        #             "values": value_update["values"],
-        #         },
-        #     ).execute()
-
-        # if ctx.slide_requests:
-        #     self.slides.presentations().batchUpdate(
-        #         presentationId=presentation_id,
-        #         body={"requests": ctx.slide_requests},
-        #     ).execute()
+        self.create_text_requests.extend(ctx.create_text_requests)
 
     # =========================================================
     # BATCH HELPER
