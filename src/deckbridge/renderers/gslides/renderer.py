@@ -17,6 +17,7 @@ class GSlidesRenderer:
 
         # slides requests
         self.create_slide_requests = []
+        self.embed_chart_requests = []
 
         self.chart_compiler = GSlidesChartCompiler(slides_service, sheets_service, spreadsheet_id)
 
@@ -57,6 +58,9 @@ class GSlidesRenderer:
 
         if self.create_slide_requests:
             self._batch_update(presentation_id, self.create_slide_requests, "slides")
+
+        if self.embed_chart_requests:
+            self._batch_update(presentation_id, self.embed_chart_requests, "slides")
 
     # =========================================================
     # CREATE SLIDES
@@ -99,6 +103,7 @@ class GSlidesRenderer:
         self.create_values_requests.extend(ctx.create_values_requests)
         self.format_values_requests.extend(ctx.format_values_requests)
         self.create_chart_requests.extend(ctx.create_chart_requests)
+        self.embed_chart_requests.extend(ctx.embed_chart_requests)
 
         # if ctx.sheet_requests:
         #     self.sheets.spreadsheets().batchUpdate(

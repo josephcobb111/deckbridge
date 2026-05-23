@@ -49,10 +49,10 @@ class GSlidesChartCompiler:
             chart_theme,
             value_axis_override,
         )
-        ctx.add_sheet_requests(requests)
+        ctx.add_create_chart_requests(requests)
 
         # -------------------------
         # Embed in slide
         # -------------------------
-        self.embedder.embed_chart(ctx.presentation_id, self.spreadsheet_id, chart_id, ctx.page_id, slot)
-        ctx.add_slide_requests(requests)
+        requests = self.embedder.embed_chart(ctx.presentation_id, self.spreadsheet_id, chart_id, ctx.page_id, slot)
+        ctx.add_embed_chart_requests(requests)
