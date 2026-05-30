@@ -1,5 +1,5 @@
-from deckbridge.renderers.pptx.renderer import PPTXRenderer
 from deckbridge.backends.base import BaseBackend
+from deckbridge.renderers.pptx.renderer import PPTXRenderer
 
 
 class PPTXBackend(BaseBackend):

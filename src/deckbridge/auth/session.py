@@ -1,9 +1,8 @@
 from datetime import datetime
 
-from deckbridge.config import DEFAULT_GSLIDES_TEMPLATE_ID
-
 from deckbridge.auth.drive_folders import DriveFolderManager
 from deckbridge.auth.google_auth import get_google_services
+from deckbridge.config import DEFAULT_GSLIDES_TEMPLATE_ID
 
 
 def copy_presentation_template(drive_service, template_id, new_title):

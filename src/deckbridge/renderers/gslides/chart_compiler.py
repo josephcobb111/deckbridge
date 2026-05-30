@@ -1,7 +1,6 @@
 import uuid
 
 from deckbridge.renderers.common.style_resolver import resolve_chart_theme
-
 from deckbridge.renderers.gslides.chart_builder import SheetsChartBuilder
 from deckbridge.renderers.gslides.chart_embedder import SlidesChartEmbedder
 from deckbridge.renderers.gslides.sheets_writer import SheetsDataWriter
