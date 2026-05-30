@@ -1,9 +1,14 @@
+from deckbridge.deck.blocks import ChartBlock
+from deckbridge.deck.specs import ChartSpec
 from deckbridge.renderers.common.style_resolver import resolve_series_color, resolve_series_dash, resolve_series_width
-from deckbridge.renderers.gslides.utils import GSHEETS_CHART_DASH_MAP, GSLIDES_ALIGN_MAP
-
-from ...deck.blocks import ChartBlock
-from ...deck.specs import ChartSpec
-from .utils import GSHEETS_CHART_STACKING_MAP, GSHEETS_CHART_TYPE_MAP, hex_to_slides_rgb, inches_to_pixels
+from deckbridge.renderers.gslides.utils import (
+    GSHEETS_CHART_DASH_MAP,
+    GSHEETS_CHART_STACKING_MAP,
+    GSHEETS_CHART_TYPE_MAP,
+    GSLIDES_ALIGN_MAP,
+    hex_to_slides_rgb,
+    inches_to_pixels,
+)
 
 
 class SheetsChartBuilder:

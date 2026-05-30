@@ -1,5 +1,5 @@
-from ..renderers.gslides.renderer import GSlidesRenderer
-from .base import BaseBackend
+from deckbridge.backends.base import BaseBackend
+from deckbridge.renderers.gslides.renderer import GSlidesRenderer
 
 
 class GSlidesBackend(BaseBackend):

@@ -1,4 +1,4 @@
-from .utils import text_to_number
+from deckbridge.renderers.gslides.utils import text_to_number
 
 
 class SheetsDataWriter:

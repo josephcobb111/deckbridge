@@ -1,7 +1,6 @@
+from deckbridge.backends.base import BaseBackend
 from deckbridge.layouts.registry import LAYOUTS
 from deckbridge.themes.default import THEME
-
-from ..backends.base import BaseBackend
 
 
 class DeckConfig:
