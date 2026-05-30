@@ -187,3 +187,4 @@ token.pickle
 # Local files
 .DS_Store
 
+litellm_config.yaml
