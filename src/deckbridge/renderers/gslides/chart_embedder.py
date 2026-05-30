@@ -1,4 +1,4 @@
-from .utils import inches_to_emu
+from deckbridge.renderers.gslides.utils import inches_to_emu
 
 
 class SlidesChartEmbedder:

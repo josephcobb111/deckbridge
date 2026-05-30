@@ -1,6 +1,6 @@
 from pptx.util import Inches
 
-from .chart_builder import PPTXChartBuilder
+from deckbridge.renderers.pptx.chart_builder import PPTXChartBuilder
 
 
 class PPTXChartCompiler:

@@ -5,7 +5,7 @@ from pptx import Presentation
 from deckbridge.renderers.common.context import RenderContext
 from deckbridge.renderers.common.slot_renderer import render_slots
 
-from .chart_compiler import PPTXChartCompiler
+from deckbridge.renderers.pptx.chart_compiler import PPTXChartCompiler
 
 
 def get_default_template_path():
