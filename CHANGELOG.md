@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.3.1
+
+## What's Changed
+* Claude by @josephcobb111 in https://github.com/josephcobb111/deckbridge/pull/20
+* Fix: replace relative imports with absolute imports by @josephcobb111 in https://github.com/josephcobb111/deckbridge/pull/21
+* Pre-commit Hooks Pass by @josephcobb111 in https://github.com/josephcobb111/deckbridge/pull/22
+
+**Full Changelog**: https://github.com/josephcobb111/deckbridge/compare/v0.3.0...v0.3.1
+
+
 ## 0.3.0
 
 ## What's Changed
