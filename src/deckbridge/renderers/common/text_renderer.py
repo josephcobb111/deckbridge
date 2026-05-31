@@ -6,6 +6,25 @@ from deckbridge.renderers.pptx.utils import PPTX_ALIGN_MAP, PPTX_VERTICAL_ALIGN_
 
 
 def resolve_text_content(slide, slot_key, slot):
+    """Resolve the text content for a given slot.
+
+    This helper extracts the appropriate text based on the slot's ``content_type``.
+    For ``chart_title`` slots it composes a list of lines containing the chart
+    title and optional subtitle, along with any style overrides. For other
+    content types it returns the raw text stored under ``slot_key`` in the slide.
+
+    Args:
+        slide (dict): The current slide definition containing a ``content``
+            mapping of block identifiers to block objects.
+        slot_key (str): The key that identifies the slot within the slide layout.
+        slot (dict): The slot definition, which may include ``content_type`` and
+            ``source`` fields.
+
+    Returns:
+        tuple: ``(text, style_overrides)`` where ``text`` is either a string or a
+        list of ``{"text": str, "style_key": str}`` dictionaries, and
+        ``style_overrides`` is the block's ``style_overrides`` (or ``None``).
+    """
     content_type = slot.get("content_type")
 
     if content_type == "chart_title":
@@ -42,6 +61,22 @@ def resolve_text_content(slide, slot_key, slot):
 
 
 def render_text_slot(ctx, slot, text, slot_key, style_overrides):
+    """Render a text slot using the appropriate backend.
+
+    Dispatches to the backend‑specific rendering functions for PPTX or Google Slides.
+    If ``text`` is falsy, the function returns without performing any rendering.
+
+    Args:
+        ctx: Rendering context containing backend information and theme.
+        slot: Slot definition dictionary from the layout.
+        text: Text content to render; can be a string or a list of dictionaries with
+            ``"text"`` and ``"style_key"`` keys.
+        slot_key: Identifier for the slot used for style resolution.
+        style_overrides: Optional style overrides dictionary.
+
+    Returns:
+        None. The rendering functions modify the context or slide objects in‑place.
+    """
     if not text:
         return
 
@@ -56,6 +91,26 @@ def render_text_slot(ctx, slot, text, slot_key, style_overrides):
 
 
 def _render_text_pptx(ctx, slot, text, slot_key, style_overrides):
+    """Render a text box onto a PPTX slide.
+
+    Creates a textbox shape on the current PPTX slide and populates it with the
+    supplied ``text``. The function resolves style information for each line of
+    text and applies paragraph‑level alignment.
+
+    Args:
+        ctx: Rendering context containing the current PPTX slide object and
+            theme information.
+        slot: Dictionary describing the slot dimensions (x, y, w, h) and other
+            layout metadata.
+        text: Text content to render; can be a string or a list of dictionaries
+            with ``"text"`` and ``"style_key"`` keys.
+        slot_key: Identifier used for style resolution of the base slot.
+        style_overrides: Optional dictionary of style overrides that supersede
+            theme defaults.
+
+    Returns:
+        None. The PPTX slide is modified in‑place.
+    """
     textbox = ctx.slide_obj.shapes.add_textbox(
         Inches(slot["x"]),
         Inches(slot["y"]),
@@ -90,6 +145,28 @@ def _render_text_pptx(ctx, slot, text, slot_key, style_overrides):
 
 
 def _render_text_gslides(ctx, slot, text, slot_key, style_overrides):
+    """Render a text box onto a Google Slides page.
+
+    Constructs a ``TEXT_BOX`` shape in the Google Slides API request list and
+    populates it with the supplied ``text``. Styles are applied per text range
+    based on resolved style information, and paragraph alignment is set for the
+    entire box.
+
+    Args:
+        ctx: Rendering context that supplies the current page ID, theme, and
+            layout specifications.
+        slot: Dictionary describing the slot dimensions (x, y, w, h) and other
+            layout metadata.
+        text: Text content to render; can be a string or a list of dictionaries
+            with ``"text"`` and ``"style_key"`` keys.
+        slot_key: Identifier used for style resolution of the base slot.
+        style_overrides: Optional dictionary of style overrides that supersede
+            theme defaults.
+
+    Returns:
+        None. The function adds the necessary API requests to ``ctx`` which are
+        later executed when the slide is rendered.
+    """
     object_id = f"{slot_key}_{ctx.page_id}"
 
     requests = []

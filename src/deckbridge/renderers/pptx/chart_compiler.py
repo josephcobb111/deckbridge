@@ -1,3 +1,10 @@
+"""Utilities for compiling and embedding PowerPoint charts.
+
+This module defines :class:`PPTXChartCompiler`, which orchestrates the creation of
+chart shapes on a PowerPoint slide using :class:`~deckbridge.renderers.pptx.chart_builder.PPTXChartBuilder`.
+It handles positioning, data building, and theme‑driven styling.
+"""
+
 from pptx.util import Inches
 
 from deckbridge.renderers.pptx.chart_builder import PPTXChartBuilder
@@ -6,15 +13,19 @@ from deckbridge.renderers.pptx.chart_builder import PPTXChartBuilder
 class PPTXChartCompiler:
     """Compile chart specifications into PowerPoint chart objects.
 
-    The :class:`PPTXChartCompiler` orchestrates the creation of a chart shape on a
-    slide using :class:`PPTXChartBuilder`. It is responsible for positioning the
-    chart on the slide, delegating data construction to the builder, and applying
-    theme‑driven styling. The public ``compile`` method is called by the rendering
-    pipeline with the rendering context, layout slot, block definition, and an
-    identifier for the chart shape.
+    This compiler coordinates chart creation on a PowerPoint slide. It positions
+    the chart based on the supplied ``slot``, delegates data construction to
+    :class:`~deckbridge.renderers.pptx.chart_builder.PPTXChartBuilder`, and applies
+    theme‑driven styling. The compiled chart is added to the slide via the
+    rendering context.
     """
 
     def __init__(self):
+        """Initializes the PPTXChartCompiler.
+
+        Creates an instance of :class:`PPTXChartBuilder` used for constructing
+        chart data and applying styling.
+        """
         self.builder = PPTXChartBuilder()
 
     def compile(self, ctx, slot, block, chart_key, value_axis_override=None):
@@ -56,10 +67,7 @@ class PPTXChartCompiler:
 
         shape = ctx.slide_obj.shapes.add_chart(chart_type, x, y, cx, cy, chart_data)
 
-        try:
-            shape.name = chart_key
-        except Exception:
-            pass
+        shape.name = chart_key
 
         chart = shape.chart
 

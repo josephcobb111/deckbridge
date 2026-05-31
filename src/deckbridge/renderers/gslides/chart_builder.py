@@ -12,12 +12,45 @@ from deckbridge.renderers.gslides.utils import (
 
 
 class SheetsChartBuilder:
+    """Builder for Google Sheets chart specifications and styling.
+
+    This class creates a chart specification compatible with the Google Sheets
+    API, handles the creation of chart objects, and applies theme‑driven styling
+    based on the deck's chart theme configuration.
+    """
+
     def __init__(self, sheets_service, spreadsheet_id):
+        """Initializes the SheetsChartBuilder.
+
+        Args:
+            sheets_service: Authenticated Google Sheets service instance used to
+                create and update charts.
+            spreadsheet_id (str): ID of the spreadsheet where chart data resides.
+        """
         self.sheets = sheets_service
         self.spreadsheet_id = spreadsheet_id
 
     def create_chart(self, chart_id, sheet_id, spec: ChartSpec, block: ChartBlock, position: dict):
+        """Create a chart in Google Sheets.
 
+        Constructs a request payload for the Sheets API that adds a new chart
+        based on the provided specification and places it on the sheet.
+
+        Args:
+            chart_id (int): Identifier for the new chart.
+            sheet_id (int): Identifier of the sheet where the chart will be
+                created.
+            spec (ChartSpec): Specification of the chart (type, data, etc.).
+            block (ChartBlock): Block containing chart metadata such as titles
+                and axis labels.
+            position (dict): Mapping with keys ``x``, ``y``, ``w``, ``h`` defining
+                the chart's size in inches. These values are converted to pixel
+                dimensions for the API request.
+
+        Returns:
+            list[dict]: A list containing a single ``addChart`` request dict that
+                can be merged into the batchUpdate payload.
+        """
         requests = [
             {
                 "addChart": {
@@ -45,7 +78,29 @@ class SheetsChartBuilder:
         return requests
 
     def apply_chart_style(self, sheet_id, chart_id, block: ChartBlock, chart_theme: dict, value_axis_override):
+        """Apply theme‑driven styling to an existing Google Sheets chart.
 
+        This method updates the chart specification with titles, axis formatting,
+        legend configuration, data labels, and series styling based on the
+        resolved ``chart_theme``. It generates an ``updateChartSpec`` request that
+        can be merged into the batchUpdate payload.
+
+        Args:
+            sheet_id (int): Identifier of the sheet containing the chart data.
+            chart_id (int): Identifier of the chart to style.
+            block (ChartBlock): Chart block providing titles, axis titles, and
+                other metadata.
+            chart_theme (dict): Resolved theme dictionary containing styling
+                information for titles, axes, legend, data labels, series colors,
+                dashes, and widths.
+            value_axis_override (tuple, optional): Optional ``(min, max)`` tuple
+                to override the chart's value axis range. If ``None`` the chart's
+                own ``value_axis_range`` is used.
+
+        Returns:
+            list[dict]: A list containing a single ``updateChartSpec`` request
+                dict that updates the chart with the new styling.
+        """
         # chart title
         api_spec = self._build_chart_spec(sheet_id, block.chart, block)
         if chart_theme["chart_title"]["has_title"]:
@@ -144,7 +199,24 @@ class SheetsChartBuilder:
         return requests
 
     def _build_chart_spec(self, sheet_id, spec: ChartSpec, block: ChartBlock):
+        """Construct the low‑level chart specification for the Google Sheets API.
 
+        This helper assembles the JSON structure required by the Sheets API to
+        define a chart, including data series ranges, axis definitions, and
+        default legend positioning. It is used both when initially creating a
+        chart and when updating its styling.
+
+        Args:
+            sheet_id (int): Identifier of the sheet containing the chart data.
+            spec (ChartSpec): Specification describing the chart type, series,
+                and underlying pandas ``DataFrame``.
+            block (ChartBlock): Block containing user‑specified titles and axis
+                labels.
+
+        Returns:
+            dict: A dictionary representing the chart specification compatible
+                with the Sheets API ``addChart`` and ``updateChartSpec`` requests.
+        """
         series = []
 
         for i, s in enumerate(spec.series):

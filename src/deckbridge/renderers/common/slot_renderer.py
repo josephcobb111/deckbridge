@@ -4,6 +4,25 @@ from deckbridge.renderers.common.text_renderer import render_text_slot, resolve_
 
 
 def render_slots(ctx, slide):
+    """Render all slots for a given slide using the layout specification.
+
+    Iterates over each slot defined in ``ctx.layout_spec.slots`` and dispatches
+    rendering based on the slot ``type``. Supported slot types are:
+
+    - ``"chart"`` – renders a chart block via ``_render_chart``.
+    - ``"text"`` – resolves text content and renders it via ``_render_text``.
+    - ``"color_legend"`` – renders a color legend using ``render_color_legend``.
+    - ``"dash_legend"`` – renders a dash legend using ``render_dash_legend``.
+
+    Args:
+        ctx: Rendering context providing layout specifications, theme, and
+            backend helpers.
+        slide (dict): Slide definition containing a ``"content"`` mapping of
+            block identifiers to block objects.
+
+    Returns:
+        None. Rendering functions modify the context or output objects in‑place.
+    """
     slots = ctx.layout_spec.slots
 
     for slot_key, slot in slots.items():
@@ -28,6 +47,23 @@ def render_slots(ctx, slide):
 
 
 def _render_chart(ctx, slot, block, slot_key, slide):
+    """Render a chart block into the slide.
+
+    If ``block`` is ``None`` the function returns early. Otherwise it resolves any
+    shared axis ranges across the slide and delegates to the ``chart_compiler``
+    in the rendering context to produce the chart output.
+
+    Args:
+        ctx: Rendering context containing the chart compiler and other helpers.
+        slot (dict): Slot definition describing the chart placement and size.
+        block (object): Chart block instance with data and styling information.
+        slot_key (str): Identifier for the slot, used for logging or lookup.
+        slide (dict): Full slide definition, potentially needed for shared axis
+            resolution.
+
+    Returns:
+        None. The chart is added to the context's output structures.
+    """
     if not block:
         return
 

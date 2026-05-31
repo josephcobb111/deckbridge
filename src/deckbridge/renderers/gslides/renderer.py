@@ -4,7 +4,26 @@ from deckbridge.renderers.gslides.chart_compiler import GSlidesChartCompiler
 
 
 class GSlidesRenderer:
+    """Renderer for Google Slides presentations.
+
+    This class coordinates creation of slides, sheets, and charts, accumulating
+    batchUpdate requests for the Google Slides and Sheets APIs. It delegates the
+    actual chart compilation to :class:`~deckbridge.renderers.gslides.chart_compiler.GSlidesChartCompiler`
+    and uses :class:`~deckbridge.renderers.common.context.RenderContext` to
+    render individual slots on each slide.
+    """
+
     def __init__(self, slides_service, sheets_service, spreadsheet_id, presentation_id, execute_requests):
+        """Initializes the GSlidesRenderer.
+
+        Args:
+            slides_service: Authenticated Google Slides service instance.
+            sheets_service: Authenticated Google Sheets service instance.
+            spreadsheet_id: ID of the spreadsheet used for data sheets.
+            presentation_id: ID of the Slides presentation being rendered.
+            execute_requests: Whether to automatically execute the accumulated batch
+                update requests after rendering.
+        """
         self.slides = slides_service
         self.sheets = sheets_service
         self.spreadsheet_id = spreadsheet_id
@@ -27,7 +46,17 @@ class GSlidesRenderer:
         self.execute_requests = execute_requests
 
     def render(self, deck):
+        """Renders the entire deck into Google Slides.
 
+        The method performs three main steps:
+        1. Creates blank slides for each slide in the deck.
+        2. Renders the content of each slide using the appropriate layout.
+        3. Optionally executes all accumulated batchUpdate requests.
+
+        Args:
+            deck: A :class:`deckbridge.models.Deck` (or compatible) object that
+                contains a list of slide definitions in ``deck.slides``.
+        """
         # -----------------------------
         # Create slides
         # -----------------------------
@@ -49,6 +78,19 @@ class GSlidesRenderer:
     # CREATE SLIDES
     # =========================================================
     def _create_slides(self, deck):
+        """Create blank slides for each slide in the deck.
+
+        Generates a unique ``objectId`` for each slide (e.g. ``slide_0``) and
+        appends a ``createSlide`` request to ``self.create_slide_requests``.
+        Returns a mapping from the slide index to the generated ``objectId`` so
+        that subsequent rendering steps can reference the correct page.
+
+        Args:
+            deck: Deck object containing a ``slides`` attribute.
+
+        Returns:
+            dict[int, str]: Mapping of slide index to slide ``objectId``.
+        """
         page_ids = {}
 
         for i, _ in enumerate(deck.slides):

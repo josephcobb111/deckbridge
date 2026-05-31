@@ -29,10 +29,37 @@ LEGEND_STYLE = {
 
 
 def _get_label(item):
+    """Return a display label for a legend item.
+
+    The function prefers the ``name`` field, then ``column``, and finally the
+    ``label`` field (defaulting to an empty string). This helper is used by both
+    color and dash legends.
+
+    Args:
+        item (dict): Legend item dictionary possibly containing ``name``,
+            ``column`` or ``label`` keys.
+
+    Returns:
+        str: The chosen label for the legend entry.
+    """
     return item.get("name") or item.get("column") or item.get("label", "")
 
 
 def _grid_position(i, x, y):
+    """Calculate the grid position for a legend item.
+
+    The legend is laid out in a grid with a maximum number of rows defined in
+    ``LEGEND_STYLE['max_rows']``. This helper computes the ``(x, y)`` coordinates
+    for the ``i``‑th item given the starting offsets ``x`` and ``y``.
+
+    Args:
+        i (int): Index of the legend item (zero‑based).
+        x (float): Base x‑coordinate (in inches) for the legend grid.
+        y (float): Base y‑coordinate (in inches) for the legend grid.
+
+    Returns:
+        tuple[float, float]: The calculated ``(x, y)`` position for the item.
+    """
     row = i % LEGEND_STYLE["max_rows"]
     col = i // LEGEND_STYLE["max_rows"]
 
@@ -40,6 +67,19 @@ def _grid_position(i, x, y):
 
 
 def _line_position(i, y):
+    """Calculate the y‑position for a dash‑legend line.
+
+    Given the base ``y`` offset and the index ``i`` of the legend entry, this
+    helper returns the vertical coordinate for the line using the row height
+    defined in ``LEGEND_STYLE['row_h']``.
+
+    Args:
+        i (int): Zero‑based index of the legend item.
+        y (float): Base y‑coordinate (in inches) for the legend.
+
+    Returns:
+        float: The y‑coordinate for the ``i``‑th line.
+    """
     return y + (i * LEGEND_STYLE["row_h"])
 
 
@@ -49,7 +89,24 @@ def _line_position(i, y):
 
 
 def render_color_legend(ctx, slot_key, slot, slide):
+    """Render a color legend for the slide.
 
+    Retrieves the ``color_legend`` data from the ``slide`` dictionary and, if
+    present, dispatches to the backend‑specific rendering implementation.
+
+    Args:
+        ctx: Rendering context providing backend information and helper methods.
+        slot_key (str): Identifier for the legend slot (used for GSlides object
+            IDs).
+        slot (dict): Slot definition containing positional and sizing
+            information.
+        slide (dict): Slide definition which may include a ``"color_legend"``
+            list of legend items.
+
+    Returns:
+        None. The rendering functions modify the context or issue API requests
+        in‑place.
+    """
     legend = slide.get("color_legend", [])
 
     if not legend:
@@ -63,7 +120,21 @@ def render_color_legend(ctx, slot_key, slot, slide):
 
 
 def _render_color_legend_pptx(ctx, slot, legend):
+    """Render a color legend on a PPTX slide.
 
+    For each legend entry, a colored square shape is added to the slide and a
+    corresponding text label is placed next to it using ``render_text_slot``.
+    Positions are calculated based on the grid layout defined in ``LEGEND_STYLE``.
+
+    Args:
+        ctx: Rendering context containing the current PPTX slide object.
+        slot (dict): Slot definition with ``x`` and ``y`` offsets for the legend.
+        legend (list[dict]): List of legend items, each potentially containing a
+            ``color`` and a label field.
+
+    Returns:
+        None. The PPTX slide is modified in‑place.
+    """
     x = slot["x"]
     y = slot["y"]
 
@@ -103,7 +174,25 @@ def _render_color_legend_pptx(ctx, slot, legend):
 
 
 def _render_color_legend_gslides(ctx, slot_key, slot, legend):
+    """Render a color legend on a Google Slides page.
 
+    Constructs a series of ``createShape`` and ``updateShapeProperties`` request
+    objects for each legend entry and adds them to the context via
+    ``ctx.add_create_legend_requests``. Each entry consists of a colored rectangle
+    and a positioned text label.
+
+    Args:
+        ctx: Rendering context providing the current Google Slides page ID and a
+            method to accumulate API requests.
+        slot_key (str): Base identifier for the legend slot, used to build unique
+            object IDs.
+        slot (dict): Slot definition containing ``x`` and ``y`` offsets.
+        legend (list[dict]): List of legend items with optional ``color`` and
+            label information.
+
+    Returns:
+        None. The function appends API request dictionaries to the context.
+    """
     requests = []
 
     x = slot["x"]
@@ -179,7 +268,23 @@ def _render_color_legend_gslides(ctx, slot_key, slot, legend):
 
 
 def render_dash_legend(ctx, slot_key, slot, slide):
+    """Render a dash legend for the slide.
 
+    Retrieves the ``dash_legend`` data from the ``slide`` dictionary and, if
+    present, dispatches to the backend‑specific rendering implementation.
+
+    Args:
+        ctx: Rendering context providing backend information and helper methods.
+        slot_key (str): Identifier for the legend slot (used for GSlides object
+            IDs).
+        slot (dict): Slot definition containing positional and sizing information.
+        slide (dict): Slide definition which may include a ``"dash_legend"`` list of
+            legend items.
+
+    Returns:
+        None. The rendering functions modify the context or issue API requests
+        in‑place.
+    """
     legend = slide.get("dash_legend", [])
 
     if not legend:

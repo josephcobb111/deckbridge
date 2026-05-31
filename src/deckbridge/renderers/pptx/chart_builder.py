@@ -1,3 +1,10 @@
+"""Utilities for building and styling PowerPoint charts.
+
+This module provides :class:`PPTXChartBuilder` which constructs chart data
+structures from a chart specification and applies theme‑driven styling to the
+resulting :class:`pptx.chart.chart.Chart` objects.
+"""
+
 from pptx.chart.data import CategoryChartData, XyChartData
 from pptx.enum.chart import XL_CHART_TYPE, XL_DATA_LABEL_POSITION, XL_LEGEND_POSITION, XL_TICK_LABEL_POSITION
 from pptx.util import Pt
@@ -12,6 +19,14 @@ from deckbridge.renderers.pptx.utils import PPTX_DASH_MAP, _validate_xy_numeric,
 
 
 class PPTXChartBuilder:
+    """Builder for PowerPoint chart data and styling.
+
+    This class creates chart data structures from a chart specification and
+    applies theme‑driven styling to the resulting :class:`pptx.chart.chart.Chart`
+    objects. It is used by the PPTX rendering pipeline to embed charts into a
+    presentation.
+    """
+
     def build_chart_data(self, spec):
         """Build chart type + data (no styling here)."""
         chart_data = self._build_chart_data(spec)
@@ -39,6 +54,19 @@ class PPTXChartBuilder:
         self._no_lines_scatter_chart(chart)
 
     def _build_chart_data(self, spec):
+        """Construct chart data based on the specification.
+
+        This method creates a :class:`CategoryChartData` or :class:`XyChartData`
+        instance depending on the chart type. It populates the data series from
+        the pandas ``DataFrame`` provided in ``spec.data``.
+
+        Args:
+            spec: Chart specification object containing ``chart_type``, ``x``,
+                ``series`` and ``data`` attributes.
+
+        Returns:
+            A populated chart data object suitable for the Slides API.
+        """
         if spec.chart_type == "scatter":
             chart_data = XyChartData()
 
