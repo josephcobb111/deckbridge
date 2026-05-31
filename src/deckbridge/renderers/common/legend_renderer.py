@@ -298,7 +298,22 @@ def render_dash_legend(ctx, slot_key, slot, slide):
 
 
 def _render_dash_legend_pptx(ctx, slot, legend):
+    """Render a dash legend on a PPTX slide.
 
+    For each legend entry a line connector is added with the specified dash style
+    and a corresponding text label is positioned next to it using ``render_text_slot``.
+    Positions are computed based on the base ``x``/``y`` offsets and the ``LEGEND_STYLE``
+    configuration.
+
+    Args:
+        ctx: Rendering context containing the current PPTX slide object.
+        slot (dict): Slot definition with ``x`` and ``y`` offsets for the legend.
+        legend (list[dict]): List of legend items, each possibly defining ``color``,
+            ``dash_style`` and ``width``.
+
+    Returns:
+        None. The PPTX slide is modified in‑place.
+    """
     x = slot["x"]
     y = slot["y"]
 
@@ -347,7 +362,26 @@ def _render_dash_legend_gslides(
     slot,
     legend,
 ):
+    """Render a dash legend on a Google Slides page.
 
+    Constructs a series of ``createLine`` and ``updateLineProperties`` request
+    dictionaries for each dash‑legend entry, applying the appropriate color,
+    dash style, and line width. Text labels are added via ``render_text_slot``.
+    The generated requests are appended to the context's batch of legend‑related
+    API calls.
+
+    Args:
+        ctx: Rendering context providing the current Google Slides page ID and a
+            method to accumulate API requests.
+        slot_key (str): Base identifier for the legend slot, used to create unique
+            object IDs for the line shapes.
+        slot (dict): Slot definition containing ``x`` and ``y`` offsets.
+        legend (list[dict]): List of legend items with optional ``color``,
+            ``dash_style`` and ``width`` attributes.
+
+    Returns:
+        None. The function appends request dictionaries to the context.
+    """
     requests = []
 
     x = slot["x"]

@@ -72,4 +72,5 @@ def _render_chart(ctx, slot, block, slot_key, slide):
 
 
 def _render_text(ctx, slot, text, slot_key, style_overrides=None):
+    """Pass through function."""
     render_text_slot(ctx, slot, text, slot_key, style_overrides)

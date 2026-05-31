@@ -108,6 +108,17 @@ class GSlidesRenderer:
     # RENDER CONTENT
     # =========================================================
     def _render_content(self, slide, page_id):
+        """Render a single slide's content.
+
+        Creates a ``RenderContext`` for the slide, runs ``render_slots`` to populate
+        the slide with text, images, charts, etc., and then gathers the resulting
+        request lists from the context into the renderer's accumulated request
+        collections.
+
+        Args:
+            slide (dict): Slide definition containing layout and slot data.
+            page_id (str): The Google Slides object ID for the target slide.
+        """
         layout_spec = self.layouts[slide["layout"]]
 
         ctx = RenderContext(
@@ -136,6 +147,20 @@ class GSlidesRenderer:
     # BATCH HELPER
     # =========================================================
     def _batch_update(self, _id, requests, service):
+        """Execute a batchUpdate request for the appropriate Google API.
+
+        The method abstracts the differences between the Slides and Sheets services,
+        handling three possible ``service`` values:
+
+        * ``"sheets"`` – updates sheet structure (e.g., adding sheets).
+        * ``"sheets_values"`` – writes cell values.
+        * ``"slides"`` – updates slide objects (e.g., creating shapes, inserting text).
+
+        Args:
+            _id (str): The spreadsheet ID for Sheets or the presentation ID for Slides.
+            requests (list[dict]): A list of request dictionaries for the API.
+            service (str): Which service to target (``"sheets"``, ``"sheets_values"`` or ``"slides"``).
+        """
         if service == "sheets":
             self.sheets.spreadsheets().batchUpdate(spreadsheetId=_id, body={"requests": requests}).execute()
         if service == "sheets_values":
@@ -146,6 +171,13 @@ class GSlidesRenderer:
             self.slides.presentations().batchUpdate(presentationId=_id, body={"requests": requests}).execute()
 
     def _execute_requests(self):
+        """Execute all accumulated batchUpdate requests for Sheets and Slides.
+
+        This helper runs each non‑empty request list in the appropriate order, calling
+        ``_batch_update`` with the correct service identifier. It ensures that sheet
+        creation, value writes, chart creation, slide creation, and embedding steps
+        are performed before text and legend insertion.
+        """
         if self.create_sheet_requests:
             self._batch_update(self.spreadsheet_id, self.create_sheet_requests, "sheets")
 

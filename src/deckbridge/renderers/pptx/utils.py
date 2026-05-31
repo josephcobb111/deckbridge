@@ -45,6 +45,23 @@ def hex_to_rgb255(hex_color: str):
 
 
 def _validate_xy_numeric(x_values, y_values, x_col, y_col):
+    """Validate that X and Y values for a scatter chart are numeric.
+
+    The function iterates over the supplied ``x_values`` and ``y_values`` sequences
+    and raises a ``ValueError`` if any entry is not a real number (including ``bool``
+    or ``nan``).  The error messages identify the offending column name and the
+    index of the problematic row, which assists callers in pinpointing data issues.
+
+    Args:
+        x_values (Sequence): Iterable of X‑axis values.
+        y_values (Sequence): Iterable of Y‑axis values.
+        x_col (str): Column name for the X values – used in error messages.
+        y_col (str): Column name for the Y values – used in error messages.
+
+    Raises:
+        ValueError: If a non‑numeric or ``nan`` value is encountered in either
+            sequence.
+    """
     for i, x in enumerate(x_values):
         if not isinstance(x, Number) or isinstance(x, bool) or math.isnan(float(x)):
             raise ValueError(
