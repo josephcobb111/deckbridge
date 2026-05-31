@@ -53,18 +53,41 @@ GSHEETS_CHART_STACKING_MAP = {
 }
 
 
-def inches_to_emu(inches):
+def inches_to_emu(inches: float) -> int:
+    """Convert inches to EMU (English Metric Units).
+
+    Args:
+        inches: Length in inches.
+
+    Returns:
+        Length in EMU.
+    """
     return int(inches * EMU_PER_INCH * DEFAULT_PPTX_TO_GOOGLE_SCALE_FACTOR)
 
 
-def inches_to_pixels(inches):
+def inches_to_pixels(inches: float) -> int:
+    """Convert inches to pixels.
+
+    Args:
+        inches: Length in inches.
+
+    Returns:
+        Length in pixels.
+    """
     return int(inches * PIXEL_PER_INCH * DEFAULT_PPTX_TO_GOOGLE_SCALE_FACTOR)
 
 
 def hex_to_slides_rgb(hex_color: str) -> dict:
-    """
-    Convert a hex color string (e.g. '7F7F7F' or '#7F7F7F')
-    to Google Slides API rgbColor format (0–1 floats).
+    """Convert a hex color string (e.g. '7F7F7F' or '#7F7F7F') to Google Slides API rgbColor format (0–1 floats).
+
+    Args:
+        hex_color: Hex color string with or without '#'.
+
+    Returns:
+        Dictionary with 'red', 'green', 'blue' keys (values between 0 and 1).
+
+    Raises:
+        ValueError: If hex_color is not 6 characters long.
     """
     hex_color = hex_color.lstrip("#")
 
@@ -78,5 +101,13 @@ def hex_to_slides_rgb(hex_color: str) -> dict:
     return {"red": r, "green": g, "blue": b}
 
 
-def text_to_number(text):
+def text_to_number(text: str) -> int:
+    """Convert text to a number using CRC32 hash.
+
+    Args:
+        text: Input text to convert.
+
+    Returns:
+        Hashed number between 0 and 2^31-1.
+    """
     return zlib.crc32(text.encode()) & 0x7FFFFFFF

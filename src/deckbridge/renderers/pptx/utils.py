@@ -27,12 +27,41 @@ PPTX_DASH_MAP = {
 
 
 def hex_to_rgb255(hex_color: str):
+    """Convert a hex color string to a ``pptx`` ``RGBColor`` object.
+
+    The input may optionally start with ``#``. The function parses the
+    six‑character hexadecimal value and returns an ``RGBColor`` instance
+    with integer components in the range 0‑255.
+
+    Args:
+        hex_color: A color string such as "#ff00aa" or "ff00aa".
+
+    Returns:
+        An ``RGBColor`` representing the equivalent color.
+    """
     hex_color = hex_color.lstrip("#")
     r, g, b = tuple(int(hex_color[i : i + 2], 16) for i in (0, 2, 4))
     return RGBColor(r, g, b)
 
 
 def _validate_xy_numeric(x_values, y_values, x_col, y_col):
+    """Validate that X and Y values for a scatter chart are numeric.
+
+    The function iterates over the supplied ``x_values`` and ``y_values`` sequences
+    and raises a ``ValueError`` if any entry is not a real number (including ``bool``
+    or ``nan``).  The error messages identify the offending column name and the
+    index of the problematic row, which assists callers in pinpointing data issues.
+
+    Args:
+        x_values (Sequence): Iterable of X‑axis values.
+        y_values (Sequence): Iterable of Y‑axis values.
+        x_col (str): Column name for the X values – used in error messages.
+        y_col (str): Column name for the Y values – used in error messages.
+
+    Raises:
+        ValueError: If a non‑numeric or ``nan`` value is encountered in either
+            sequence.
+    """
     for i, x in enumerate(x_values):
         if not isinstance(x, Number) or isinstance(x, bool) or math.isnan(float(x)):
             raise ValueError(

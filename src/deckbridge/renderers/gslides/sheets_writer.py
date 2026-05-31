@@ -1,13 +1,56 @@
+"""Utilities for writing chart data to Google Sheets.
+
+This module provides the :class:`SheetsDataWriter` which creates a new sheet
+in a spreadsheet and writes a pandas ``DataFrame`` representing chart data to
+it. The writer works with the surrounding rendering context to accumulate the
+necessary batchUpdate requests for the Google Sheets API.
+"""
+
 from deckbridge.renderers.gslides.utils import text_to_number
 
 
 class SheetsDataWriter:
+    """Writes data to Google Sheets.
+
+    This class handles creating new sheets in a spreadsheet and writing chart
+    data (provided as a pandas DataFrame) to those sheets.
+    """
+
     def __init__(self, sheets_service, spreadsheet_id):
+        """Initializes the writer with a Google Sheets service.
+
+        Args:
+            sheets_service: Authenticated Google Sheets service instance used to
+                send batchUpdate requests.
+            spreadsheet_id: ID of the spreadsheet where new sheets will be
+                created and data written.
+        """
         self.sheets = sheets_service
         self.spreadsheet_id = spreadsheet_id
 
     def write_dataframe(self, ctx, block, sheet_name):
+        """Writes a DataFrame to a new sheet in the spreadsheet.
 
+        This creates a new sheet with a deterministic ``sheet_id`` derived from
+        ``sheet_name`` and populates it with the chart data contained in
+        ``block.chart``.
+
+        Args:
+            ctx: Context object that accumulates batchUpdate requests for the
+                Sheets API. It must provide ``add_create_sheet_requests``,
+                ``add_create_values_requests`` and ``add_format_values_requests``
+                methods.
+            block: A chart block that contains a ``chart`` attribute. The chart
+                must have ``data`` (a pandas ``DataFrame``), ``x`` (name of the
+                x‑axis column), ``series`` (list of series dictionaries with
+                ``name`` and ``column`` keys), and optionally ``value_axis_tick
+                _format`` for number formatting.
+            sheet_name: Desired name of the new sheet.
+
+        Returns:
+            tuple: ``(sheet_name, sheet_id)`` where ``sheet_id`` is the numeric
+                identifier used in subsequent formatting requests.
+        """
         df = block.chart.data
 
         # Create new sheet

@@ -4,7 +4,26 @@ from deckbridge.renderers.gslides.chart_compiler import GSlidesChartCompiler
 
 
 class GSlidesRenderer:
+    """Renderer for Google Slides presentations.
+
+    This class coordinates creation of slides, sheets, and charts, accumulating
+    batchUpdate requests for the Google Slides and Sheets APIs. It delegates the
+    actual chart compilation to :class:`~deckbridge.renderers.gslides.chart_compiler.GSlidesChartCompiler`
+    and uses :class:`~deckbridge.renderers.common.context.RenderContext` to
+    render individual slots on each slide.
+    """
+
     def __init__(self, slides_service, sheets_service, spreadsheet_id, presentation_id, execute_requests):
+        """Initializes the GSlidesRenderer.
+
+        Args:
+            slides_service: Authenticated Google Slides service instance.
+            sheets_service: Authenticated Google Sheets service instance.
+            spreadsheet_id: ID of the spreadsheet used for data sheets.
+            presentation_id: ID of the Slides presentation being rendered.
+            execute_requests: Whether to automatically execute the accumulated batch
+                update requests after rendering.
+        """
         self.slides = slides_service
         self.sheets = sheets_service
         self.spreadsheet_id = spreadsheet_id
@@ -27,7 +46,17 @@ class GSlidesRenderer:
         self.execute_requests = execute_requests
 
     def render(self, deck):
+        """Renders the entire deck into Google Slides.
 
+        The method performs three main steps:
+        1. Creates blank slides for each slide in the deck.
+        2. Renders the content of each slide using the appropriate layout.
+        3. Optionally executes all accumulated batchUpdate requests.
+
+        Args:
+            deck: A :class:`deckbridge.models.Deck` (or compatible) object that
+                contains a list of slide definitions in ``deck.slides``.
+        """
         # -----------------------------
         # Create slides
         # -----------------------------
@@ -49,6 +78,19 @@ class GSlidesRenderer:
     # CREATE SLIDES
     # =========================================================
     def _create_slides(self, deck):
+        """Create blank slides for each slide in the deck.
+
+        Generates a unique ``objectId`` for each slide (e.g. ``slide_0``) and
+        appends a ``createSlide`` request to ``self.create_slide_requests``.
+        Returns a mapping from the slide index to the generated ``objectId`` so
+        that subsequent rendering steps can reference the correct page.
+
+        Args:
+            deck: Deck object containing a ``slides`` attribute.
+
+        Returns:
+            dict[int, str]: Mapping of slide index to slide ``objectId``.
+        """
         page_ids = {}
 
         for i, _ in enumerate(deck.slides):
@@ -66,6 +108,17 @@ class GSlidesRenderer:
     # RENDER CONTENT
     # =========================================================
     def _render_content(self, slide, page_id):
+        """Render a single slide's content.
+
+        Creates a ``RenderContext`` for the slide, runs ``render_slots`` to populate
+        the slide with text, images, charts, etc., and then gathers the resulting
+        request lists from the context into the renderer's accumulated request
+        collections.
+
+        Args:
+            slide (dict): Slide definition containing layout and slot data.
+            page_id (str): The Google Slides object ID for the target slide.
+        """
         layout_spec = self.layouts[slide["layout"]]
 
         ctx = RenderContext(
@@ -94,6 +147,20 @@ class GSlidesRenderer:
     # BATCH HELPER
     # =========================================================
     def _batch_update(self, _id, requests, service):
+        """Execute a batchUpdate request for the appropriate Google API.
+
+        The method abstracts the differences between the Slides and Sheets services,
+        handling three possible ``service`` values:
+
+        * ``"sheets"`` – updates sheet structure (e.g., adding sheets).
+        * ``"sheets_values"`` – writes cell values.
+        * ``"slides"`` – updates slide objects (e.g., creating shapes, inserting text).
+
+        Args:
+            _id (str): The spreadsheet ID for Sheets or the presentation ID for Slides.
+            requests (list[dict]): A list of request dictionaries for the API.
+            service (str): Which service to target (``"sheets"``, ``"sheets_values"`` or ``"slides"``).
+        """
         if service == "sheets":
             self.sheets.spreadsheets().batchUpdate(spreadsheetId=_id, body={"requests": requests}).execute()
         if service == "sheets_values":
@@ -104,6 +171,13 @@ class GSlidesRenderer:
             self.slides.presentations().batchUpdate(presentationId=_id, body={"requests": requests}).execute()
 
     def _execute_requests(self):
+        """Execute all accumulated batchUpdate requests for Sheets and Slides.
+
+        This helper runs each non‑empty request list in the appropriate order, calling
+        ``_batch_update`` with the correct service identifier. It ensures that sheet
+        creation, value writes, chart creation, slide creation, and embedding steps
+        are performed before text and legend insertion.
+        """
         if self.create_sheet_requests:
             self._batch_update(self.spreadsheet_id, self.create_sheet_requests, "sheets")
 

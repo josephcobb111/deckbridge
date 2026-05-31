@@ -8,6 +8,7 @@ This file provides guidance to Claude Code when working with this repository.
 - **Clarity & Confidence:** If you aren't sure what to do, ask me for clarification.
 - **Thinking Limits:** Limit extended thinking to a concise budget (e.g., maximum 2,000 thinking tokens) to prevent over-analysis on minor code changes.
 - **Task Execution:** Avoid unnecessary deliberation and proceed directly to code planning. 
+- **Execution Environment:** Run commands on the deckbridge conda environment, e.g., conda run -n deckbridge <command>.
 
 ## Common Development Commands
 1. **Testing**
