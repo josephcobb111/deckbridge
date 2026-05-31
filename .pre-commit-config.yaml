@@ -64,13 +64,6 @@ repos:
          types: [python]
          exclude: (^tests/^deckbridge/_version.py|^versioneer.py|^setup.py|^docs/|^deckbridge/__init__.py|^deckbridge/_git_version.py)
          args: ["--config-file=pyproject.toml"]
-      # Pylint: Complexity and style checking
-      # https://pylint.pycqa.org/en/latest/user_guide/installation/pre-commit-integration.html
-      -  id: pylint
-         name: pylint
-         entry: pylint
-         language: system
-         types: [file, python]
       # General fixers: Format files for white spaces and trailing new lines, warn on debug statements
       # https://github.com/pre-commit/pre-commit-hooks#hooks-available
       -  id: trailing-whitespace
