@@ -27,6 +27,18 @@ PPTX_DASH_MAP = {
 
 
 def hex_to_rgb255(hex_color: str):
+    """Convert a hex color string to a ``pptx`` ``RGBColor`` object.
+
+    The input may optionally start with ``#``. The function parses the
+    six‑character hexadecimal value and returns an ``RGBColor`` instance
+    with integer components in the range 0‑255.
+
+    Args:
+        hex_color: A color string such as "#ff00aa" or "ff00aa".
+
+    Returns:
+        An ``RGBColor`` representing the equivalent color.
+    """
     hex_color = hex_color.lstrip("#")
     r, g, b = tuple(int(hex_color[i : i + 2], 16) for i in (0, 2, 4))
     return RGBColor(r, g, b)

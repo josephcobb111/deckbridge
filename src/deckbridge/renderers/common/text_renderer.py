@@ -3,7 +3,6 @@ from pptx.util import Inches, Pt
 from deckbridge.renderers.common.style_resolver import resolve_text_style
 from deckbridge.renderers.gslides.utils import GSLIDES_ALIGN_MAP, GSLIDES_VERTICAL_ALIGN_MAP, hex_to_slides_rgb, inches_to_emu
 from deckbridge.renderers.pptx.utils import PPTX_ALIGN_MAP, PPTX_VERTICAL_ALIGN_MAP, hex_to_rgb255
-from deckbridge.themes.default import THEME
 
 
 def resolve_text_content(slide, slot_key, slot):

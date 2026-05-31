@@ -14,11 +14,7 @@ def resolve_chart_theme(theme, layout_name, style_overrides=None):
 
 
 def resolve_text_style(slot_key, slot, theme, layout_name, style_overrides):
-    """
-    Merge style layers:
-    DEFAULT → THEME (global) → THEME (slot) → slot
-    """
-
+    """Merge style layers: DEFAULT → THEME (global) → THEME (slot) → slot."""
     slot_group = slot.get("style_key", slot_key)
 
     chart_theme = resolve_chart_theme(theme, layout_name, style_overrides) if "chart" in slot_key else {}

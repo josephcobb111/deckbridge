@@ -13,9 +13,9 @@ class RenderContext:
     sheets_service: object = None
     slides_service: object = None
 
-    presentation_id: str = None
-    spreadsheet_id: str = None
-    page_id: str = None
+    presentation_id: Optional[str] = None
+    spreadsheet_id: Optional[str] = None
+    page_id: Optional[str] = None
 
     chart_compiler: object = None
 

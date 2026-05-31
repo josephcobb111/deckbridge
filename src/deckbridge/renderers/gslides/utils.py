@@ -62,10 +62,7 @@ def inches_to_pixels(inches):
 
 
 def hex_to_slides_rgb(hex_color: str) -> dict:
-    """
-    Convert a hex color string (e.g. '7F7F7F' or '#7F7F7F')
-    to Google Slides API rgbColor format (0–1 floats).
-    """
+    """Convert a hex color string (e.g. '7F7F7F' or '#7F7F7F') to Google Slides API rgbColor format (0–1 floats)."""
     hex_color = hex_color.lstrip("#")
 
     if len(hex_color) != 6:

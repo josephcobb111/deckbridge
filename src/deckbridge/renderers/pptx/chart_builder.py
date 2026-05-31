@@ -13,18 +13,14 @@ from deckbridge.renderers.pptx.utils import PPTX_DASH_MAP, _validate_xy_numeric,
 
 class PPTXChartBuilder:
     def build_chart_data(self, spec):
-        """
-        Build chart type + data (no styling here)
-        """
+        """Build chart type + data (no styling here)."""
         chart_data = self._build_chart_data(spec)
         chart_type = self._map_chart_type(spec.chart_type)
 
         return chart_type, chart_data
 
     def apply_chart_style(self, chart, theme, layout_name, block, value_axis_override):
-        """
-        Apply theme-driven styling to a chart object
-        """
+        """Apply theme-driven styling to a chart object."""
         chart_theme = resolve_chart_theme(theme, layout_name, block.style_overrides)
 
         self._single_series_bar_chart(chart)

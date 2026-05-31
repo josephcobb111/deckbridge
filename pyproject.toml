@@ -165,7 +165,7 @@ ignore = [
 ]
 
 [tool.ruff.lint.per-file-ignores]
-"__init__.py" = ["E402", "F401"]
+"__init__.py" = ["E402", "F401", "D104"]
 "**/{tests,docs}/*" = ["E402", "D", "F841", "ARG", "T20"]
 
 [tool.ruff.lint.flake8-tidy-imports]

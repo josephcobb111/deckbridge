@@ -203,7 +203,12 @@ class SheetsChartBuilder:
                 "series": series,
             },
         }
+        # Ensure proper type for mypy when adding stacked type
         if GSHEETS_CHART_STACKING_MAP[spec.chart_type] != "NOT_STACKED":
-            api_spec["basicChart"]["stackedType"] = GSHEETS_CHART_STACKING_MAP[spec.chart_type]
+            from typing import Any, Dict, cast
+
+            basic_chart = cast(Dict[str, Any], api_spec["basicChart"])
+            basic_chart["stackedType"] = GSHEETS_CHART_STACKING_MAP[spec.chart_type]
+            api_spec["basicChart"] = basic_chart
 
         return api_spec
