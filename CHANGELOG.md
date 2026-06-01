@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.4.0
+
+## What's Changed
+* Add execute legend requests for gslides by @josephcobb111 in https://github.com/josephcobb111/deckbridge/pull/24
+
+**Full Changelog**: https://github.com/josephcobb111/deckbridge/compare/v0.3.1...v0.4.0
+
+
 ## 0.3.1
 
 ## What's Changed
