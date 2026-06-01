@@ -142,6 +142,7 @@ class GSlidesRenderer:
         self.create_chart_requests.extend(ctx.create_chart_requests)
         self.embed_chart_requests.extend(ctx.embed_chart_requests)
         self.create_text_requests.extend(ctx.create_text_requests)
+        self.create_legend_requests.extend(ctx.create_legend_requests)
 
     # =========================================================
     # BATCH HELPER
